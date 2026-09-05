@@ -1,0 +1,49 @@
+{
+  "$schema_note": "代码审查工作台数据契约 v0.1 —— 对齐 代码审查工作台.html 的 finding-card(p0/p1)、实时事件流、统计面板结构。产物按此 schema 存档，后续可直接注入工作台渲染。",
+  "review": {
+    "id": "string, 样本唯一标识, 如 github-py-0007",
+    "source": "dahoas_critique_revision | github_codereview | cwe_vuln_review",
+    "task": "review_comment | review_critique | vuln_detect",
+    "language": "Python/JavaScript/Java/... 或 null",
+    "input": "string, 被审查的真实代码/变更片段(来自 test 分片)",
+    "output_ref": "string, 数据集人工真值(golden 参照)",
+    "meta": { "repo": "", "pr": "", "file": "", "cwe": "", "vuln_name": "" }
+  },
+  "model_call": {
+    "backend": "golden | ollama | openai",
+    "model": "string, 实际模型名(ollama/openai 后端填写)",
+    "engine": "string, 解析引擎: extract_findings.py",
+    "latency_s": 0.0,
+    "prompt_chars": 0,
+    "output_chars": 0,
+    "truncated": false,
+    "error": null
+  },
+  "finding": {
+    "id": "string, FIX 编号风格: {review.id}-F{seq}",
+    "severity": "P0 | P1 | P2 | P3   (对应工作台 finding-card.p0 / .p1 高亮)",
+    "category": "string, 如 SQL注入 / 硬编码密钥 / XSS / 性能 / 可维护性",
+    "title": "string, 发现标题(映射 finding-title)",
+    "line": "number|null, 代码行号(无法定位为 null, 对应 finding-src)",
+    "src": "string, 定位说明, 如 文件 xxx · 第 N 行",
+    "rule": "string, 命中规则/工具, 如 CWE-89 / semgrep.python.sql-exec",
+    "description": "string, 问题描述与修复建议(映射 finding-desc)",
+    "evidence": "string, 来自模型输出的原文证据片段",
+    "actions": { "mark_fp": true, "add_fix": true }
+  },
+  "live_event": {
+    "ts": "ISO8601, 事件时间",
+    "phase": 1..6,
+    "actor": "Semgrep | CodeQL | gitleaks | AI语义审查 | Lead Reviewer | 系统",
+    "status": "completed | running | queued",
+    "message": "string, 事件消息(实时流展示)"
+  },
+  "stats": {
+    "review_id": "string",
+    "files": 1,
+    "progress_pct": 0,
+    "by_severity": { "P0": 0, "P1": 0, "P2": 0, "P3": 0 },
+    "by_source": {},
+    "by_language": {}
+  }
+}
