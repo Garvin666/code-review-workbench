@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>代码审查工作台 · Code Review Workbench</title>
+<style>
+  :root{--brand:#5645D4;--navy:#0A1530;--ink:#1f2430;--mut:#6b7280;--line:#e5e7eb;--bg:#f7f7fb}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+  header{background:linear-gradient(135deg,#0A1530 0%,#131d3d 55%,#241b52 100%);color:#fff;padding:56px 24px 44px;text-align:center}
+  .tag{display:inline-block;background:rgba(86,69,212,.25);border:1px solid rgba(255,255,255,.25);color:#cdc8ff;font-size:12px;letter-spacing:1.5px;padding:4px 14px;border-radius:20px;margin-bottom:18px}
+  h1{font-size:clamp(26px,4vw,40px);font-weight:700;letter-spacing:.5px}
+  h1 span{color:#8b7cf8}
+  .sub{color:#b9c0d4;margin-top:12px;font-size:15px;line-height:1.8}
+  main{flex:1;max-width:960px;margin:0 auto;width:100%;padding:36px 20px 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;text-decoration:none;color:inherit;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;display:block}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,30,80,.10);border-color:#b9b0f5}
+  .card .ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;color:#fff}
+  .c1{background:var(--brand)}.c2{background:#1d4ed8}.c3{background:#0e7490}.c4{background:#b45309}
+  .card h3{font-size:16px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .card p{font-size:13px;color:var(--mut);line-height:1.7}
+  .arrow{margin-left:auto;color:#c3c8d8;transition:transform .15s}
+  .card:hover .arrow{transform:translateX(3px);color:var(--brand)}
+  footer{text-align:center;color:var(--mut);font-size:12px;padding:20px;border-top:1px solid var(--line);background:#fff}
+  .badge{display:inline-block;font-size:11px;color:var(--brand);border:1px solid #d5cffb;background:#f2efff;padding:1px 8px;border-radius:10px;margin-left:6px;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <div class="tag">AI CODE REVIEW · DEMO WORKBENCH</div>
+  <h1>代码审查<span>工作台</span></h1>
+  <div class="sub">Notion 风格设计稿还原 · 实时审查 / 检查清单 / 漏洞跟踪 / 工具矩阵 / 报告导出<br>配套数据管道 review_pipeline（采样 → 推理 → 抽取 → 试点 → 报告）</div>
+</header>
+<main>
+  <div class="grid">
+    <a class="card" href="代码审查工作台_v2.html">
+      <div class="ic c1">🧭</div>
+      <h3>工作台 v2 · 六页合集<span class="badge">主推</span></h3>
+      <p>6 页面 SPA：实时审查 + 检查清单 + 代码扫描 + 漏洞跟踪 + 工具矩阵 + 报告导出，1440×960 桌面端还原。</p>
+      <div class="arrow">→</div>
+    </a>
+    <a class="card" href="代码审查工作台.html">
+      <div class="ic c2">🖥️</div>
+      <h3>实时审查 · 单页演示</h3>
+      <p>流式审查输出、暂停恢复、误报标记、整改单、导出报告、进度条动效 — 纯前端交互演示。</p>
+      <div class="arrow">→</div>
+    </a>
+    <a class="card" href="review_pipeline/pilot_report.html">
+      <div class="ic c3">🔬</div>
+      <h3>试点评估报告</h3>
+      <p>端到端管道试点结果：17/17 冒烟通过，标签配对与漏洞分级语义验证。</p>
+      <div class="arrow">→</div>
+    </a>
+    <a class="card" href="https://github.com/Garvin666/code-review-workbench/blob/main/overview.md">
+      <div class="ic c4">📖</div>
+      <h3>项目总览</h3>
+      <p>overview.md — 设计稿还原说明、审查交互与管道架构速览。</p>
+      <div class="arrow">→</div>
+    </a>
+  </div>
+</main>
+<footer>Garvin666 · code-review-workbench · 由 GitHub Pages 托管 · 数据集 code_review_data 因体积未入库</footer>
+</body>
+</html>
