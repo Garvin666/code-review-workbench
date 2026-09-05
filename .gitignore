@@ -1,0 +1,11 @@
+# 数据集（体积过大，不入库，完整数据见 code_review_data/README）
+code_review_data/
+
+# 工作区内部数据
+.workbuddy/
+
+# 临时文件
+.gh_login.out
+*.log
+.DS_Store
+Thumbs.db
