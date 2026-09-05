@@ -1,0 +1,29 @@
+{
+ "run_at": "2026-09-05T15:05:40+08:00",
+ "backend": "golden",
+ "ok": 12,
+ "err": 0,
+ "elapsed_s": 0.0,
+ "total_findings": 14,
+ "by_severity": {
+  "P1": 3,
+  "P0": 1,
+  "P2": 8,
+  "P3": 2
+ },
+ "by_source": {
+  "cwe_vuln_review": 4,
+  "dahoas_critique_revision": 4,
+  "github_codereview": 4
+ },
+ "by_language": {
+  "未知": 4,
+  "Ruby": 1,
+  "Python": 2,
+  "Java": 1,
+  "Php": 1,
+  "PHP": 1,
+  "Rust": 1,
+  "C#": 1
+ }
+}
