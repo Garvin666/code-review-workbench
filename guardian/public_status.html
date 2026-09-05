@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>服务状态 · Guardian Status</title>
+<style>
+:root{
+  --brand:#5645D4; --brand-soft:#EEEDFE;
+  --ink:#1F1E1B; --ink-2:#6F6C63; --ink-3:#9B978C;
+  --bg:#F4F3F1; --card:#FFFFFF; --line:#E5E3DF;
+  --ok:#16A34A; --ok-bg:#E9F7EF; --warn:#D97706; --warn-bg:#FEF4E4;
+  --down:#DC2626; --down-bg:#FDEBEB; --maint:#7C3AED; --maint-bg:#F5F0FF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:14px/1.6 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:40px 22px 60px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+h1{font-size:20px}
+header small{display:block;color:var(--ink-3);font-size:11px;letter-spacing:.1em}
+.headline{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:18px 0;box-shadow:0 1px 2px rgba(28,25,23,.04)}
+.hdot{width:10px;height:10px;border-radius:50%;flex:none}
+.hdot.ok{background:var(--ok)}.hdot.warn{background:var(--warn)}.hdot.down{background:var(--down)}
+.headline b{font-size:15px}
+.headline .ts{margin-left:auto;color:var(--ink-3);font-size:12px}
+.mtbanner{display:none;align-items:center;gap:10px;background:var(--maint-bg);border:1px solid #E3D5FF;border-radius:12px;padding:10px 16px;margin:0 0 14px;color:#6d28d9;font-size:13px}
+.mtbanner.show{display:flex}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(28,25,23,.04)}
+.row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.down{background:var(--down)}.dot.maint{background:var(--maint)}
+.row .nm{font-weight:600;flex:1;min-width:0}
+.row .nm small{display:block;font-weight:400;color:var(--ink-3);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:11px;color:var(--ink-2);background:#F0EEE9;border-radius:6px;padding:2px 8px;flex:none}
+.state{font-size:12.5px;font-weight:600;flex:none}
+.state.ok{color:#15703a}.state.warn{color:#b45309}.state.down{color:#a02a2a}.state.maint{color:#6d28d9}
+.up{flex:none;text-align:right;font-size:12px;color:var(--ink-2)}
+.up b{font-size:13.5px;font-variant-numeric:tabular-nums;color:#15703a}
+.up b.w{color:#b45309}.up b.d{color:#a02a2a}
+.note{color:var(--ink-3);font-size:12px;text-align:center;margin-top:18px}
+.err{display:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:40px 20px;text-align:center;color:var(--ink-2)}
+.err.show{display:block}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--ink-2);margin:6px 0 0}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+@media(max-width:640px){.up{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">G</div>
+    <div><h1>服务状态总览</h1><small>GUARDIAN WORKBENCH · PUBLIC STATUS</small></div>
+  </header>
+
+  <div class="headline" id="headline">
+    <span class="hdot" id="hdot"></span>
+    <b id="htext">载入中…</b>
+    <span class="legend" style="margin-left:auto;display:flex;gap:12px">
+      <span><i class="dot ok"></i>正常</span><span><i class="dot warn"></i>预警</span>
+      <span><i class="dot down"></i>故障</span><span><i class="dot maint"></i>维护</span>
+    </span>
+  </div>
+
+  <div class="mtbanner" id="mtbanner">🛠 <span id="mtt"></span></div>
+
+  <div class="card" id="list"></div>
+  <div class="err" id="err">
+    <div style="font-size:30px;margin-bottom:8px">⚠️</div>
+    <div>无法连接守护中枢服务。<br>请确认 guardian_server.py 已在本机运行（http://127.0.0.1:8700）。</div>
+  </div>
+  <div class="note">状态每 10s 自动刷新 · 本页为只读公开页，由 Guardian Workbench 守护中枢生成 · API: <span style="font-family:monospace">/api/v1/status</span></div>
+</div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const ST={ok:["ok","正常"],warn:["warn","预警"],down:["down","故障"]};
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function fmt(iso){if(!iso)return"—";const d=new Date(iso);return (d.getMonth()+1)+"月"+d.getDate()+"日 "+d.toTimeString().slice(0,8);}
+function upCls(v){if(v==null)return"";return v<95?" d":(v<99.5?" w":"");}
+async function tick(){
+  try{
+    const r=await fetch("/api/v1/status");
+    const j=await r.json();
+    if(!j.ok) throw 0;
+    const d=j.data, g=d.global||{};
+    $("#err").classList.remove("show");
+    let cls="ok",txt="全部服务运行正常",dot="ok";
+    if(g.down>0){cls="down";txt=`${g.down} 项服务故障`;dot="down";}
+    else if(g.warn>0){cls="warn";txt=`${g.warn} 项服务预警`;dot="warn";}
+    $("#htext").textContent=txt+" · "+((g.ok||0)+(g.warn||0)+(g.down||0))+" 项被守护";
+    $("#hdot").className="hdot "+dot;
+    $("#htext").style.color=cls==="ok"?"#15703a":cls==="warn"?"#b45309":"#a02a2a";
+    const mt=(d.maintenance&&d.maintenance.active)||[];
+    $("#mtbanner").classList.toggle("show",mt.length>0);
+    $("#mtt").textContent=mt.map(w=>`维护中：${w.title}（至 ${esc(w.end?w.end.replace("T"," ").slice(5,16):"—")}）`).join("　");
+    $("#list").innerHTML=(d.targets||[]).map(t=>{
+      const inMt=t.in_maintenance;
+      const stKey=inMt?"maint":(t.state==="ok"?"ok":(t.state==="down"?"down":"warn"));
+      const label=inMt?"维护中":(ST[t.state]?ST[t.state][1]:t.state);
+      const up7=t.uptime&&t.uptime["7d"];
+      return `<div class="row">
+        <span class="dot ${stKey}"></span>
+        <div class="nm">${esc(t.name)}<small>${esc(t.url||(t.source==="report"?"客户端上报 · 心跳驱动":"—"))}</small></div>
+        <span class="tag">${esc(t.source==="probe"?"探测":t.source==="agent"?"代理":"上报")}</span>
+        <span class="up">7d 可用率<br><b class="${upCls(up7)}">${up7!=null?up7.toFixed(2)+"%":"—"}</b></span>
+        <span class="state ${stKey}">${label}</span>
+      </div>`;
+    }).join("")||`<div class="row" style="justify-content:center;color:var(--ink-3)">暂无被守护服务</div>`;
+  }catch(e){
+    $("#list").innerHTML="";
+    $("#err").classList.add("show");
+  }
+}
+tick();
+setInterval(tick,10000);
+</script>
+</body>
+</html>
