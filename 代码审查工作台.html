@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="U37nA6k4v2j3JWJNi2CMpU">
+<head data-page-node-id="ux9HXdZWaVr725UlHon0wB">
+<meta charset="UTF-8" data-page-node-id="5IQpIZMyUKxnz8FEjsxmr1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="TjU3U1DWq4nqvwqtBrjJSp">
+<title>安全审查工作台 · 实时审查</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%235645D4'/%3E%3Cpath d='M12 5.5l5 2.2v3.6c0 3.3-2.1 5.4-5 6.6-2.9-1.2-5-3.3-5-6.6V7.7l5-2.2z' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E" data-page-node-id="S2iHT1rBTK12OkFYAy2zdi">
+<link rel="preconnect" href="https://fonts.googleapis.com" data-page-node-id="lB5w9AaPNpYuhWe1pQkOo9">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin data-page-node-id="IIvacBfq1C9thDimDgkI2L">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet" data-page-node-id="Swkddgk73U3w2NMO6abIL4">
+<style>
+/* ============================================================
+   Design Tokens — 严格取自 Ardot 设计稿「代码审查工作台·实时审查」
+   ============================================================ */
+:root {
+  /* 品牌紫 */
+  --brand:        #5645D4;
+  --brand-deep:   #4534B3;
+  --brand-mid:    #6B5BD6;
+  --brand-soft:   #E6E0F5;
+  --brand-time:   #7A6BD9;
+  /* 中性色（Notion 式暖灰） */
+  --bg:           #FFFFFF;
+  --bg-canvas:    #FAFAF9;
+  --bg-sidebar:   #F6F5F4;
+  --border:       #E5E3DF;
+  --border-strong:#C8C4BE;
+  --track:        #F0EEEC;
+  --ink-1:        #1A1A1A;
+  --ink-2:        #37352F;
+  --ink-3:        #5D5B54;
+  --ink-4:        #787671;
+  --ink-5:        #A4A097;
+  /* 语义色 */
+  --ok:           #147A2B;
+  --ok-bg:        #D9F3E1;
+  --ok-line:      #B9E5C6;
+  --warn:         #DD5B00;
+  --warn-bg:      #FFE8D4;
+  --warn-ink:     #793400;
+  --p0:           #E03131;
+  --p0-bg:        #FDE0EC;
+  --p0-ink:       #B3261E;
+  --p2-dot:       #A16207;
+  --p2-bg:        #FEF7D6;
+  --p2-ink:       #6B4A00;
+  --p3-dot:       #005BAB;
+  --p3-bg:        #DCECFA;
+  --p3-ink:       #005BAB;
+  /* 代码面板（深海军蓝） */
+  --code-bg:          #0A1530;
+  --code-bar:         #0D1830;
+  --code-border:      #1A2A52;
+  --code-tab-active:  #1E2F5C;
+  --code-tab-more:    #16244A;
+  --code-text:        #D4D9E6;
+  --code-kw:          #C3B5F7;
+  --code-str:         #8FD6A8;
+  --code-fn:          #8EC3FF;
+  --code-risk:        #F8A9A9;
+  --code-comment:     #5D6B8C;
+  --code-lineno:      #46537A;
+  --code-dim:         #8A99C4;
+  --code-tab-dim:     #5D6B8C;
+  --code-lineno-hot:  #8A7FA8;
+  --p1-row:           #241A33;
+  --p1-card:          #231A33;
+  --p1-card-border:   #46305A;
+  --p1-title:         #F2EAF8;
+  --p1-src:           #9C8FB8;
+  --p1-desc:          #B9AFCF;
+  --p0-row:           #2A1B24;
+  --p0-card:          #331D26;
+  --p0-card-border:   #5A2A3A;
+  --p0-title:         #F8EAF0;
+  --p0-src:           #B08A98;
+  --p0-desc:          #D9BCC6;
+  --fp-btn-border:    #2E4470;
+  --fp-btn-border-p0: #4A3540;
+  /* 字体 */
+  --font-ui:   'Inter', 'Noto Sans SC', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Noto Sans SC', 'Cascadia Code', Consolas, monospace;
+  /* 阴影 */
+  --shadow-card: 0 3px 10px rgba(6,6,6,0.07);
+  --shadow-code: 0 24px 48px rgba(6,6,6,0.20), 0 12px 36px rgba(87,69,212,0.16);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--ink-2);
+  background: var(--bg-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-width: 1200px;
+  overflow-x: auto;
+}
+svg { display: block; flex-shrink: 0; }
+button { font-family: inherit; border: none; background: none; cursor: pointer; }
+
+.app {
+  display: flex;
+  height: 100vh;
+  min-height: 700px;
+  background: var(--bg);
+}
+
+/* ============================================================
+   侧边导航栏 — 232px · #F6F5F4
+   ============================================================ */
+.sidebar {
+  width: 232px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-divider { width: 1px; flex-shrink: 0; background: var(--border); }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px 12px;
+}
+.brand-logo {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.brand-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.brand-name { font-size: 14px; font-weight: 600; color: var(--ink-1); line-height: 1.25; }
+.brand-sub  { font-size: 10.5px; color: var(--ink-5); line-height: 1.25; }
+
+.nav-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px;
+  overflow-y: auto;
+  min-height: 0;
+}
+.nav-group-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--ink-5);
+  padding: 10px 0 4px 12px;
+  letter-spacing: 0.02em;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: var(--ink-4);
+  transition: background .15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.nav-item + .nav-item { margin-top: 0; }
+.nav-item:hover { background: #EDEBE8; }
+.nav-item .nav-icon { width: 16px; height: 16px; color: var(--ink-4); transition: color .15s ease; }
+.nav-item .nav-label { font-size: 13px; font-weight: 500; color: var(--ink-3); }
+.nav-item.active { background: var(--brand-soft); }
+.nav-item.active .nav-icon { color: var(--brand); }
+.nav-item.active .nav-label { font-weight: 600; color: var(--brand); }
+
+.proj-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 4px;
+}
+.proj-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: var(--ink-5);
+  transition: background .15s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.proj-item:hover { background: #EDEBE8; }
+.proj-item .proj-dot { width: 14px; height: 14px; }
+.proj-item .proj-label { font-size: 12.5px; font-weight: 500; color: var(--ink-3); white-space: nowrap; }
+.proj-item.active .proj-label { font-weight: 600; color: var(--ink-1); }
+
+.sidebar-footer { border-top: 1px solid var(--border); }
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 14px;
+}
+.user-avatar {
+  width: 26px; height: 26px;
+  border-radius: 999px;
+  background: var(--warn-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: var(--warn-ink);
+  flex-shrink: 0;
+}
+.user-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.user-name { font-size: 13px; font-weight: 500; color: var(--ink-1); line-height: 1.25; }
+.user-role { font-size: 10.5px; color: var(--ink-5); line-height: 1.25; white-space: nowrap; }
+
+/* ============================================================
+   主区域
+   ============================================================ */
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+/* 顶栏 — 64px */
+.topbar {
+  height: 64px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.repo-icon { width: 18px; height: 18px; }
+.crumb-repo { font-size: 14px; font-weight: 500; color: var(--ink-1); }
+.crumb-sep  { font-size: 13px; color: var(--ink-5); }
+.crumb-pr   { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+
+.live-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  padding: 4px 10px;
+  margin-left: 4px;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 0 5px rgba(86,69,212,0.9);
+  animation: pulse-brand 2s ease-in-out infinite;
+}
+.live-chip-text { font-size: 11.5px; font-weight: 600; color: var(--brand-deep); white-space: nowrap; }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.search {
+  width: 216px; height: 34px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.search:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(86,69,212,0.12); }
+.search svg { width: 15px; height: 15px; }
+.search input {
+  flex: 1; min-width: 0;
+  border: none; outline: none; background: transparent;
+  font-family: inherit; font-size: 12.5px; color: var(--ink-2);
+}
+.search input::placeholder { color: var(--ink-5); }
+
+.btn {
+  height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  font-size: 12.5px; font-weight: 500;
+  transition: background .15s ease, transform .1s ease, border-color .15s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-secondary {
+  padding: 0 14px;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  color: var(--ink-1);
+}
+.btn-secondary:hover { background: var(--bg-sidebar); }
+.btn-primary {
+  padding: 0 16px;
+  background: var(--brand);
+  color: #FFFFFF;
+}
+.btn-primary:hover { background: var(--brand-deep); }
+
+/* 内容区 — #FAFAF9 · padding 24 · gap 24 */
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  background: var(--bg-canvas);
+}
+.left-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.right-col {
+  width: 336px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+/* 通用白卡片 */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+}
+
+/* ============================================================
+   审查流水线卡片 — padding 16 20 14 · gap 12
+   ============================================================ */
+.pipeline-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px 14px;
+  flex-shrink: 0;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.card-head-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.card-head-left svg { width: 16px; height: 16px; }
+.card-title { font-size: 15px; font-weight: 600; color: var(--ink-1); }
+.stage-chip {
+  display: inline-flex; align-items: center;
+  border-radius: 999px;
+  background: var(--bg-sidebar);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  font-size: 11.5px; font-weight: 500; color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* 六阶段步进器 */
+.stage-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.stage-dot { width: 22px; height: 22px; flex-shrink: 0; }
+.stage-line { flex: 1; height: 2px; border-radius: 1px; }
+.stage-line.done { background: var(--ok-line); }
+.stage-line.todo { background: var(--border); }
+.stage-labels { display: flex; gap: 4px; }
+.stage-label {
+  flex: 1;
+  text-align: center;
+  font-size: 12px; font-weight: 500;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stage-label.current { font-weight: 600; color: var(--brand); }
+.stage-label.pending { color: var(--ink-5); }
+.stage-desc { font-size: 12px; color: var(--ink-3); line-height: 1.55; }
+
+/* ============================================================
+   代码审查面板 — #0A1530 · radius 12 · 双层阴影
+   ============================================================ */
+.code-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-code);
+  overflow: hidden;
+}
+
+/* 文件标签栏 — 42px · #0D1830 */
+.tab-bar {
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  background: var(--code-bar);
+  border-bottom: 1px solid var(--code-border);
+}
+.file-tab {
+  height: 30px;
+  display: inline-flex; align-items: center;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--code-tab-dim);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+  white-space: nowrap;
+}
+.file-tab:hover { color: var(--code-text); background: var(--code-tab-more); }
+.file-tab.active { background: var(--code-tab-active); color: #E8E4F5; font-weight: 500; }
+.file-tab-more {
+  height: 30px;
+  display: inline-flex; align-items: center;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: var(--code-tab-more);
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--code-dim);
+  cursor: pointer;
+}
+.tab-spacer { flex: 1; }
+.tab-meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px; color: var(--code-lineno);
+  white-space: nowrap;
+}
+
+/* 代码区 — 行高 28 · padding 10 16 */
+.code-area {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #22345F transparent;
+}
+.code-area::-webkit-scrollbar { width: 8px; height: 8px; }
+.code-area::-webkit-scrollbar-thumb { background: #22345F; border-radius: 4px; }
+.code-area::-webkit-scrollbar-thumb:hover { background: #2C4278; }
+.code-area::-webkit-scrollbar-track { background: transparent; }
+.code-area::-webkit-scrollbar-corner { background: transparent; }
+
+.code-line {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: background .12s ease;
+}
+.code-line:hover { background: rgba(30, 47, 92, 0.35); }
+.code-line .ln {
+  width: 26px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--code-lineno);
+  flex-shrink: 0;
+}
+.code-line .src {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--code-text);
+}
+.kw   { color: var(--code-kw); }
+.str  { color: var(--code-str); }
+.fn   { color: var(--code-fn); }
+.cmt  { color: var(--code-comment); }
+.risk { color: var(--code-risk); }
+
+/* 发现行（P1 / P0） */
+.code-line.finding-p1 { background: var(--p1-row); }
+.code-line.finding-p0 { background: var(--p0-row); }
+.code-line.finding-p1:hover, .code-line.finding-p0:hover { filter: brightness(1.12); }
+.code-line.finding-p1 .ln, .code-line.finding-p0 .ln { color: var(--code-lineno-hot); }
+.risk-bar { width: 3px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+.risk-bar.p1 { background: var(--warn); }
+.risk-bar.p0 { background: var(--p0); }
+
+/* 行内发现标注卡 */
+.finding-wrap {
+  display: flex;
+  padding: 2px 0 4px;
+  margin-left: 46px;
+}
+.finding-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.finding-card.p1 {
+  background: var(--p1-card);
+  border: 1px solid var(--p1-card-border);
+}
+.finding-card.p0 {
+  background: var(--p0-card);
+  border: 1px solid var(--p0-card-border);
+}
+.finding-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sev-badge {
+  display: inline-flex; align-items: center;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 10px; font-weight: 600; color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+.sev-badge.p1 { background: var(--warn); }
+.sev-badge.p0 { background: var(--p0); }
+.finding-title { font-size: 12px; font-weight: 600; }
+.finding-card.p1 .finding-title { color: var(--p1-title); }
+.finding-card.p0 .finding-title { color: var(--p0-title); }
+.finding-src { font-size: 10.5px; }
+.finding-card.p1 .finding-src { color: var(--p1-src); }
+.finding-card.p0 .finding-src { color: var(--p0-src); }
+.finding-desc { font-size: 11.5px; line-height: 1.55; }
+.finding-card.p1 .finding-desc { color: var(--p1-desc); }
+.finding-card.p0 .finding-desc { color: var(--p0-desc); }
+.finding-actions { display: flex; align-items: center; gap: 8px; }
+.fp-btn {
+  display: inline-flex; align-items: center;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px; font-weight: 500;
+  color: var(--code-fn);
+  transition: transform .1s ease, opacity .15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.finding-card.p1 .fp-btn { border: 1px solid var(--fp-btn-border); }
+.finding-card.p0 .fp-btn { border: 1px solid var(--fp-btn-border-p0); }
+.fp-btn:hover { opacity: 0.82; }
+.fp-btn:active { transform: scale(0.97); }
+.fix-btn {
+  display: inline-flex; align-items: center;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px; font-weight: 500;
+  color: #FFFFFF;
+  transition: transform .1s ease, filter .15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.finding-card.p1 .fix-btn { background: var(--brand); }
+.finding-card.p0 .fix-btn { background: var(--p0); }
+.fix-btn:hover { filter: brightness(1.12); }
+.fix-btn:active { transform: scale(0.97); }
+
+/* 面板状态条 — #0D1830 · padding 7 16 */
+.panel-status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 16px;
+  background: var(--code-bar);
+}
+.panel-status-left {
+  font-family: var(--font-mono);
+  font-size: 10.5px; color: var(--code-fn);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.panel-status-right {
+  font-family: var(--font-mono);
+  font-size: 10.5px; color: var(--code-lineno);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   实时审查流卡片 — padding 16 18 12 · gap 8
+   ============================================================ */
+.stream-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 12px;
+}
+.live-badge {
+  display: inline-flex; align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: var(--p0-bg);
+  padding: 4px 10px;
+}
+.live-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--p0);
+  box-shadow: 0 0 5px rgba(224,49,49,0.9);
+  animation: pulse-red 1.6s ease-in-out infinite;
+}
+.live-badge-text { font-size: 10.5px; font-weight: 600; color: var(--p0); letter-spacing: 0.04em; }
+
+.event-list {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #DDDA D5 transparent;
+}
+.event-list::-webkit-scrollbar { width: 6px; }
+.event-list::-webkit-scrollbar-thumb { background: #DDDAD5; border-radius: 3px; }
+.event-list::-webkit-scrollbar-track { background: transparent; }
+
+.event {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  transition: background .15s ease;
+}
+.event:hover { background: var(--bg-sidebar); }
+.event .t {
+  width: 44px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-5);
+  line-height: 1.35;
+  padding-top: 1px;
+}
+.event .ic { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+.event .tx {
+  flex: 1; min-width: 0;
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.event.running { background: var(--brand-soft); }
+.event.running:hover { background: #DCD4F0; }
+.event.running .t { color: var(--brand-time); }
+.event.running-col { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.event.running-main { font-size: 12px; font-weight: 600; color: var(--brand-deep); line-height: 1.4; }
+.event.running-sub {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--brand-mid);
+  line-height: 1.45;
+  min-height: 16px;
+  word-break: break-all;
+}
+.event.pending .t { color: var(--border-strong); }
+.event.pending .tx { color: var(--ink-5); }
+.caret {
+  display: inline-block;
+  width: 6px; height: 12px;
+  margin-left: 1px;
+  vertical-align: -2px;
+  background: var(--brand-mid);
+  animation: blink 1s steps(1) infinite;
+}
+
+/* ============================================================
+   审查统计卡片 — padding 16 18 16 · gap 12
+   ============================================================ */
+.stats-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px 16px;
+  flex-shrink: 0;
+}
+.progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.progress-label { font-size: 12px; font-weight: 500; color: var(--ink-3); }
+.progress-pct { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--ink-1); }
+.progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--brand);
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.progress-sub { font-size: 11px; color: var(--ink-5); line-height: 1.5; }
+
+.sev-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sev-pill {
+  display: inline-flex; align-items: center;
+  gap: 5px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: default;
+  transition: transform .12s ease;
+}
+.sev-pill:hover { transform: translateY(-1px); }
+.sev-dot { width: 6px; height: 6px; border-radius: 999px; flex-shrink: 0; }
+.sev-count { font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.sev-pill.p0 { background: var(--p0-bg); }   .sev-pill.p0 .sev-dot { background: var(--p0-ink); }   .sev-pill.p0 .sev-count { color: var(--p0-ink); }
+.sev-pill.p1 { background: var(--warn-bg); } .sev-pill.p1 .sev-dot { background: var(--warn); }    .sev-pill.p1 .sev-count { color: var(--warn-ink); }
+.sev-pill.p2 { background: var(--p2-bg); }   .sev-pill.p2 .sev-dot { background: var(--p2-dot); }  .sev-pill.p2 .sev-count { color: var(--p2-ink); }
+.sev-pill.p3 { background: var(--p3-bg); }   .sev-pill.p3 .sev-dot { background: var(--p3-dot); }  .sev-pill.p3 .sev-count { color: var(--p3-ink); }
+
+/* ============================================================
+   工具执行状态卡片 — padding 16 18 14 · gap 10
+   ============================================================ */
+.tools-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px 14px;
+  flex-shrink: 0;
+}
+.tool-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+.tool-name { width: 78px; flex-shrink: 0; font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
+.tool-row.dim .tool-name { color: var(--ink-4); }
+.tool-ic { width: 14px; height: 14px; flex-shrink: 0; }
+.tool-status { flex: 1; min-width: 0; font-size: 11.5px; color: var(--ink-3); }
+.tool-status.running { font-weight: 500; color: var(--brand); }
+.tool-status.pending { color: var(--ink-5); }
+.tool-progress {
+  width: 72px; height: 4px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+.tool-progress-fill { width: 32px; height: 4px; border-radius: 999px; background: var(--brand); }
+
+/* ============================================================
+   动效
+   ============================================================ */
+@keyframes pulse-brand {
+  0%, 100% { box-shadow: 0 0 5px rgba(86,69,212,0.9); }
+  50%      { box-shadow: 0 0 5px rgba(86,69,212,0.9), 0 0 0 5px rgba(86,69,212,0); }
+}
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 5px rgba(224,49,49,0.9); }
+  50%      { box-shadow: 0 0 5px rgba(224,49,49,0.9), 0 0 0 4px rgba(224,49,49,0); }
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+.spin { animation: rotate 0.9s linear infinite; transform-origin: center; }
+@keyframes blink { 50% { opacity: 0; } }
+body.paused .live-dot,
+body.paused .live-badge-dot,
+body.paused .spin,
+body.paused .caret { animation-play-state: paused; }
+
+/* ============================================================
+   Toast
+   ============================================================ */
+.toast-zone {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 999;
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink-1);
+  color: #FFFFFF;
+  font-size: 12.5px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 24px rgba(6,6,6,0.25);
+  animation: toast-in .25s cubic-bezier(0.22, 1, 0.36, 1);
+  max-width: 380px;
+}
+.toast.out { animation: toast-out .25s ease forwards; }
+.toast .tick { width: 14px; height: 14px; flex-shrink: 0; }
+@keyframes toast-in  { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(6px); } }
+
+/* 焦点可达性 */
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.search:focus-within { outline: none; }
+
+/* 极窄兜底 */
+@media (max-width: 1280px) {
+  .search { width: 180px; }
+  .crumb-pr { overflow: hidden; text-overflow: ellipsis; }
+}
+</style>
+</head>
+<body data-page-node-id="rKuqgsHzBrFBjC8G97iSiq">
+
+<div class="app" data-page-node-id="0yJ6PgMpW0ghFpA5F5Pd0O">
+
+  <!-- ======================= 侧边导航栏 232px ======================= -->
+  <aside class="sidebar" data-page-node-id="UbQiL3oFLl0R5xSeh7727P">
+    <!-- 品牌区 -->
+    <div class="brand" data-page-node-id="bOvIOemeainQvtQYsYCya0">
+      <div class="brand-logo" data-page-node-id="Mm4F37GsWw8W2oeBdSE92W">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20" data-page-node-id="z0aYzoozQQ86uQZCIGfx7z">
+          <path d="M12 3l7 3v5c0 4.6-3 7.6-7 9.2C8 18.6 5 15.6 5 11V6l7-3z" stroke="#FFFFFF" stroke-width="1.8" stroke-linejoin="round" data-page-node-id="vTHtToYf6GS3RS4RJ2iDQ6"/>
+          <path d="M9 11.6l2.1 2.1 4-4.2" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="xs1Yy5pJN9IPKrNevholpG"/>
+        </svg>
+      </div>
+      <div class="brand-text" data-page-node-id="dfXkVfDUmnefMO7Z5ZE52l">
+        <div class="brand-name" data-page-node-id="HzOjtcB9R7vCSONOIcgM88">安全审查工作台</div>
+        <div class="brand-sub" data-page-node-id="zuxrw67qw7JwFDczrhGSn9">Security Review Bench</div>
+      </div>
+    </div>
+
+    <!-- 导航 -->
+    <nav class="nav-wrap" data-page-node-id="A2TILs7X5aQ1LgJ5VV1ldK">
+      <div class="nav-group-label" data-page-node-id="pQRLbOaY7ZEhAUJg2QzbKV">工作区</div>
+
+      <div class="nav-item" data-nav data-page-node-id="pb4J9NzAXvzsQYUA03rAmS">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="ZgRowainaMi0Blztw1fkT7"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7" data-page-node-id="O5UAfkufoebTwdTFtbp6S1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7" data-page-node-id="XFsl7aOLZObu1WxTnzmhSh"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7" data-page-node-id="X26UGtsnvhiEBUHBgLOL79"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7" data-page-node-id="Ocmvb9EHjbWpW8LEJ2hxJj"/></svg>
+        <span class="nav-label" data-page-node-id="KMYpxUSEPcDRV5kARVWYqJ">总览</span>
+      </div>
+
+      <div class="nav-item active" data-nav data-page-node-id="sSYP74IxLFDUNMNkyHH7le">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="UBIgGZmWSJccx6hM04YxX8"><path d="M2.5 12.5h4l2.5-7 4 13 2.5-7h6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="3GHHC5bHLwzRDu4VjHdfzX"/></svg>
+        <span class="nav-label" data-page-node-id="7XE7eBxII1njelOlIWFuLq">实时审查</span>
+      </div>
+
+      <div class="nav-item" data-nav data-page-node-id="FtnAaFxXvYSk8zlAmAW8Vz">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="hUHEE5SzttgKBl2X7dYBdh"><rect x="4" y="4" width="16" height="16" rx="4" stroke="currentColor" stroke-width="1.7" data-page-node-id="dokCHydKNdqtbWzxoUD5yL"/><path d="M8.5 12.3l2.4 2.4 4.6-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="8hX6lDg9t5QGRiapCCVEOG"/></svg>
+        <span class="nav-label" data-page-node-id="HnCCaGknMXt9DcLD31V8YH">检查清单</span>
+      </div>
+
+      <div class="nav-item" data-nav data-page-node-id="iC6Ay1cNHjpgpwq3C3F4IF">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="3Cv1hsxDgdnCtRJGLllaNj"><path d="M9 4.5c-2.6 0-2.4 2-2.4 3.7 0 1.8-.4 3.8-2.6 3.8 2.2 0 2.6 2 2.6 3.8 0 1.7-.2 3.7 2.4 3.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" data-page-node-id="QolhbpYZFEryBnx2CxYitM"/><path d="M15 4.5c2.6 0 2.4 2 2.4 3.7 0 1.8.4 3.8 2.6 3.8-2.2 0-2.6 2-2.6 3.8 0 1.7-.2 3.7-2.4 3.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" data-page-node-id="XCM8ZZNLlqcBCBjdx5GrC7"/></svg>
+        <span class="nav-label" data-page-node-id="JBEhj18IUDSDBlMmuMpGLm">代码扫描</span>
+      </div>
+
+      <div class="nav-item" data-nav data-page-node-id="9Cwcs20HD4abGvkjMrg8CA">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="6su9Wr5ugKG5gQqWK6S4a0"><circle cx="12" cy="13.5" r="4.6" stroke="currentColor" stroke-width="1.7" data-page-node-id="kpYEjXnbIUjttQGWtHrTC2"/><path d="M12 8.9V6.2m0 0c.6-.9 1.7-1.3 2.8-1M12 6.2c-.6-.9-1.7-1.3-2.8-1M7.5 10L5 8M16.5 10L19 8M4.5 14h2.4M17.1 14h2.4M6.5 19l2-1.6M17.5 19l-2-1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" data-page-node-id="1IHgA1ukgkiy0sMKxMbvrp"/></svg>
+        <span class="nav-label" data-page-node-id="D2QSWF8UonEOqg9AcT5nCy">漏洞跟踪</span>
+      </div>
+
+      <div class="nav-item" data-nav data-page-node-id="cuWDfmkuyoybRns9E9kbkW">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="aEArSKe6c3E59mlkG9NUXG"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" data-page-node-id="8ccHmkrSatpxKFnBEFX68a"/><circle cx="9" cy="7" r="2.2" fill="#F6F5F4" stroke="currentColor" stroke-width="1.7" data-page-node-id="cnT1hXIP70RFgITxaMj9qn"/><circle cx="15" cy="12" r="2.2" fill="#F6F5F4" stroke="currentColor" stroke-width="1.7" data-page-node-id="Cb483jWEYeBYnS2oNX2D6l"/><circle cx="8" cy="17" r="2.2" fill="#F6F5F4" stroke="currentColor" stroke-width="1.7" data-page-node-id="DvE0Z0H3o05THIXXrbOUmg"/></svg>
+        <span class="nav-label" data-page-node-id="AJjhWOpgWVReJ4DaQlIMhQ">工具矩阵</span>
+      </div>
+
+      <div class="nav-item" data-nav data-page-node-id="peSad726F5BUOrfE7WR0bF">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="GnQ1chFFPEyZfeROfvNeQr"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" data-page-node-id="h2zVlkXvBq0TVjGhGXpYH2"/><path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="K4HajOuBeUDG2tx73XJ0P3"/></svg>
+        <span class="nav-label" data-page-node-id="uc5OhrErAsZlfNeyc6RWdG">报告导出</span>
+      </div>
+    </nav>
+
+    <!-- 项目分组 -->
+    <div class="proj-wrap" data-page-node-id="MCA0pMGEijmnEcK3CMQjKv">
+      <div class="nav-group-label" data-page-node-id="sLhmSBm7Z6aigfXA0WjOCc">项目</div>
+      <div class="proj-item active" data-proj data-page-node-id="lODxU8Y1573lj9OM7dmwNU">
+        <svg class="proj-dot" viewBox="0 0 24 24" data-page-node-id="rogutMBJhj7FWqLxFnjL3K"><circle cx="12" cy="12" r="5" fill="#5645D4" data-page-node-id="aiMfaC43vDYftOfHESHTQj"/></svg>
+        <span class="proj-label" data-page-node-id="aUW603JxrAES0r4qFUJwda">mall-ecommerce</span>
+      </div>
+      <div class="proj-item" data-proj data-page-node-id="AUlW1dbTLdz0E5IkXXiqu1">
+        <svg class="proj-dot" viewBox="0 0 24 24" fill="none" data-page-node-id="O5yuSyC3mNRNO7dowmR3eW"><circle cx="12" cy="12" r="4.5" fill="#FFFFFF" stroke="#A4A097" stroke-width="1.5" data-page-node-id="3k8pQqvzrdgUGhwpbWOsir"/></svg>
+        <span class="proj-label" data-page-node-id="0jrppodSTQdO0GeJxIgrtU">user-center</span>
+      </div>
+      <div class="proj-item" data-proj data-page-node-id="9jDP4yP5LwsfoRA95dSbTm">
+        <svg class="proj-dot" viewBox="0 0 24 24" fill="none" data-page-node-id="ES0OXkqaZx4chRoYZisRoL"><circle cx="12" cy="12" r="4.5" fill="#FFFFFF" stroke="#A4A097" stroke-width="1.5" data-page-node-id="RhErRCbdNmm2nDVpuk2smO"/></svg>
+        <span class="proj-label" data-page-node-id="OTHlRtBMzx6Md78Lwm2zEg">pay-service</span>
+      </div>
+    </div>
+
+    <!-- 用户信息 -->
+    <div class="sidebar-footer" data-page-node-id="8nFshNaCaNESoUqdJL2caQ">
+      <div class="user-row" data-page-node-id="q6QQmqaWoETkaL8CdBtq3a">
+        <div class="user-avatar" data-page-node-id="P0T4Ve1KAE5RDAOavxZYnT">加</div>
+        <div class="user-text" data-page-node-id="LQwvKmz96uLYzH3NaH0HSX">
+          <div class="user-name" data-page-node-id="pKYI6B1GNw50sORSMaQwOz">加文</div>
+          <div class="user-role" data-page-node-id="foZtXp7sqeyf6EIZbcJZ4B">安全工程师 · Lead Reviewer</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="sidebar-divider" data-page-node-id="bDa6JQ9nwCahCnWM9B4iQN"></div>
+
+  <!-- ======================= 主区域 ======================= -->
+  <main class="main" data-page-node-id="nJc1e3LCcm8vq5YrLX0JhJ">
+
+    <!-- 顶栏 64px -->
+    <header class="topbar" data-page-node-id="MFE0BkTUXCaoHoyww2H87q">
+      <div class="topbar-left" data-page-node-id="oRLvUEX0CTNlI7221llecw">
+        <svg class="repo-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="KfqHQ3axhnnQV5R7wJGanH"><circle cx="6.5" cy="6" r="2.3" stroke="#787671" stroke-width="1.7" data-page-node-id="EnDslTcusVWGexLQf4QDIF"/><circle cx="6.5" cy="18" r="2.3" stroke="#787671" stroke-width="1.7" data-page-node-id="E8IAz48OSyLG7oDERhYCyN"/><circle cx="17.5" cy="8" r="2.3" stroke="#787671" stroke-width="1.7" data-page-node-id="I7yrjexF7XXOINDDRIXWWo"/><path d="M6.5 8.3v7.4M17.5 10.3c0 3.5-3.2 4.4-6.9 4.7" stroke="#787671" stroke-width="1.7" stroke-linecap="round" data-page-node-id="pIXU2R2mcKARkBCwFFP42H"/></svg>
+        <span class="crumb-repo" data-page-node-id="dMhVgCa5YGYCgfav3B9mc8">mall-ecommerce</span>
+        <span class="crumb-sep" data-page-node-id="6yuDScvkqhRnGaAfKGDZwU">/</span>
+        <span class="crumb-pr" data-page-node-id="sf7MKfWQE2aupP5HT4jv6s">PR #482 · 认证模块重构</span>
+        <div class="live-chip" data-page-node-id="384F0jA4AePzLUpeUjEpGe">
+          <span class="live-dot" data-page-node-id="ZD0jH87sznuptIaiGPv8dG"></span>
+          <span class="live-chip-text" id="liveChipText" data-page-node-id="j6oCxl2YpFgBRKiGELsv5N">审查进行中 · 阶段 4/6</span>
+        </div>
+      </div>
+      <div class="topbar-right" data-page-node-id="4F2L9VxubpZQI8dRDAnE4a">
+        <div class="search" data-page-node-id="2VyzjrF2MY2j0vs4AQdsA7">
+          <svg viewBox="0 0 24 24" fill="none" data-page-node-id="jiTZO0Jy2AhJmGZInOCUJw"><circle cx="11" cy="11" r="6.5" stroke="#A4A097" stroke-width="1.8" data-page-node-id="s9201gVpbsRBiYHbj4rIkS"/><path d="M20 20l-4.2-4.2" stroke="#A4A097" stroke-width="1.8" stroke-linecap="round" data-page-node-id="gsoJFf9kRpEkO31GNeroyX"/></svg>
+          <input type="text" placeholder="搜索代码 / 漏洞 / 规则" aria-label="搜索代码 / 漏洞 / 规则" data-page-node-id="MwOkMPshmHMSsYfUp9BlEn">
+        </div>
+        <button class="btn btn-secondary" id="btnPause" data-page-node-id="1Ay0mGIT7S88gyH944Ogxi">暂停审查</button>
+        <button class="btn btn-primary" id="btnExport" data-page-node-id="xtNrq17unbS58rU6gvDH8U">导出报告</button>
+      </div>
+    </header>
+
+    <!-- 内容区 -->
+    <div class="content" data-page-node-id="2fNzVXWKtayHD0YlS490Pa">
+      <div class="left-col" data-page-node-id="TUmz7EVhWHdyEhjAkKQ5Ok">
+
+        <!-- 审查流水线卡片 -->
+        <section class="card pipeline-card" data-page-node-id="XRHnVMCRe9NuyRPtli9xS2">
+          <div class="card-head" data-page-node-id="CldqJ0rzXWztxVEIJSRgMC">
+            <div class="card-head-left" data-page-node-id="jGUEoecM7JGv0VH0Fxcrwn">
+              <svg viewBox="0 0 24 24" fill="none" data-page-node-id="RAEa6JCnByWzTFqfymanTt"><rect x="3" y="3" width="6.5" height="6.5" rx="2" stroke="#5645D4" stroke-width="1.8" data-page-node-id="NNOf2K2mZ2Z8nWWO9Vgnfv"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="2" stroke="#5645D4" stroke-width="1.8" data-page-node-id="FMLIjjseeTt4ph4j1qABRt"/><path d="M9.5 6.3h5a3 3 0 0 1 3 3v5.2" stroke="#5645D4" stroke-width="1.8" stroke-linecap="round" data-page-node-id="PbaOuHV3Mwy0CTbU9kHw9U"/></svg>
+              <span class="card-title" data-page-node-id="1kUC9gG5S2IEJ4YF86TPU7">审查流水线</span>
+            </div>
+            <span class="stage-chip" data-page-node-id="pZmcZisBheId6vHPiVIFRL">阶段 4 / 6 · 已用时 23 分钟</span>
+          </div>
+
+          <div class="stage-dots" data-page-node-id="eNBIPiOZ2G3GVTsKwWTxDM">
+            <svg class="stage-dot" viewBox="0 0 22 22" fill="none" data-page-node-id="qDm0OEPOutBWE3iEbFcz3x"><circle cx="11" cy="11" r="10" fill="#D9F3E1" data-page-node-id="nl2CXQ8Afa7GqlQJGC9KGw"/><path d="M6.6 11.4l2.9 2.9 5.6-6.1" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="rWj4raSnpC0XLECDEqsCOu"/></svg>
+            <div class="stage-line done" data-page-node-id="0gCh1nE9H4jTONv5KUibY8"></div>
+            <svg class="stage-dot" viewBox="0 0 22 22" fill="none" data-page-node-id="BeMrzNZ9eukEqM6FGvg4GZ"><circle cx="11" cy="11" r="10" fill="#D9F3E1" data-page-node-id="zmDcc2p8pBwFiH9uWA2JKn"/><path d="M6.6 11.4l2.9 2.9 5.6-6.1" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="yuhm8oSSxBJ71HGPGzA1vc"/></svg>
+            <div class="stage-line done" data-page-node-id="bqEiAEYM6Ib8wfLN2uelAI"></div>
+            <svg class="stage-dot" viewBox="0 0 22 22" fill="none" data-page-node-id="ldHLBOYAeSN50iBlHGrh8b"><circle cx="11" cy="11" r="10" fill="#D9F3E1" data-page-node-id="wFjGAPjCa3BQvTATZQIHAv"/><path d="M6.6 11.4l2.9 2.9 5.6-6.1" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="CgNTEVmkLb4xz3Xjo33UHU"/></svg>
+            <div class="stage-line done" data-page-node-id="4MlTt622ZXjYQv3iB4PARw"></div>
+            <svg class="stage-dot" viewBox="0 0 22 22" fill="none" data-page-node-id="VnwvFHeZbyBC1wgYiTprHe"><circle cx="11" cy="11" r="10" fill="#FFFFFF" stroke="#5645D4" stroke-width="2" data-page-node-id="A6zf4goORWvZ7YqG59uLQ9"/><circle cx="11" cy="11" r="4" fill="#5645D4" data-page-node-id="6CbJVv60iavw3vBzqqPcFA"/></svg>
+            <div class="stage-line todo" data-page-node-id="fU2tgwJAFQakTvBq4FAMtq"></div>
+            <svg class="stage-dot" viewBox="0 0 22 22" fill="none" data-page-node-id="jU9XS9PJ7WgDgQjVk7WXSj"><circle cx="11" cy="11" r="9.5" fill="#FFFFFF" stroke="#C8C4BE" stroke-width="1.5" data-page-node-id="ypvuzLjKCUb0FgSzVIlFlO"/></svg>
+            <div class="stage-line todo" data-page-node-id="MbxRhR8P9wizV3EJTt3n3H"></div>
+            <svg class="stage-dot" viewBox="0 0 22 22" fill="none" data-page-node-id="Rn4IDlPMLumzj2U4bFcOkI"><circle cx="11" cy="11" r="9.5" fill="#FFFFFF" stroke="#C8C4BE" stroke-width="1.5" data-page-node-id="aDmQabK0BzRmou3C4oApYR"/></svg>
+          </div>
+
+          <div class="stage-labels" data-page-node-id="kl81DDxA4biODIvtCNEFbY">
+            <span class="stage-label" data-page-node-id="NZJrs5Yyc9vqKwI9IeBik8">准备 · 信息收集</span>
+            <span class="stage-label" data-page-node-id="0jsHSrBm3wAA7rbwozllw7">静态代码分析</span>
+            <span class="stage-label" data-page-node-id="eBt4O54w9D9r8dnbuMeiU5">密钥与依赖扫描</span>
+            <span class="stage-label current" data-page-node-id="hCriNxGF3gpTiEvjfOf45S">人工 + AI 语义审查</span>
+            <span class="stage-label pending" data-page-node-id="mRCxYFxy0BgxZ93DWbuwU2">动态 / 运行时测试</span>
+            <span class="stage-label pending" data-page-node-id="8itPGm1YXqFL0HX78DB2WS">汇总 · 报告 · 复测</span>
+          </div>
+
+          <div class="stage-desc" data-page-node-id="wnFoDYNBSnJHNqBUI0YZD8">当前 · 人工 + AI 语义审查 — 逐功能过权限矩阵,审查认证、会话与找回密码流程,发现将实时回填至漏洞跟踪。</div>
+        </section>
+
+        <!-- 代码审查面板 -->
+        <section class="code-panel" data-page-node-id="TH7mLzSWpZj60LSHOx1Aoz">
+
+          <!-- 文件标签栏 -->
+          <div class="tab-bar" data-page-node-id="FKZMcU2aRDsq7xpNyEtoKE">
+            <div class="file-tab active" data-tab data-page-node-id="pcOSs0Ye3CZ9VPpsE5KMqp">src/auth/login.ts</div>
+            <div class="file-tab" data-tab data-page-node-id="B7ZFBWnWI2cOt3iIoncB0g">src/api/order.ts</div>
+            <div class="file-tab-more" data-page-node-id="7kb6O1gjF4iOB1chPBNa8U">+12</div>
+            <div class="tab-spacer" data-page-node-id="a3ZmrwHzDtWhenMU4pMnp9"></div>
+            <span class="tab-meta" data-page-node-id="admcaeQSiHfTI2oBXOs8DU">214 文件 · 已扫描 68% · 分析中</span>
+          </div>
+
+          <!-- 代码区 -->
+          <div class="code-area" data-page-node-id="S9kMa1xZPuUecg5CVtgApl">
+            <div class="code-line" data-page-node-id="4y8eWnI1J6cR3YE08hahtK"><span class="ln" data-page-node-id="ZpfJJSb5UqojjCiMFdSz8Z">1</span><span class="src" data-page-node-id="5tEPGSrKiL4ozty93yF1vU"><span class="kw" data-page-node-id="h3tnToD5cvdJuxbAKYCdqY">import </span>{ Router } <span class="kw" data-page-node-id="YgOfzmuW9popR4TcnwaTEG">from </span><span class="str" data-page-node-id="vLiy4oqYSpJkMSKbWBZYOL">"express"</span>;</span></div>
+            <div class="code-line" data-page-node-id="8Js2fNWKjrDFBi7tnpdHmb"><span class="ln" data-page-node-id="YcrzBR06zz7ieBEKBkzg3S">2</span><span class="src" data-page-node-id="X9fkNwEFF09lskHLIkULmQ"><span class="kw" data-page-node-id="wq1LMbJQ2qNyuLQ9nwaYEO">import </span>{ db } <span class="kw" data-page-node-id="U9AeH6dhZgn4wsMoGD5gub">from </span><span class="str" data-page-node-id="aR5sD5TAkKMMznFZ10qt8D">"../core/db"</span>;</span></div>
+            <div class="code-line" data-page-node-id="O77HCk61PeO5vB56JEQC00"><span class="ln" data-page-node-id="KYlnLho7PfwbikZdr26goI">3</span></div>
+            <div class="code-line" data-page-node-id="n62GVKpvSAtSTnq4Euk4a9"><span class="ln" data-page-node-id="9S1Ldx7TU5GV8grxJ5eb3u">4</span><span class="src cmt" data-page-node-id="1FEGknrQUsoOAFS2pMMv6D">// TODO: 迁移至环境变量 · 已标记审查 A-1024</span></div>
+
+            <div class="code-line finding-p1" data-page-node-id="pyt4TLAQqYNvDG47tQ7O9i">
+              <span class="risk-bar p1" data-page-node-id="GZtq9xNRjVzFn48044PNUv"></span>
+              <span class="ln" data-page-node-id="bNjHaGVea3ylzHQCvt9mHj">5</span>
+              <span class="src" data-page-node-id="09DEcdbbVNlJCvMt8TqFLk"><span class="kw" data-page-node-id="uFMdtOE7ADjV8ykojGcFv9">const </span>SECRET_KEY = <span class="risk" data-page-node-id="uMoVaTqSpOnCLlVOwB8sfY">"sk_live_9f8a7b6c5d4e3f2g1h"</span>;</span>
+            </div>
+
+            <!-- P1 发现标注卡 -->
+            <div class="finding-wrap" data-page-node-id="ErXmuZH1mMSq5CQp32KPc9">
+              <div class="finding-card p1" data-page-node-id="3PmiLoOD2M5jFkXbveUzp4">
+                <div class="finding-head" data-page-node-id="4tlgUWVvFfXyBsmEEHUd9O">
+                  <span class="sev-badge p1" data-page-node-id="wFfMUfqEVPs0FH5vAzlsnZ">P1 高危</span>
+                  <span class="finding-title" data-page-node-id="JdukaaD7bW335dXq9accG7">疑似硬编码密钥 · CWE-798</span>
+                  <span class="finding-src" data-page-node-id="QuZdKFshPy50yUZtPJtyWY">gitleaks + AI 复核</span>
+                </div>
+                <div class="finding-desc" data-page-node-id="I5G0hEuxAKgTcR7hgCOjll">密钥已进入 Git 提交历史,建议立即轮换并迁移至环境变量或 KMS 托管。</div>
+                <div class="finding-actions" data-page-node-id="dEl1nlTrURxzbvNjepBhY1">
+                  <span class="fp-btn" data-fp data-page-node-id="CQPVLjyhXiTAWllYsWGwwf">标记误报</span>
+                  <span class="fix-btn" data-fix data-page-node-id="snNBuPhA76EH0spgqGMBve">加入整改单</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="code-line" data-page-node-id="AP3SuCPOgGmkL49YCwKx0K"><span class="ln" data-page-node-id="P2bXPo8KCjt7c5JF5KgZjM">6</span></div>
+            <div class="code-line" data-page-node-id="LfBeFhKNIQZfmFzJlHiYNm"><span class="ln" data-page-node-id="r98kxPP5jQUltdn6XHz7gH">7</span><span class="src" data-page-node-id="aojmAv0CiP4sAT6zFHozgH"><span class="kw" data-page-node-id="ScuW3ZbA8MRDuAr76WuurU">export async function </span><span class="fn" data-page-node-id="ZFGXPlcv0qhmMTwIe0CGSy">login</span>(req, res) {</span></div>
+            <div class="code-line" data-page-node-id="ZTT7H5kgmYp6WRF17DtblQ"><span class="ln" data-page-node-id="g9UWrMWNuY5YfeWWS5wDaG">8</span><span class="src" data-page-node-id="5mlDIMPbL3L8veVhMvGEbY">  <span class="kw" data-page-node-id="O0wkBPA0dALpOuRLb5CIin">const </span>{ user, pass } = req.body;</span></div>
+
+            <div class="code-line finding-p0" data-page-node-id="Gm9dDWBsCvYmwWyMnv3DS3">
+              <span class="risk-bar p0" data-page-node-id="PtEbCPEqjNeeec8qzatSVx"></span>
+              <span class="ln" data-page-node-id="MyBTFN1DMOZEv1QLR40p8D">9</span>
+              <span class="src" data-page-node-id="NmVqeAvZy3lTRIROGpgZPw">  <span class="kw" data-page-node-id="BFw1Pmrkel2zbw4IyGkZBq">const </span>sql = <span class="risk" data-page-node-id="XMDi6f5C4qoZje2xA84arx">"SELECT * FROM users WHERE name='"</span> + user + <span class="risk" data-page-node-id="Y8sAY818rBXY2fJhB0o8SG">"'"</span>;</span>
+            </div>
+
+            <!-- P0 发现标注卡 -->
+            <div class="finding-wrap" data-page-node-id="jq02agmokoFAUnup3LdZAI">
+              <div class="finding-card p0" data-page-node-id="VV7YuxUqcSwGtfmdwM5WDN">
+                <div class="finding-head" data-page-node-id="iCnMTt9whPb14PJxdBlfLF">
+                  <span class="sev-badge p0" data-page-node-id="4TrYkVBXEV8RCzWC2bjlUq">P0 紧急</span>
+                  <span class="finding-title" data-page-node-id="49fAdbrKssfcs3nfN2Ignu">SQL 拼接注入 · CWE-89</span>
+                  <span class="finding-src" data-page-node-id="EyQJjReAaOVcoxHN29SfKl">CodeQL 污点追踪 + AI</span>
+                </div>
+                <div class="finding-desc" data-page-node-id="l4U7pkOBqAoM41Cm0k4jCh">用户输入未参数化直接拼接进 SQL,存在认证绕过与拖库风险,建议改用参数化查询 / ORM 预编译。</div>
+                <div class="finding-actions" data-page-node-id="ZoGNGy6uakS8LWLRtl66Zi">
+                  <span class="fp-btn" data-fp data-page-node-id="3W9D1rFrET4IUheIGgGeVL">标记误报</span>
+                  <span class="fix-btn" data-fix data-page-node-id="AA2YfxPoEkifeInUJZBFTV">加入整改单</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="code-line" data-page-node-id="XnEJGPoOmmIM7vJrYswfmy"><span class="ln" data-page-node-id="Ezk1eb3A7P3kMTcK4q6YCB">10</span><span class="src" data-page-node-id="XNHIuGrbpv1sL5ZTAS7Wrp">  <span class="kw" data-page-node-id="A7HRHeTrL1BP6uxi1AYCb3">const </span>rows = await <span class="fn" data-page-node-id="R9qwDVIQ5u6EukWybTYXtK">db.query</span>(sql);</span></div>
+            <div class="code-line" data-page-node-id="r0en2ahLeA5evhHAs57sT8"><span class="ln" data-page-node-id="SMA1cLXj8BbDvg65J13ntT">11</span><span class="src" data-page-node-id="A7U6st40MmbyLUpSVpA8pX">  <span class="kw" data-page-node-id="F0dJaBjRAWqhmKP0FoRviT">if </span>(!rows.length) <span class="kw" data-page-node-id="nQQ1QAkibToiK68bkBBYMq">return </span>res.status(401).json({ code: <span class="str" data-page-node-id="M1d29cQ7ACUuIe4HXTNOKt">"AUTH_FAIL"</span> });</span></div>
+            <div class="code-line" data-page-node-id="shWNuenk8vbmfdF1Emf9ph"><span class="ln" data-page-node-id="mJRxXWemOEKGFYwYsnav3G">12</span><span class="src" data-page-node-id="m6NYttV4oqPUViQTuJWxdv">  <span class="kw" data-page-node-id="fzMXkZF9xUd2SVUVa6IsGE">const </span>token = <span class="fn" data-page-node-id="yRjIeDPafVBKYJjel8H7yq">sign</span>(rows[0].id, SECRET_KEY, { expiresIn: <span class="str" data-page-node-id="oUQeaX8CEuRBFCNvBITYb8">"7d"</span> });</span></div>
+            <div class="code-line" data-page-node-id="mfICGFHYyxLBK1cQ4OU7GU"><span class="ln" data-page-node-id="QH4m8BJEiDuDMYKd68qax7">13</span><span class="src" data-page-node-id="D4fcsBMDRaVJaa9tvn9hid">  <span class="kw" data-page-node-id="YRbSthXQWRUsOuQ1tecf18">return </span>res.json({ token });</span></div>
+            <div class="code-line" data-page-node-id="BGBTKN5pda5DvQCMzxXfnk"><span class="ln" data-page-node-id="ACoT3z7sGfpKGtE75AVzw0">14</span><span class="src" data-page-node-id="FCmGNlE5aa1kGQDRvmLNa8">}</span></div>
+          </div>
+
+          <!-- 面板状态条 -->
+          <div class="panel-status" data-page-node-id="odQtuaUaAKyhpv3vSGzfvc">
+            <span class="panel-status-left" data-page-node-id="dLwbVxLXWyyR1XJzUhXp0S">阶段 4 · AI 语义审查 · 逐行分析中 — 已定位 2 处高危</span>
+            <span class="panel-status-right" data-page-node-id="hYtza7g1iTEvYzVfQqrvkZ">src/auth/login.ts · 14 行</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- ======================= 右列 336px ======================= -->
+      <div class="right-col" data-page-node-id="EAqB9TKh0afAwP8DViTsp4">
+
+        <!-- 实时审查流 -->
+        <section class="card stream-card" data-page-node-id="PhYuXzChyTwcuWV9sOk3mu">
+          <div class="card-head" data-page-node-id="7LVOUVHKU69sx0tQ4hNnFk">
+            <div class="card-head-left" data-page-node-id="TS3pRYa9PWOGL3ViCEcDrJ">
+              <svg viewBox="0 0 24 24" fill="none" data-page-node-id="gRyBUfhEUaag53fAdUBbyb"><path d="M2.5 12.5h4l2.5-7 4 13 2.5-7h6" stroke="#5645D4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="fcV7NqqNO2GvskWngp4WGa"/></svg>
+              <span class="card-title" data-page-node-id="scNnIRCzGAqdBsfTwikSMd">实时审查流</span>
+            </div>
+            <div class="live-badge" data-page-node-id="bTbE7oNBevQ8KVxKfJDMCs">
+              <span class="live-badge-dot" data-page-node-id="3iAJjLyNX1waxzQGYwoDwO"></span>
+              <span class="live-badge-text" data-page-node-id="xRoalSGZZ3oygpthdLKB6X">LIVE</span>
+            </div>
+          </div>
+
+          <div class="event-list" id="eventList" data-page-node-id="vNLYjoOMTlRoq2JAAjxvBu">
+            <div class="event" data-page-node-id="nm0pP8cnOtdcVzsEFHEVWd">
+              <span class="t" data-page-node-id="TtSXMxudkupc1rI300q60A">13:24:02</span>
+              <svg class="ic" viewBox="0 0 24 24" fill="none" data-page-node-id="dHSA4JEttsFgCkA9P3mfLz"><circle cx="12" cy="12" r="9.5" fill="#D9F3E1" data-page-node-id="Nclfa4tZUN1ISvF65FBzil"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="G39icZp4HhAZy2a9JIRyip"/></svg>
+              <span class="tx" data-page-node-id="JZSGCjYHx5hU5xDcHUh5fk">信息收集完成 · 资产 32 项 / 入口 8 处已圈定</span>
+            </div>
+            <div class="event" data-page-node-id="HTSHKiCfoQAohNTcyIz2rp">
+              <span class="t" data-page-node-id="Go22DFAlkYiP480TPebnsJ">13:25:18</span>
+              <svg class="ic" viewBox="0 0 24 24" fill="none" data-page-node-id="gTHDLVGZZJc8xEXcHoPrz4"><circle cx="12" cy="12" r="9.5" fill="#D9F3E1" data-page-node-id="G4hcvU3EdthEP1lzo0qAfm"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="dpdN6nv9xv95U6BFcJgIAP"/></svg>
+              <span class="tx" data-page-node-id="0rbmjHVVv6ILh3iNMUFoZD">Semgrep 扫描完成 · 214 文件 · 37 条告警</span>
+            </div>
+            <div class="event" data-page-node-id="FdhUoDwKgT2nsSLPa700T2">
+              <span class="t" data-page-node-id="nSksFfv2NnjIZMcrCTAT1Q">13:26:41</span>
+              <svg class="ic" viewBox="0 0 24 24" fill="none" data-page-node-id="wY0rOdH1rn0ZUTXQ9sTnRS"><path d="M12 3.5L22 20H2L12 3.5z" fill="#FFE8D4" stroke="#DD5B00" stroke-width="1.6" stroke-linejoin="round" data-page-node-id="9aSr9HwiAGQe96XJW6Iy2e"/><path d="M12 9.5v4.5" stroke="#DD5B00" stroke-width="1.8" stroke-linecap="round" data-page-node-id="H3WQxPhvo7eA9d8QGZ5b5c"/><circle cx="12" cy="17" r="1" fill="#DD5B00" data-page-node-id="uHIZ4mk02Cx5AmLCwtczXo"/></svg>
+              <span class="tx" data-page-node-id="UCBzLVCDby708earA5WemH">发现硬编码密钥 · login.ts:5 · 已定级 P1</span>
+            </div>
+            <div class="event" data-page-node-id="vzVnHRErWCM559d7tPGX04">
+              <span class="t" data-page-node-id="DvoycAGmAhWsVKuQwkvdU3">13:26:55</span>
+              <svg class="ic" viewBox="0 0 24 24" fill="none" data-page-node-id="6RG1kuspp1afRJCVRMMzhv"><circle cx="12" cy="12" r="9.5" fill="#D9F3E1" data-page-node-id="15JfTwWgCitw8ZzwGeilOp"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="go5rxeBEaMAgLjBJO2Ufab"/></svg>
+              <span class="tx" data-page-node-id="qMFH6vvWGBDBFC16B7N2iq">gitleaks 复核完成 · 命中 2 处,1 处待确认</span>
+            </div>
+            <div class="event running" data-page-node-id="Ol8hgZ98wHq9MYErrSCepR">
+              <span class="t" id="liveClock" data-page-node-id="qVqE1Iw9JVxGUPPqDSnjVw">13:27:02</span>
+              <svg class="ic spin" viewBox="0 0 24 24" fill="none" data-page-node-id="ZDSdWJLwWrS0qAqSieFWvP"><path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#5645D4" stroke-width="2.4" stroke-linecap="round" data-page-node-id="xUIKoNFfgPzGesXLFSNvLC"/></svg>
+              <div class="event running-col" data-page-node-id="Opz6CGaMAFyu7ymqBYEsFp">
+                <span class="event running-main" data-page-node-id="7fdxORo6iiFWZh1dNiuu1f">AI 语义审查中 · 逐行分析 login.ts</span>
+                <span class="event running-sub" data-page-node-id="SGTUKyNJsyTx88Qget66B1"><span id="typeTarget" data-page-node-id="7Katys29vFj91gGZiSG8eK"></span><span class="caret" data-page-node-id="Kf8kBjDyySUuo917FrJdnf"></span></span>
+              </div>
+            </div>
+            <div class="event pending" data-page-node-id="JRX23acfGQNRUUV6AcPNpJ">
+              <span class="t" data-page-node-id="9ZERYGzNyuHCxk9WX6HlT7">—</span>
+              <svg class="ic" viewBox="0 0 24 24" fill="none" data-page-node-id="ZM5OzKEfnmbtcRoW04X7lE"><circle cx="12" cy="12" r="8.5" stroke="#C8C4BE" stroke-width="1.6" stroke-dasharray="3.5 3.5" data-page-node-id="4z5ZUFHaU2dGvVPAcLak5j"/></svg>
+              <span class="tx" data-page-node-id="fXA9eAY2BTqSHbsREDF9yi">动态测试 · 等待测试环境授权</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 审查统计 -->
+        <section class="card stats-card" data-page-node-id="Xejl5hmzGjiDQVTQvNngfl">
+          <div class="card-head" data-page-node-id="33XU5UKnnxE3awbZDX1LKq">
+            <div class="card-head-left" data-page-node-id="RExjuUBUmeDITD1rkAIBhn">
+              <svg viewBox="0 0 24 24" fill="none" data-page-node-id="ONbVGHiSOtvRbVvk54QOJP"><path d="M4 20h16" stroke="#5645D4" stroke-width="1.8" stroke-linecap="round" data-page-node-id="x0fm9JktkVHKBDlveH7Bln"/><path d="M7.5 19v-4M12 19V7.5M16.5 19v-7" stroke="#5645D4" stroke-width="1.8" stroke-linecap="round" data-page-node-id="D5b2f6J3d1DuEEQ7g46OX6"/></svg>
+              <span class="card-title" data-page-node-id="6ycmz8gcBdKK563lNGnQxt">审查统计</span>
+            </div>
+          </div>
+          <div class="progress-row" data-page-node-id="OmdE9p0lilSDBlNdB0QFMm">
+            <span class="progress-label" data-page-node-id="8yhcBICJq8oqeOAVoUFIkQ">整体进度</span>
+            <span class="progress-pct" id="pct" data-page-node-id="GkuJF2e1Ob8jhWlBXHKPD7">0%</span>
+          </div>
+          <div class="progress-track" data-page-node-id="t96WxDj7D2TJ2dysoXf61D">
+            <div class="progress-fill" id="progressFill" data-page-node-id="EAUBr7NDwu3H3ilbyCHFu7"></div>
+          </div>
+          <div class="progress-sub" data-page-node-id="RnPQw8JuXYRNEiOu4hWD7G">已扫描 214 / 316 文件 · 用时 23 分钟 · 预计剩余 11 分钟</div>
+          <div class="sev-row" data-page-node-id="xWHmOZ88fUmvJbCbzzqoye">
+            <span class="sev-pill p0" data-page-node-id="vCKUKhkA0JfKjVVy7qoZNX"><span class="sev-dot" data-page-node-id="9F0nFr2XFrEwPqeknOrA52"></span><span class="sev-count" data-page-node-id="lfDrjs4m2Pf64CRhvJmWsa">P0 × 1</span></span>
+            <span class="sev-pill p1" data-page-node-id="n8SSGW0seBBq6fUpZ7CTto"><span class="sev-dot" data-page-node-id="N9u4UUEufKMEVY0fLFQh7A"></span><span class="sev-count" data-page-node-id="jDK5BajehEvUXUsbH1guYJ">P1 × 3</span></span>
+            <span class="sev-pill p2" data-page-node-id="4nFelnzoOC8lD5qZKJwl05"><span class="sev-dot" data-page-node-id="ISkmLac7TiRkNVUYOb4OzG"></span><span class="sev-count" data-page-node-id="jYHsZisfR0GemOL5KYtWao">P2 × 4</span></span>
+            <span class="sev-pill p3" data-page-node-id="ErUCbLh4C9qyoh0EzmLKFP"><span class="sev-dot" data-page-node-id="jDmUTnGFdHlYS11guHAFcS"></span><span class="sev-count" data-page-node-id="fzq4jFvY0YGMPfSdfJFKdR">P3 × 1</span></span>
+          </div>
+        </section>
+
+        <!-- 工具执行状态 -->
+        <section class="card tools-card" data-page-node-id="QKGmhI9AJcydxG1upH6xvT">
+          <div class="card-head" data-page-node-id="kHEWd9n81LGi3vvfTub0qE">
+            <div class="card-head-left" data-page-node-id="mA9TRlnWErjJPewbdZF2jI">
+              <svg viewBox="0 0 24 24" fill="none" data-page-node-id="Vj0UjUs6ykpaKeylPEKN8K"><path d="M4 7h16M4 12h16M4 17h16" stroke="#5645D4" stroke-width="1.7" stroke-linecap="round" data-page-node-id="0tAeOjMYywlzkFOUmK3YbO"/><circle cx="9" cy="7" r="2.2" fill="#FFFFFF" stroke="#5645D4" stroke-width="1.7" data-page-node-id="AOkSd3V1fR1JuK97wammbA"/><circle cx="15" cy="12" r="2.2" fill="#FFFFFF" stroke="#5645D4" stroke-width="1.7" data-page-node-id="8hjLxDrHFWxRyTOphAjo1Y"/><circle cx="8" cy="17" r="2.2" fill="#FFFFFF" stroke="#5645D4" stroke-width="1.7" data-page-node-id="2OE7pVg6JITJdADcXFHzSp"/></svg>
+              <span class="card-title" data-page-node-id="9Emgfj5FeO5bl3ZUVibYuC">工具执行状态</span>
+            </div>
+          </div>
+          <div class="tool-row" data-page-node-id="KmhkhWvzPFgLpBylh9qyrY">
+            <span class="tool-name" data-page-node-id="mXLht5drVTRaE0m5DeMiSY">Semgrep</span>
+            <svg class="tool-ic" viewBox="0 0 24 24" fill="none" data-page-node-id="T2hMBl9wkRMQlyaD8L5HwG"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#147A2B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="zJCfTCI8OeE0VokBQEWAjd"/></svg>
+            <span class="tool-status" data-page-node-id="Ly6Af21YGZzoyQWWyVoFyz">已完成 · 37 告警</span>
+          </div>
+          <div class="tool-row" data-page-node-id="yz0utjKfBySKymlAO64ZsH">
+            <span class="tool-name" data-page-node-id="JDTMZXp7NEzPen6BApKd41">gitleaks</span>
+            <svg class="tool-ic" viewBox="0 0 24 24" fill="none" data-page-node-id="EzoD7z7vFeQn8tifDZ1A24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#147A2B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="oqtyHUWsLBf8seNiHDYoRW"/></svg>
+            <span class="tool-status" data-page-node-id="YYV3gRAAADLF1V5xo9TQHF">已完成 · 命中 2 处</span>
+          </div>
+          <div class="tool-row" data-page-node-id="hZplmlQBNiYpgBNRhB5t4W">
+            <span class="tool-name" data-page-node-id="B8saGv0AclkusVH6fNcLX6">CodeQL</span>
+            <svg class="tool-ic spin" viewBox="0 0 24 24" fill="none" data-page-node-id="iGdn5WebZJ8AmB0EJNNmpR"><path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#5645D4" stroke-width="2.4" stroke-linecap="round" data-page-node-id="UaU9DwUTEL2q2LQ5yKOU4a"/></svg>
+            <div class="tool-progress" data-page-node-id="db8d2YEJxsahQyxaoR2SND"><div class="tool-progress-fill" data-page-node-id="m1tFGLahqV6pc5qRt57yjK"></div></div>
+            <span class="tool-status running" data-page-node-id="FNyULBFA4U3DV3LJed0Fz8">运行中 · 45%</span>
+          </div>
+          <div class="tool-row dim" data-page-node-id="rJKEoBFzHORlhOnLw1yXMZ">
+            <span class="tool-name" data-page-node-id="Rrgsc0WsDudOSMNCFLyRO5">OWASP ZAP</span>
+            <svg class="tool-ic" viewBox="0 0 24 24" fill="none" data-page-node-id="qXHgR3uptKeWgfApR2q3li"><circle cx="12" cy="12" r="8.5" stroke="#C8C4BE" stroke-width="1.6" stroke-dasharray="3.5 3.5" data-page-node-id="CEKbi30MBvOtnIALzHi1JR"/></svg>
+            <span class="tool-status pending" data-page-node-id="aaH1RF4VHOJsRAjx4ZhwfD">排队中 · 等待授权</span>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast-zone" id="toastZone" data-page-node-id="ec7YwShGmoBEo77k3a8Hoi"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Toast ---------- */
+  var toastZone = document.getElementById('toastZone');
+  function toast(msg) {
+    var el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = '<svg class="tick" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#D9F3E1"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span></span>';
+    el.querySelector('span').textContent = msg;
+    toastZone.appendChild(el);
+    setTimeout(function () {
+      el.classList.add('out');
+      setTimeout(function () { el.remove(); }, 260);
+    }, 2600);
+  }
+
+  /* ---------- 导航 / 项目切换（视觉状态） ---------- */
+  document.querySelectorAll('[data-nav]').forEach(function (item) {
+    item.addEventListener('click', function () {
+      document.querySelectorAll('[data-nav]').forEach(function (n) { n.classList.remove('active'); });
+      item.classList.add('active');
+      var label = item.querySelector('.nav-label').textContent;
+      if (label !== '实时审查') toast(label + ' · 页面占位（当前设计稿仅包含实时审查页）');
+    });
+  });
+  document.querySelectorAll('[data-proj]').forEach(function (item) {
+    item.addEventListener('click', function () {
+      document.querySelectorAll('[data-proj]').forEach(function (n) { n.classList.remove('active'); });
+      item.classList.add('active');
+    });
+  });
+
+  /* ---------- 文件标签切换 ---------- */
+  document.querySelectorAll('[data-tab]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('[data-tab]').forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+    });
+  });
+
+  /* ---------- 暂停 / 继续审查 ---------- */
+  var btnPause = document.getElementById('btnPause');
+  var liveChipText = document.getElementById('liveChipText');
+  var paused = false;
+  btnPause.addEventListener('click', function () {
+    paused = !paused;
+    document.body.classList.toggle('paused', paused);
+    btnPause.textContent = paused ? '继续审查' : '暂停审查';
+    liveChipText.textContent = paused ? '已暂停 · 阶段 4/6' : '审查进行中 · 阶段 4/6';
+    toast(paused ? '审查已暂停 · 工具与 AI 分析挂起' : '审查已恢复 · 继续阶段 4 分析');
+  });
+
+  /* ---------- 导出报告 ---------- */
+  document.getElementById('btnExport').addEventListener('click', function () {
+    toast('报告导出任务已创建 · 完成后可在「报告导出」页下载');
+  });
+
+  /* ---------- 发现标注卡操作 ---------- */
+  document.querySelectorAll('[data-fp]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      toast('已标记为误报 · 等待 Lead Reviewer 确认');
+    });
+  });
+  document.querySelectorAll('[data-fix]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      toast('已加入整改单 · 编号 FIX-2077');
+    });
+  });
+
+  /* ---------- 进度条载入动画 0 → 68% ---------- */
+  var fill = document.getElementById('progressFill');
+  var pct = document.getElementById('pct');
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      fill.style.width = '68%';
+      var start = null;
+      var D = 1200;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min((ts - start) / D, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        pct.textContent = Math.round(eased * 68) + '%';
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  });
+
+  /* ---------- 运行中事件：实时时钟 ---------- */
+  var clock = document.getElementById('liveClock');
+  function tickClock() {
+    var d = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    clock.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  tickClock();
+  setInterval(function () { if (!paused) tickClock(); }, 1000);
+
+  /* ---------- 流式输出打字机 ---------- */
+  var typeTarget = document.getElementById('typeTarget');
+  var lines = [
+    '流式输出: 检测到 SQL 拼接,污点源自 req.body',
+    '流式输出: 追踪污点传播路径 → db.query(sql)',
+    '流式输出: 复核 SECRET_KEY 引用 · 建议迁移 KMS',
+    '流式输出: 比对权限矩阵 · 检查角色越权访问'
+  ];
+  var li = 0, ci = 0, deleting = false;
+  function typeLoop() {
+    if (paused) { setTimeout(typeLoop, 400); return; }
+    var text = lines[li];
+    if (!deleting) {
+      ci++;
+      typeTarget.textContent = text.slice(0, ci);
+      if (ci >= text.length) { deleting = true; setTimeout(typeLoop, 2200); return; }
+      setTimeout(typeLoop, 38 + Math.random() * 40);
+    } else {
+      ci -= 3;
+      if (ci <= 0) { ci = 0; deleting = false; li = (li + 1) % lines.length; }
+      typeTarget.textContent = text.slice(0, Math.max(ci, 0));
+      setTimeout(typeLoop, 14);
+    }
+  }
+  typeLoop();
+
+  /* ---------- 事件列表滚动至底部（保持最新可见） ---------- */
+  var list = document.getElementById('eventList');
+  requestAnimationFrame(function () { list.scrollTop = list.scrollHeight; });
+})();
+</script>
+</body>
+</html>
