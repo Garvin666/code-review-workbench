@@ -583,6 +583,144 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
   .crumb-pr { overflow: hidden; text-overflow: ellipsis; }
 }
 </style>
+
+<!-- ============ 守护中枢（Guardian）并入样式 · .gscope 作用域隔离 ============ -->
+<style>
+.gscope{
+  /* 守护页变量（覆盖 :root 同名项，与独立版 guardian_ui 视觉一致） */
+  --g-card:#FFFFFF; --g-line:#E5E3DF;
+  --g-ink:#1F1E1B; --g-ink2:#6F6C63; --g-ink3:#9B978C;
+  --ok:#16A34A; --ok-bg:#E9F7EF;
+  --warn:#D97706; --warn-bg:#FEF4E4;
+  --down:#DC2626; --down-bg:#FDEBEB;
+  --info:#2563EB; --info-bg:#EAF1FD;
+  --code-bg:#0A1530;
+  --brand-soft:#EEEDFE;
+}
+.gscope .ggbar{display:flex;align-items:center;gap:12px;padding:0 16px;height:54px;background:var(--g-card);border:1px solid var(--g-line);border-radius:12px;box-shadow:var(--shadow-card);flex-shrink:0}
+.gscope .g-ico{width:28px;height:28px;border-radius:8px;background:var(--brand);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gscope .g-title{font-size:14px;font-weight:600;color:var(--ink-1);line-height:1.2}
+.gscope .g-sub{font-size:9.5px;color:var(--ink-4);letter-spacing:.05em;line-height:1.2}
+.gscope .ggbar .sp{flex:1}
+.gscope .ggbar .clock{font-family:var(--font-mono);font-size:12px;color:var(--ink-4);font-variant-numeric:tabular-nums}
+.gscope .gpill{display:inline-flex;align-items:center;gap:7px;padding:4px 11px;border-radius:999px;font-size:11.5px;font-weight:500;background:var(--bg-sidebar);border:1px solid var(--border);color:var(--ink-3);white-space:nowrap}
+.gscope .gpill i{width:7px;height:7px;border-radius:50%;background:#C8C4BE;flex:none}
+.gscope .gpill.ok{color:#15703a;background:var(--ok-bg);border-color:transparent}.gscope .gpill.ok i{background:var(--ok)}
+.gscope .gpill.warn{color:#a05a03;background:var(--warn-bg);border-color:transparent}.gscope .gpill.warn i{background:var(--warn)}
+.gscope .gpill.down{color:#a02a2a;background:var(--down-bg);border-color:transparent}.gscope .gpill.down i{background:var(--down)}
+.gscope .gpill.demo{color:#1d4fbf;background:var(--info-bg);border-color:transparent}.gscope .gpill.demo i{background:var(--info)}
+.gscope .gpill.off{color:var(--ink-3)}
+/* 主体两栏 */
+.gscope .ggbody{flex:1;display:flex;gap:16px;min-height:0;overflow:hidden}
+.gscope .ggmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;overflow-y:auto;padding:1px 3px 1px 1px}
+.gscope .ggside{width:336px;flex:none;display:flex;flex-direction:column;min-height:0}
+.gscope .gpanel-grow{flex:1;min-height:0;display:flex;flex-direction:column}
+/* KPI */
+.gscope .gkpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;flex-shrink:0}
+.gscope .gkpi{background:var(--g-card);border:1px solid var(--g-line);border-radius:12px;padding:12px 15px;box-shadow:var(--shadow-card)}
+.gscope .gkpi .k-label{font-size:11.5px;color:var(--g-ink2);display:flex;align-items:center;gap:6px}
+.gscope .gkpi .k-label i{width:7px;height:7px;border-radius:2px;display:inline-block}
+.gscope .gkpi .k-num{font-size:26px;font-weight:700;line-height:1.2;margin-top:2px;color:var(--ink-1);font-variant-numeric:tabular-nums}
+.gscope .gkpi .k-sub{font-size:10.5px;color:var(--g-ink3);margin-top:1px}
+/* 离线/演示横幅 */
+.gscope .gbanner{display:none;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;font-size:12px;line-height:1.5;flex-shrink:0}
+.gscope .gbanner.show{display:flex}
+.gscope .gbanner.demo{background:var(--info-bg);border:1px solid #C5D9F7;color:#1d4fbf}
+.gscope .gbanner.warn{background:var(--warn-bg);border:1px solid #F3D9AE;color:#7a4a00}
+.gscope .gbanner.down{background:var(--down-bg);border:1px solid #F5C6C6;color:#a02a2a}
+.gscope .gbanner b{font-weight:600}
+.gscope .gbanner .gb-btn{margin-left:auto;flex:none}
+/* 面板 */
+.gscope .panel{background:var(--g-card);border:1px solid var(--g-line);border-radius:12px;box-shadow:var(--shadow-card);display:flex;flex-direction:column;min-height:0;overflow:hidden;flex-shrink:0}
+.gscope .gpanel-grow{flex-shrink:1}
+.gscope .p-head{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--g-line);flex-shrink:0}
+.gscope .p-head h3{font-size:13.5px;font-weight:600;color:var(--ink-1)}
+.gscope .p-head .sp{flex:1}
+.gscope .chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:500;background:var(--bg-sidebar);border:1px solid var(--border);color:var(--ink-3);white-space:nowrap}
+.gscope .chip.brand{background:var(--brand-soft);color:var(--brand-deep);border-color:transparent}
+.gscope .chip.c-ok{background:var(--ok-bg);color:#15703a;border-color:transparent}
+.gscope .chip.c-warn{background:var(--warn-bg);color:#a05a03;border-color:transparent}
+.gscope .chip.c-down{background:var(--down-bg);color:#a02a2a;border-color:transparent}
+/* 目标卡网格 */
+.gscope .ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:12px;padding:14px 16px}
+.gscope .tcard{border:1px solid var(--border);border-radius:10px;padding:12px 13px;cursor:pointer;transition:all .12s;background:#fff}
+.gscope .tcard:hover{border-color:#C9C5F2;box-shadow:0 2px 8px rgba(86,69,212,.08)}
+.gscope .tcard .row1{display:flex;align-items:center;gap:8px}
+.gscope .tcard .row1 .nm{flex:1;font-weight:600;font-size:12.5px;color:var(--ink-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gscope .tcard .row1 .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.gscope .dot-ok{background:var(--ok)}.gscope .dot-warn{background:var(--warn)}.gscope .dot-down{background:var(--down)}.gscope .dot-ok,.gscope .dot-warn,.gscope .dot-down{box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+.gscope .tcard .probes{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.gscope .pchip{font-size:10px;padding:1px 6px;border-radius:5px;background:#F1EFEA;color:var(--ink-3)}
+.gscope .pchip.p-ok{background:var(--ok-bg);color:#15703a}.gscope .pchip.p-warn{background:var(--warn-bg);color:#a05a03}.gscope .pchip.p-fail{background:var(--down-bg);color:#a02a2a}.gscope .pchip.p-noadata{background:#EFEDE7;color:var(--g-ink3)}
+.gscope .tcard .meta{margin-top:7px;font-size:10.5px;color:var(--g-ink3);display:flex;justify-content:space-between}
+/* 目标详情 */
+.gscope .detail{padding:0 16px 6px}
+.gscope .urls{font-size:11px;color:var(--g-ink3);padding:2px 0 8px;word-break:break-all}
+.gscope .probe-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px dashed var(--g-line)}
+.gscope .probe-row:last-child{border-bottom:none}
+.gscope .probe-row .pname{width:78px;font-size:12px;font-weight:500;color:var(--g-ink2);display:flex;align-items:center;gap:7px;flex:none}
+.gscope .probe-row .pname i{width:7px;height:7px;border-radius:50%;background:#D8D5CD;flex:none}
+.gscope .probe-row .pname i.st-ok{background:var(--ok)}.gscope .probe-row .pname i.st-warn{background:var(--warn)}.gscope .probe-row .pname i.st-fail{background:var(--down)}
+.gscope .probe-row .pdetail{flex:1;font-size:12px;color:var(--g-ink2);min-width:0;overflow-wrap:anywhere}
+.gscope .probe-row .plat{font-size:10.5px;color:var(--g-ink3);font-variant-numeric:tabular-nums;flex:none}
+.gscope .lat-chart{height:64px;padding:4px 0 2px}
+.gscope .lat-chart svg{width:100%;height:100%;display:block}
+.gscope .bar-note{font-size:10px;color:var(--g-ink3);display:flex;justify-content:space-between;padding-top:2px}
+/* 事件流 */
+.gscope .evlist{flex:1;overflow-y:auto;padding:4px 10px 10px}
+.gscope .ev{padding:7px 10px;border-radius:8px;display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--ink-2)}
+.gscope .ev .t{margin-top:1px;flex:none;font-size:10.5px;color:var(--g-ink3);font-variant-numeric:tabular-nums}
+.gscope .ev .msg{flex:1;line-height:1.45;min-width:0}
+.gscope .ev .msg b{font-weight:600;margin-right:4px}
+.gscope .ev.critical{background:var(--down-bg)}
+.gscope .ev.warn{background:var(--warn-bg)}
+.gscope .ev.info{background:var(--ok-bg)}
+.gscope .ev-tag{flex:none;font-size:9.5px;padding:1px 6px;border-radius:5px;font-weight:500;margin-top:1px}
+.gscope .ev.critical .ev-tag{background:#dc2626;color:#fff}.gscope .ev.warn .ev-tag{background:#d97706;color:#fff}.gscope .ev.info .ev-tag{background:#16a34a;color:#fff}
+/* 空态 */
+.gscope .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--g-ink3);text-align:center}
+.gscope .empty .big{font-size:32px;margin-bottom:6px;color:#D3CFC6}
+.gscope .empty .hint{font-size:12px;max-width:340px;line-height:1.6}
+/* 登记抽屉 */
+.gscope .overlay{position:fixed;inset:0;background:rgba(31,28,23,.32);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+.gscope .overlay.show{opacity:1;pointer-events:auto}
+.gscope .drawer{position:fixed;top:0;right:-460px;width:460px;height:100vh;background:#fff;z-index:50;box-shadow:-8px 0 30px rgba(0,0,0,.12);transition:right .22s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.gscope .drawer.show{right:0}
+.gscope .drawer .d-head{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--g-line)}
+.gscope .drawer .d-head h3{font-size:15px;color:var(--ink-1)}
+.gscope .drawer .d-body{flex:1;overflow-y:auto;padding:18px 20px}
+.gscope .form label{display:block;font-size:11.5px;color:var(--g-ink2);margin:12px 0 5px;font-weight:500}
+.gscope .form .seg{display:flex;gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.gscope .form .seg button{flex:1;padding:7px 0;font-size:12px;color:var(--g-ink2);background:#fff}
+.gscope .form .seg button.on{background:var(--brand-soft);color:var(--brand-deep);font-weight:600}
+.gscope .input,.gscope .select{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:9px;font-family:inherit;font-size:12.5px;background:#fff;outline:none;color:var(--ink-2)}
+.gscope .input:focus,.gscope .select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(86,69,212,.12)}
+.gscope .form .hint{font-size:11px;color:var(--g-ink3);margin-top:5px;line-height:1.5}
+.gscope .d-actions{margin-top:18px;display:flex;gap:10px}
+/* token 结果 */
+.gscope .result{margin-top:14px;display:none}
+.gscope .result.show{display:block}
+.gscope .tokbox{background:var(--code-bg);color:#E7EBF7;border-radius:10px;padding:14px 16px;font-family:var(--font-mono)}
+.gscope .tokbox .lbl{font-size:10px;color:#8B9AC9;letter-spacing:.08em;margin-bottom:6px}
+.gscope .tokbox .tok{font-size:14.5px;word-break:break-all;color:#C7B8FF;font-weight:600}
+.gscope .tok-actions{margin-top:9px;display:flex;gap:8px}
+.gscope .stab{display:flex;border-bottom:1px solid var(--g-line);margin-top:12px}
+.gscope .stab button{flex:1;padding:8px 0;font-size:12px;color:var(--g-ink2);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer}
+.gscope .stab button.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+.gscope .codebox{background:var(--code-bg);border-radius:10px;margin-top:10px;position:relative;overflow:hidden}
+.gscope .codebox pre{margin:0;padding:14px 16px;color:#C7D0E8;font-family:var(--font-mono);font-size:11px;line-height:1.6;overflow:auto;white-space:pre;min-height:80px;max-height:230px}
+.gscope .codebox .copy{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);color:#E7EBF7;border-radius:7px;padding:3px 10px;font-size:11px;cursor:pointer;border:none}
+.gscope .codebox .copy:hover{background:rgba(255,255,255,.18)}
+/* g-toast（避开 v2 .toast） */
+.gscope .gtoasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.gscope .gtoast{pointer-events:auto;background:#fff;border:1px solid var(--g-line);border-left:4px solid var(--info);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:9px 16px 9px 12px;display:flex;gap:10px;align-items:center;min-width:280px;max-width:480px;color:var(--ink-2);font-size:12.5px;animation:gtin .25s cubic-bezier(.2,.9,.3,1.2)}
+.gscope .gtoast.t-critical{border-left-color:#dc2626}.gscope .gtoast.t-warn{border-left-color:#d97706}.gscope .gtoast.t-info{border-left-color:#16a34a}
+.gscope .gtoast .tdot{width:9px;height:9px;border-radius:50%;flex:none}
+.gscope .gtoast.t-critical .tdot{background:#dc2626}.gscope .gtoast.t-warn .tdot{background:#d97706}.gscope .gtoast.t-info .tdot{background:#16a34a}
+.gscope .gtoast .tmsg{font-size:12.5px;flex:1}
+.gscope .gtoast .tx{color:var(--g-ink3);cursor:pointer;padding:0 4px}
+@keyframes gtin{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+</style>
 </head>
 <body data-page-node-id="ssJFiEIRHDaHJkOKjksRRF">
 
@@ -630,6 +768,11 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="6g8FEAptnAvqfluHo8LKwV"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" data-page-node-id="EH5kbHbnoANmoKwgnbWzxF"/><path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="jg4FPYePcATcpOEyBrpa2H"/></svg>
         <span class="nav-label" data-page-node-id="hia4kkhlzqhY53PVes665y">报告导出</span>
       </div>
+      <div class="nav-group-label" style="margin-top:10px">守护</div>
+      <div class="nav-item" data-nav="guardian" title="守护中枢：守护你的网站 / 小程序 / App 在线状态与安全">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3.5l6.5 2.7v4.2c0 4.1-2.6 6.7-6.5 8.2-3.9-1.5-6.5-4.1-6.5-8.2V6.2L12 3.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.9 12.7l2.1 2.1 4.2-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="nav-label">守护中枢</span>
+      </div>
     </nav>
 
     <div class="proj-wrap" data-page-node-id="gvTrGektE8qG1yNNFnj8IA">
@@ -667,7 +810,7 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
     <header class="topbar" data-page-node-id="HSpeL88o54pnqVNnBimB6E">
       <div class="topbar-left" data-page-node-id="DJH7nay3Gs4byeE3HuScXW">
         <svg class="repo-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="Q6w6BUVeVtxE3PGSTG4etj"><circle cx="6.5" cy="6" r="2.3" stroke="#787671" stroke-width="1.7" data-page-node-id="LdrN83CUOkptxBfMYVY4uE"/><circle cx="6.5" cy="18" r="2.3" stroke="#787671" stroke-width="1.7" data-page-node-id="Ew8oizRZXdikT7J2aOoo9z"/><circle cx="17.5" cy="8" r="2.3" stroke="#787671" stroke-width="1.7" data-page-node-id="cvDGwAhr2NDcHHeXjybnad"/><path d="M6.5 8.3v7.4M17.5 10.3c0 3.5-3.2 4.4-6.9 4.7" stroke="#787671" stroke-width="1.7" stroke-linecap="round" data-page-node-id="U2pVmCUOmeAwBpRWEjwkzb"/></svg>
-        <span class="crumb-repo" data-page-node-id="Gf1OC3SQ8EyDEKHMa9EnRM">mall-ecommerce</span>
+        <span class="crumb-repo" id="crumbRepo" data-page-node-id="Gf1OC3SQ8EyDEKHMa9EnRM">mall-ecommerce</span>
         <span class="crumb-sep" data-page-node-id="K5ePRuumSnX2Uev53gZxbL">/</span>
         <span class="crumb-pr" id="crumbPr" data-page-node-id="Rm6Kqi9Z9I6iMeKQwxFcw6">PR #482 · 认证模块重构</span>
         <span class="live-chip" id="liveChip" data-page-node-id="kC5AfJqMeicriesykyQwDJ">
@@ -699,7 +842,7 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
             <div class="card-head" data-page-node-id="0JUoC9MjJprrnl39kW0V4x">
               <div class="card-head-left" data-page-node-id="HglKK7BRt7dL9W8EDvulHJ">
                 <svg viewBox="0 0 24 24" fill="none" data-page-node-id="Ofn6xNnberlXhv5OSTGsFq"><rect x="3" y="3" width="6.5" height="6.5" rx="2" stroke="#5645D4" stroke-width="1.8" data-page-node-id="rHTLtb9e8AKziXuBsEIe7Z"/><rect x="14.5" y="14.5" width="6.5" height="6.5" rx="2" stroke="#5645D4" stroke-width="1.8" data-page-node-id="X4d7rAAfeLzKMoUgIzFZB5"/><path d="M9.5 6.3h5a3 3 0 0 1 3 3v5.2" stroke="#5645D4" stroke-width="1.8" stroke-linecap="round" data-page-node-id="0mKFQIDPWjgHvBGsug1JVx"/></svg>
-                <span class="card-title" data-page-node-id="NQznB3Jr6RLfG6f9P9rHbK">mall-ecommerce · 项目概览</span>
+                <span class="card-title" id="overviewProjTitle" data-page-node-id="NQznB3Jr6RLfG6f9P9rHbK">mall-ecommerce · 项目概览</span>
               </div>
               <span class="stage-chip" data-page-node-id="tFds1SHERB2X5W31cN9gTH">本周新增 5 项 · 修复 3 项</span>
             </div>
@@ -770,13 +913,13 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
 
           <section class="code-panel" data-page-node-id="zcDQv577uocdGWO7rjNC84">
             <div class="tab-bar" data-page-node-id="zSz7RyGoln0NjVXAjgxXuo">
-              <div class="file-tab active" data-tab data-page-node-id="1EhjU3qN2ldwhNWnEn6DIa">src/auth/login.ts</div>
-              <div class="file-tab" data-tab data-page-node-id="vJNBW3E5Unb8VKwqQ70Plq">src/api/order.ts</div>
-              <div class="file-tab-more" data-page-node-id="ayt9XbhqUCIOnrm997A1M6">+12</div>
+              <div class="file-tab active" id="fileTab0" data-tab data-page-node-id="1EhjU3qN2ldwhNWnEn6DIa">src/auth/login.ts</div>
+              <div class="file-tab" id="fileTab1" data-tab data-page-node-id="vJNBW3E5Unb8VKwqQ70Plq">src/api/order.ts</div>
+              <div class="file-tab-more" id="fileTabsMore" data-page-node-id="ayt9XbhqUCIOnrm997A1M6">+12</div>
               <div class="tab-spacer" data-page-node-id="H77XaDI8294RhNvgoVwR0J"></div>
-              <span class="tab-meta" data-page-node-id="TyVFYxfNpDFSqJoH7daQwB">214 文件 · 已扫描 68% · 分析中</span>
+              <span class="tab-meta" id="tabMeta" data-page-node-id="TyVFYxfNpDFSqJoH7daQwB">214 文件 · 已扫描 68% · 分析中</span>
             </div>
-            <div class="code-area" data-page-node-id="UO5leuSQgxEwAnHNHcwhYr">
+            <div class="code-area" id="codeArea" data-page-node-id="UO5leuSQgxEwAnHNHcwhYr">
               <div class="code-line" data-page-node-id="JSp4ArjoyraLBtFCA6nALy"><span class="ln" data-page-node-id="mTV7C9wWsApxBXUg7dS1g7">1</span><span class="src" data-page-node-id="EOdiAvGXI5kutBy4VLdzAp"><span class="kw" data-page-node-id="4HdkCdGpvkBASwOSCcaGR2">import </span>{ Router } <span class="kw" data-page-node-id="e9T0UuTUv6dcTgfH73Q3N4">from </span><span class="str" data-page-node-id="kekKDQFSgOfCQAAFSQXcLH">"express"</span>;</span></div>
               <div class="code-line" data-page-node-id="40bpP7H5VmrIoqMyxzLl5k"><span class="ln" data-page-node-id="DfvPMXMhWBeTfjjDLVV0qw">2</span><span class="src" data-page-node-id="AknlbfT0WrSQ7FRkN4Eyg4"><span class="kw" data-page-node-id="ESt25eTCMdF7w4F6WTGp60">import </span>{ db } <span class="kw" data-page-node-id="ylCKCUWnwRvmg3BDTPWsgH">from </span><span class="str" data-page-node-id="XxD6hqeVngxSjUcajICFC0">"../core/db"</span>;</span></div>
               <div class="code-line" data-page-node-id="D2IHZwukLCzKa9lCY0Cd7T"><span class="ln" data-page-node-id="uLCBE2AsCXb298cQA6ko0u">3</span></div>
@@ -829,8 +972,8 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
               <div class="code-line" data-page-node-id="mTei0WBtBVMQk0MEveFNqT"><span class="ln" data-page-node-id="EkSp8faiCIA84jeuXNWrdc">14</span><span class="src" data-page-node-id="gEWbpgRHvlebNFbHwH5h49">}</span></div>
             </div>
             <div class="panel-status" data-page-node-id="1F77vtwGJHtoZ3XjjueyMV">
-              <span class="panel-status-left" data-page-node-id="879W2svqsIkFFHczkQm5z2">阶段 4 · AI 语义审查 · 逐行分析中 — 已定位 2 处高危</span>
-              <span class="panel-status-right" data-page-node-id="JrB8BSfME7x41p0EhEk4kV">src/auth/login.ts · 14 行</span>
+              <span class="panel-status-left" id="panelStatusLeft" data-page-node-id="879W2svqsIkFFHczkQm5z2">阶段 4 · AI 语义审查 · 逐行分析中 — 已定位 2 处高危</span>
+              <span class="panel-status-right" id="panelStatusRight" data-page-node-id="JrB8BSfME7x41p0EhEk4kV">src/auth/login.ts · 14 行</span>
             </div>
           </section>
         </div>
@@ -873,12 +1016,12 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
             </div>
             <div class="progress-row" data-page-node-id="QquxElCONYALMUKh3zy9Un"><span class="progress-label" data-page-node-id="CGYMiICsWXoAsQguC7CI7f">整体进度</span><span class="progress-pct" id="pct" data-page-node-id="Jx9gWvJqDCYuCXqducCBjO">0%</span></div>
             <div class="progress-track" data-page-node-id="CGFwruCNdELVBUb7nHKYmr"><div class="progress-fill" id="progressFill" data-page-node-id="Vk9S5g02ewBjXmyCVUVmzY"></div></div>
-            <div class="progress-sub" data-page-node-id="8LtqYISmLH16JGEqyGYguo">已扫描 214 / 316 文件 · 用时 23 分钟 · 预计剩余 11 分钟</div>
+            <div class="progress-sub" id="progressSub" data-page-node-id="8LtqYISmLH16JGEqyGYguo">已扫描 214 / 316 文件 · 用时 23 分钟 · 预计剩余 11 分钟</div>
             <div class="sev-row" data-page-node-id="eoYaTE3voHeBcz0fDR31my">
-              <span class="sev-pill p0" data-page-node-id="CRL8lj1mhagGvDGlF2KhSg"><span class="sev-dot" data-page-node-id="5qnKMCoCtRpEMGVQcnDzle"></span><span class="sev-count" data-page-node-id="7vrhsP1xG5knv96X66NaE7">P0 × 1</span></span>
-              <span class="sev-pill p1" data-page-node-id="uazeokLg0d2MxclQOqVXX1"><span class="sev-dot" data-page-node-id="qnexxkYwNLMKEiefx20kPe"></span><span class="sev-count" data-page-node-id="jCNWrbpindXrbvsOepXjeP">P1 × 3</span></span>
-              <span class="sev-pill p2" data-page-node-id="UEIZl8tzYbEAB1AYanA7wb"><span class="sev-dot" data-page-node-id="szw0grh51KbZ3gahXIglJF"></span><span class="sev-count" data-page-node-id="bX1Ol82613VWc7oon9Elvd">P2 × 4</span></span>
-              <span class="sev-pill p3" data-page-node-id="YXATHbCtBRPE5dNFlWQS6x"><span class="sev-dot" data-page-node-id="vCrpESfhuKUQmCzS1Jx58F"></span><span class="sev-count" data-page-node-id="vgKOWKHgxcdLzhaAke3Nab">P3 × 1</span></span>
+              <span class="sev-pill p0" id="sevP0" data-page-node-id="CRL8lj1mhagGvDGlF2KhSg"><span class="sev-dot" data-page-node-id="5qnKMCoCtRpEMGVQcnDzle"></span><span class="sev-count" id="sevP0N" data-page-node-id="7vrhsP1xG5knv96X66NaE7">P0 × 1</span></span>
+              <span class="sev-pill p1" id="sevP1" data-page-node-id="uazeokLg0d2MxclQOqVXX1"><span class="sev-dot" data-page-node-id="qnexxkYwNLMKEiefx20kPe"></span><span class="sev-count" id="sevP1N" data-page-node-id="jCNWrbpindXrbvsOepXjeP">P1 × 3</span></span>
+              <span class="sev-pill p2" id="sevP2" data-page-node-id="UEIZl8tzYbEAB1AYanA7wb"><span class="sev-dot" data-page-node-id="szw0grh51KbZ3gahXIglJF"></span><span class="sev-count" id="sevP2N" data-page-node-id="bX1Ol82613VWc7oon9Elvd">P2 × 4</span></span>
+              <span class="sev-pill p3" id="sevP3" data-page-node-id="YXATHbCtBRPE5dNFlWQS6x"><span class="sev-dot" data-page-node-id="vCrpESfhuKUQmCzS1Jx58F"></span><span class="sev-count" id="sevP3N" data-page-node-id="vgKOWKHgxcdLzhaAke3Nab">P3 × 1</span></span>
             </div>
           </section>
 
@@ -927,7 +1070,7 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
                 <svg viewBox="0 0 24 24" fill="none" data-page-node-id="VspJVBvCJRZVheTFleY8Me"><circle cx="12" cy="12" r="9.5" stroke="#5645D4" stroke-width="1.8" data-page-node-id="KOkBiDdm5FkZoHgEvhXi0U"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#5645D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="NFVLcywPL2QdYgf54RpRAN"/></svg>
                 <span class="card-title" data-page-node-id="0mpIzMtrk1vReMlBmXvMXY">网站 OWASP Top 10 + 自定义扩展</span>
               </div>
-              <span class="meta" data-page-node-id="4WfzWT1h4bAJCyMrjwlok9"><b data-page-node-id="wzPRjBgq6TpOSVTLDaQ9R8">64</b> 项 · 已通过 <b data-page-node-id="0ezKoTXKzEfeKBiXpajQJy">38</b> · 待审 <b data-page-node-id="I7Gct5cCYF213gQejMHb86">22</b> · 风险 <b data-page-node-id="CUZ90KQjja8hKrYGHfRSCc">4</b></span>
+              <span class="meta" id="checklistMeta" data-page-node-id="4WfzWT1h4bAJCyMrjwlok9"><b data-page-node-id="wzPRjBgq6TpOSVTLDaQ9R8">64</b> 项 · 已通过 <b id="ckPassed">38</b> · 待审 <b id="ckPending">22</b> · 风险 <b id="ckRisk">4</b></span>
             </div>
             <table class="table" data-page-node-id="sjd7bNZrszArtMiosj6bCS">
               <thead data-page-node-id="m3hdhV1Sqtxyd67Gq36t5A">
@@ -980,7 +1123,7 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
               <span class="den" data-page-node-id="6O7r7xCIcxRzPcZoaI2LA8">64</span>
             </div>
             <div class="progress-track" style="height:8px;" data-page-node-id="nHZeU9Q8kFJLmgeq44HoYp"><div class="progress-fill" id="ckProgress" style="background:linear-gradient(90deg,#5645D4,#7A6BD9);" data-page-node-id="ELHJt1mC9TZhCDYCodPHzl"></div></div>
-            <div class="progress-sub" style="margin-top:8px;" data-page-node-id="W6y0nXvpCQJwlDcGAeMnjE">已通过 38 · 待审 22 · 风险 4</div>
+            <div class="progress-sub" style="margin-top:8px;" id="ckProgressSub" data-page-node-id="W6y0nXvpCQJwlDcGAeMnjE">已通过 38 · 待审 22 · 风险 4</div>
           </section>
 
           <section class="card right-card" data-page-node-id="y95DICJDbolA9Cny069ZNL">
@@ -1018,19 +1161,19 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
             </div>
             <div class="scan-meta-row" data-page-node-id="Vwaia66yvxZW8RdW2m8tCp">
               <svg class="file-icon" viewBox="0 0 24 24" fill="none" data-page-node-id="svwl5z7M2W0h1jo0tkArYg"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" data-page-node-id="vc1hdc2WFOFfEHPnzuFTkj"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" data-page-node-id="Wuvhyiui1ZfYvSllBMBNIB"/></svg>
-              <span class="file-name" data-page-node-id="N840ePynnZHVSFjFve0l2A">src/auth/login.ts</span>
-              <span class="file-meta" data-page-node-id="4UBclaxduqY5phDIO4V9HC">14 行 · 412 字符</span>
+              <span class="file-name" id="scanFile" data-page-node-id="N840ePynnZHVSFjFve0l2A">src/auth/login.ts</span>
+              <span class="file-meta" id="scanFileMeta" data-page-node-id="4UBclaxduqY5phDIO4V9HC">14 行 · 412 字符</span>
             </div>
             <div style="display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--ink-4);" data-page-node-id="BW5ULGNMWoxejToADJ5ISO">
               <span data-page-node-id="lMNa2B64ToDLMaI9kEqNo8">已应用 17 / 21 规则</span>
               <div class="progress-track" style="flex:1;height:6px;" data-page-node-id="3sVDmOwJEJzrRII6CPDEuL"><div class="progress-fill" id="scanProgress" style="background:linear-gradient(90deg,#5645D4,#7A6BD9);" data-page-node-id="klHgV3AszGmUzBd8lzrBS9"></div></div>
-              <span class="mono" style="color:var(--ink-3);" data-page-node-id="tpIxzL2wae9QCWDIjJRrZo">81%</span>
+              <span class="mono" id="scanPctLabel" style="color:var(--ink-3);" data-page-node-id="tpIxzL2wae9QCWDIjJRrZo">81%</span>
             </div>
-            <div class="scan-stats-grid" data-page-node-id="YlzwC0nCMDE6OGO1JHAQri">
-              <div class="scan-stat danger" data-page-node-id="Q8bYDxwrWImEyUczf0b4sZ"><span class="n" style="color:var(--p0);" data-page-node-id="ATou4TSSFnQptfZdQPXYuc">5</span><span class="l" data-page-node-id="OAuFk3DIt0i4isXiSJA5Mh">命中</span></div>
-              <div class="scan-stat" data-page-node-id="svEyAIZYpzdJDuFjlEmWFb"><span class="n" data-page-node-id="91G68Iu3Tu1vit7Jmi98I6">214</span><span class="l" data-page-node-id="wo6EVHYdCsPVwbTlqIu8qp">已扫描文件</span></div>
-              <div class="scan-stat" data-page-node-id="DZIpmK8nbOQ7TWx1WHYKtz"><span class="n" data-page-node-id="ES5Y2Dx6sqymQq35K9YBpW">102</span><span class="l" data-page-node-id="APNI1zJ1xwmWnAVIJStVBx">队列中</span></div>
-              <div class="scan-stat" data-page-node-id="MIJBdudP1CQjd7bYQ8rEPk"><span class="n" data-page-node-id="AxjX59tHn64tjq5AKrN9H4">4:32</span><span class="l" data-page-node-id="mCEG1IIsbBkMNyrerG7iT7">已用时</span></div>
+            <div class="scan-stats-grid" id="scanStatsGrid" data-page-node-id="YlzwC0nCMDE6OGO1JHAQri">
+              <div class="scan-stat danger" data-page-node-id="Q8bYDxwrWImEyUczf0b4sZ"><span class="n" id="scanHits" style="color:var(--p0);" data-page-node-id="ATou4TSSFnQptfZdQPXYuc">5</span><span class="l" data-page-node-id="OAuFk3DIt0i4isXiSJA5Mh">命中</span></div>
+              <div class="scan-stat" data-page-node-id="svEyAIZYpzdJDuFjlEmWFb"><span class="n" id="scanScanned" data-page-node-id="91G68Iu3Tu1vit7Jmi98I6">214</span><span class="l" data-page-node-id="wo6EVHYdCsPVwbTlqIu8qp">已扫描文件</span></div>
+              <div class="scan-stat" data-page-node-id="DZIpmK8nbOQ7TWx1WHYKtz"><span class="n" id="scanQueued" data-page-node-id="ES5Y2Dx6sqymQq35K9YBpW">102</span><span class="l" data-page-node-id="APNI1zJ1xwmWnAVIJStVBx">队列中</span></div>
+              <div class="scan-stat" data-page-node-id="MIJBdudP1CQjd7bYQ8rEPk"><span class="n" id="scanTime" data-page-node-id="AxjX59tHn64tjq5AKrN9H4">4:32</span><span class="l" data-page-node-id="mCEG1IIsbBkMNyrerG7iT7">已用时</span></div>
             </div>
           </section>
 
@@ -1081,7 +1224,7 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
               <span class="status-tag live" data-page-node-id="5BWqG3TFkJmETzvRpCpfmK">● LIVE</span>
             </div>
             <div class="sub" data-page-node-id="MeLinKtEGwLjjahX96NJgz">扫描引擎回流的命中事件</div>
-            <div class="hit-list" data-page-node-id="W8sFzFMoDA8rOgdYTtG2BL">
+            <div class="hit-list" id="hitList" data-page-node-id="W8sFzFMoDA8rOgdYTtG2BL">
               <div class="hit-item" data-page-node-id="w99cRzda2HGDf0biDg45RY"><div class="hit-row1" data-page-node-id="HOHiQvUzdQOF3GFY9x8OhC"><span class="t" data-page-node-id="92nMGf3RdFtgbQ8xDILtKI">13:26:14</span><span class="muted" data-page-node-id="XVNllbQioHGYTeVcImPtRq">R-SQL-01</span><span class="muted" data-page-node-id="YGvts6rKtzoIaSJGonUaxr">命中</span><span data-page-node-id="x25G8qYOhsqWFAsILgJsAw">login.ts:9</span></div><div class="hit-row2" data-page-node-id="srEt0x03hyeCafgt8dpjSS">SQL 拼接 · <code data-page-node-id="chj9Dw9NZIGRC6TaPG81ov">req.body.user</code> → <code data-page-node-id="qubjdYAjkt6rUJUUxHmQjD">db.query(sql)</code></div></div>
               <div class="hit-item" data-page-node-id="TiCD0HXgnlcFKxMEkNDBWk"><div class="hit-row1" data-page-node-id="55MikOSBbdj50hRBx40l4y"><span class="t" data-page-node-id="MC191mKKLHauVWGiGdgqHy">13:26:14</span><span class="muted" data-page-node-id="miSjGeBoK2OBc3Bey7exNS">R-SEC-03</span><span class="muted" data-page-node-id="pm3TqcZ2Tr8Wq9MfJzSbvk">命中</span><span data-page-node-id="R6bOXp6CBpyCR6JDM1X9C9">login.ts:5</span></div><div class="hit-row2" data-page-node-id="BJzCFgpbd2RxViGkgmTDkl">硬编码密钥 · <code data-page-node-id="n1b04wP1D4iS5KD58r3ajs">SECRET_KEY</code> 已嵌入源码</div></div>
               <div class="hit-item" data-page-node-id="QGFqRNDtjs1lPsWnILSFBQ"><div class="hit-row1" data-page-node-id="peY3dgOZuVBa2PuBk71sIc"><span class="t" data-page-node-id="kJ2ssHVXKKlLT5B5VegqKY">13:26:14</span><span class="muted" data-page-node-id="FTAX85cIBPtO8KUFrJBGZl">R-CRY-02</span><span class="muted" data-page-node-id="j8l91FgFDPqcL7ZucvNwM5">命中</span><span data-page-node-id="jWjsTA1AFwf64osRlYBFhB">中 2 处</span></div><div class="hit-row2" data-page-node-id="LlGZeNZkIasBtNfCTKnuT8">弱哈希 · 使用 <code data-page-node-id="HZhSkCgl9zpms3tjQqKS9H">MD5()</code> 处理敏感字段</div></div>
@@ -1330,6 +1473,145 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
         </div>
       </div>
 
+      <!-- ====== Page: 守护中枢（Guardian · 探测 + 上报双通道） ====== -->
+      <div class="page gscope" data-page="guardian" style="flex-direction:column;gap:14px">
+        <!-- 页内工具条（guardian 页隐藏全局顶栏） -->
+        <div class="ggbar">
+          <div class="g-ico"><svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M12 4l6.5 2.4v4.6c0 4.4-2.8 7-6.5 8.6-3.7-1.6-6.5-4.2-6.5-8.6V6.4L12 4z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12l2.2 2.2L15.4 10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="g-title">守护中枢</div><div class="g-sub">GUARDIAN HUB · 守护已上线的网站 / 小程序 / App</div></div>
+          <span class="gpill off" id="gConn"><i></i><span id="gConnText">连接中…</span></span>
+          <span class="gpill" id="gHealth"><i></i><span id="gHealthText">—</span></span>
+          <span class="sp"></span>
+          <span class="clock" id="gClock">--:--:--</span>
+          <button class="btn btn-secondary" id="btnPause">暂停告警</button>
+          <button class="btn btn-primary" id="btnAdd">+ 登记目标</button>
+        </div>
+
+        <div class="ggbody">
+          <div class="ggmain">
+            <!-- KPI 5 卡 -->
+            <div class="gkpis">
+              <div class="gkpi"><div class="k-label"><i style="background:#5645D4"></i>守护目标</div><div class="k-num" id="kTotal">0</div><div class="k-sub" id="kSub">—</div></div>
+              <div class="gkpi"><div class="k-label"><i style="background:#16A34A"></i>正常</div><div class="k-num" style="color:#16A34A" id="kOk">0</div><div class="k-sub">state = ok</div></div>
+              <div class="gkpi"><div class="k-label"><i style="background:#D97706"></i>预警</div><div class="k-num" style="color:#D97706" id="kWarn">0</div><div class="k-sub">慢 / 证书 / 变更</div></div>
+              <div class="gkpi"><div class="k-label"><i style="background:#DC2626"></i>故障</div><div class="k-num" style="color:#DC2626" id="kDown">0</div><div class="k-sub">连续失败判定</div></div>
+              <div class="gkpi"><div class="k-label"><i style="background:#2563EB"></i>今日事件</div><div class="k-num" id="kEvents">0</div><div class="k-sub" id="kChannels">—</div></div>
+            </div>
+            <!-- 离线 / 演示模式横幅 -->
+            <div class="gbanner" id="gBanner"></div>
+            <!-- v0.3 维护窗口横幅 -->
+            <div class="gmtban" id="gmtBan"><span class="gmt-ico">🛠</span><span id="gmtText"></span></div>
+            <!-- 总览视图 -->
+            <section class="panel" id="viewOverview">
+              <div class="p-head"><h3>全部守护目标</h3><span class="sp"></span><span class="chip brand" id="chAnno">3s 自动巡检</span></div>
+              <div class="ggrid" id="ovGrid"></div>
+            </section>
+            <!-- 详情视图 -->
+            <section class="panel" id="viewDetail" style="display:none">
+              <div class="p-head"><h3 id="dName"></h3>
+                <span class="chip" id="dType"></span><span class="chip" id="dSource"></span><span class="chip" id="dState"></span>
+                <span class="chip" id="dMaint" style="display:none">维护中</span>
+                <span class="sp"></span><span class="chip brand" id="dRefresh" style="cursor:pointer">刷新</span>
+                <button class="chip" id="dBack" style="cursor:pointer">← 返回总览</button>
+              </div>
+              <div class="detail">
+                <div class="urls" id="dUrl"></div>
+                <div class="upstrip" id="dUptime"></div>
+                <div id="dProbes"></div>
+                <div class="lat-chart"><svg id="latSvg" preserveAspectRatio="none"></svg></div>
+                <div class="bar-note"><span>响应延迟曲线 (ms)</span><span id="dLastLat">—</span></div>
+              </div>
+            </section>
+          </div>
+          <div class="ggside">
+            <section class="panel gpanel-grow">
+              <div class="p-head"><h3>事件流</h3><span class="sp"></span><span class="chip" id="evFilter">全部</span></div>
+              <div class="evlist" id="evList"></div>
+            </section>
+          </div>
+        </div>
+
+        <!-- 登记守护目标抽屉（仅在 guardian 页使用的 fixed 层） -->
+        <div class="overlay" id="overlay"></div>
+        <aside class="drawer" id="drawer">
+          <div class="d-head"><h3 id="dTitle">登记守护目标</h3><span class="sp"></span><button class="btn btn-secondary" id="dClose">关闭 ✕</button></div>
+          <div class="d-body">
+            <div class="form" id="formWrap">
+              <label>目标名称 *</label>
+              <input class="input" id="fName" placeholder="例如：商城后端 API / 我的小程序">
+              <label>守护类型</label>
+              <div class="seg" id="typeSeg">
+                <button data-v="website" class="on">网站</button>
+                <button data-v="api">API</button>
+                <button data-v="miniprogram">小程序</button>
+                <button data-v="app">App</button>
+              </div>
+              <label>接入通道</label>
+              <div class="seg" id="srcSeg">
+                <button data-v="probe">中枢探测</button>
+                <button data-v="report" class="on">客户端上报</button>
+                <button data-v="agent">代理采集</button>
+              </div>
+              <div id="urlField" style="display:none">
+                <label>目标地址 URL（探测通道）</label>
+                <div class="row2">
+                  <input class="input" id="fUrl" placeholder="https://example.com 或 http://127.0.0.1:PORT/路径">
+                  <button class="btn btn-secondary" id="btnTest" style="flex:none">测试连通</button>
+                </div>
+                <div class="hint">可探测：在线 / 延迟 / TLS / 内容指纹 / 安全头；登记前先测一次，结果不入库。</div>
+                <div class="testout" id="testOut"></div>
+              </div>
+              <label id="intervalLabel" style="display:none">巡检间隔（秒）</label>
+              <input class="input" id="fInterval" value="30" style="width:130px;display:none">
+              <div class="d-actions">
+                <button class="btn btn-primary" id="fSubmit" style="flex:1">创建并领取 Token</button>
+              </div>
+            </div>
+            <div class="result" id="result">
+              <label style="font-weight:600">✓ 目标已登记，这是你的专属 Token（仅此一次展示）</label>
+              <div class="tokbox"><div class="lbl">X-GUARDIAN-TOKEN</div><div class="tok" id="rToken"></div></div>
+              <div class="tok-actions">
+                <button class="btn btn-secondary" id="copyToken">复制 Token</button>
+                <button class="btn btn-secondary" id="newTarget">再登记一个</button>
+              </div>
+              <div class="stab">
+                <button data-k="python" class="on">Python 心跳</button>
+                <button data-k="js">JS 网页埋点</button>
+                <button data-k="wx">微信小程序</button>
+                <button data-k="curl">curl 定时任务</button>
+              </div>
+              <div class="codebox"><pre id="codePre"></pre><button class="copy" id="copyCode">复制代码</button></div>
+              <div class="hint" style="margin-top:10px">把片段放进被守护的网站 / 小程序 / App：它会定时向守护中枢上报心跳；异常时工作台徽标变红并弹系统通知。</div>
+            </div>
+          </div>
+        </aside>
+        <div class="gtoasts" id="gtoasts"></div>
+        <style>
+        /* ===== 守护中枢 v0.3 增量样式 ===== */
+        .gscope .gmtban{display:none;align-items:center;gap:10px;background:#F5F0FF;border:1px solid #E3D5FF;border-radius:12px;padding:8px 14px;color:#6d28d9;font-size:12px}
+        .gscope .gmtban.show{display:flex}
+        .gscope .gmtban .gmt-ico{flex:none}
+        .gscope .tcard .gup{margin-top:7px;display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--g-ink3)}
+        .gscope .tcard .gup b{font-variant-numeric:tabular-nums;font-size:12px;color:#15703a}
+        .gscope .tcard .gup b.gw{color:#b45309}.gscope .tcard .gup b.gd{color:#a02a2a}
+        .gscope .gup .sp2{margin-left:auto}
+        .gscope .chip.c-maint{background:#F5F0FF;color:#6d28d9;border-color:transparent}
+        .gscope .detail .upstrip{display:flex;gap:10px;padding:8px 2px 10px;flex-wrap:wrap}
+        .gscope .upcell{background:#F8F7F4;border:1px solid var(--border);border-radius:9px;padding:5px 12px;min-width:86px}
+        .gscope .upcell .ut{font-size:10px;color:var(--g-ink3)}
+        .gscope .upcell .uv{font-size:15px;font-weight:700;color:#15703a;font-variant-numeric:tabular-nums}
+        .gscope .upcell .uv.gw{color:#b45309}.gscope .upcell .uv.gd{color:#a02a2a}.gscope .upcell .uv.na{color:var(--g-ink3)}
+        .gscope .row2{display:flex;gap:10px;align-items:center}
+        .gscope .row2 .input{flex:1}
+        .gscope .testout{display:none;gap:6px;flex-wrap:wrap;margin-top:10px}
+        .gscope .testout.show{display:flex}
+        .gscope .testout .pchip{font-size:10.5px;padding:2px 8px}
+        .gscope .testout .tres{font-size:11px;padding:2px 8px;border-radius:999px;background:#F1EFEA;color:var(--g-ink3)}
+        .gscope .testout .tres.ok{background:var(--ok-bg);color:#15703a}
+        .gscope .testout .tres.fail{background:var(--down-bg);color:#a02a2a}
+        </style>
+      </div>
+
     </div>
   </main>
 </div>
@@ -1362,7 +1644,8 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
     scan:       { crumb: '代码扫描规则 · 21 条规则 · 命中 5 项', search: '搜索规则 / CWE / 路径',         secBtn: '导入规则',  priBtn: '运行扫描',         liveChip: false, statusChip: { kind:'warn', text:'SCANNING · 81%' },     pageTitle: '代码扫描' },
     vuln:       { crumb: '漏洞跟踪 · 修复看板',             search: '搜索漏洞 / CWE / 责任人',             secBtn: '导出清单',  priBtn: '批量指派',         liveChip: false, statusChip: { kind:'warn', text:'2 个逾期' },             pageTitle: '漏洞跟踪' },
     tools:      { crumb: '工具矩阵 · 扫描工具集',           search: '搜索工具 / 类别',                     secBtn: '添加工具',  priBtn: '进行全部分析',     liveChip: false, statusChip: { kind:'ok',   text:'5 / 8 已接入' },          pageTitle: '工具矩阵' },
-    report:     { crumb: '报告导出 · 模板与历史',           search: '搜索模板 / 历史报告',                 secBtn: '保存模板',  priBtn: '导出报告',         liveChip: false, statusChip: { kind:'brand',text:'数据实时同步' },          pageTitle: '报告导出' }
+    report:     { crumb: '报告导出 · 模板与历史',           search: '搜索模板 / 历史报告',                 secBtn: '保存模板',  priBtn: '导出报告',         liveChip: false, statusChip: { kind:'brand',text:'数据实时同步' },          pageTitle: '报告导出' },
+    guardian:   { crumb: '守护中枢 · 探测 + 上报双通道',      search: '搜索守护目标 / 事件 / 类型',           secBtn: '暂停告警',  priBtn: '+ 登记目标',       liveChip: false, statusChip: null, hideTopbar: true,                   pageTitle: '守护中枢' }
   };
 
   var liveChip = document.getElementById('liveChip');
@@ -1388,6 +1671,9 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
       statusChip.className = 'status-chip ' + cfg.statusChip.kind;
       statusChipText.textContent = cfg.statusChip.text;
     }
+    /* 守护中枢页隐藏全局顶栏，改用页内工具条 */
+    var topbarEl = document.querySelector('header.topbar');
+    if (topbarEl) topbarEl.style.display = cfg.hideTopbar ? 'none' : '';
   }
 
   document.querySelectorAll('[data-nav]').forEach(function (item) {
@@ -1406,7 +1692,9 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
     item.addEventListener('click', function () {
       document.querySelectorAll('[data-proj]').forEach(function (n) { n.classList.remove('active'); });
       item.classList.add('active');
+      var key = item.getAttribute('data-proj');
       var label = item.querySelector('.proj-label').textContent;
+      applyProjectData(key);
       toast('已切换至项目 · ' + label);
     });
   });
@@ -1587,6 +1875,970 @@ body.paused .live-dot, body.paused .live-badge-dot, body.paused .spin, body.paus
   /* ---------- 添加工具 ---------- */
   var addTile = document.querySelector('.add-tool-tile');
   if (addTile) addTile.addEventListener('click', function () { toast('添加工具 · 支持 SAST / DAST / SCA · 选择模板可一键接入'); });
+
+  /* ============================================================
+     项目数据 · mall-ecommerce / user-center / pay-service
+     ============================================================ */
+  var PROJECTS = {
+    mall: {
+      crumb: 'PR #482 · 认证模块重构',
+      repo:  'mall-ecommerce',
+      statusChip: { kind: 'warn', text: '2 个逾期' },
+      overviewTitle: 'mall-ecommerce · 项目概览',
+      live: {
+        files: ['src/auth/login.ts', 'src/api/order.ts', 'src/api/cart.ts'],
+        tabsMore: '+12',
+        tabMeta: '214 文件 · 已扫描 68% · 分析中',
+        panelLeft:  '阶段 4 · AI 语义审查 · 逐行分析中 — 已定位 2 处高危',
+        panelRight: 'src/auth/login.ts · 14 行',
+        progressSub: '已扫描 214 / 316 文件 · 用时 23 分钟 · 预计剩余 11 分钟',
+        sev: { p0: 1, p1: 3, p2: 4, p3: 1 },
+        codeHtml: [
+          c('1', 'import ', { kw: '{ Router }' }, ' from ', { str: "'express'" }, ';'),
+          c('2', 'import ', { kw: 'db' }, ' from ', { str: "'../core/db'" }, ';'),
+          c('3', ''),
+          c('4', { cmt: '// TODO: 迁移至环境变量 · 已标记审查 A-1024' }),
+          finding(5, 'p1', [
+            t({ kw: 1 }, 'const '), 'SECRET_KEY = ', t({ risk: 1 }, '"sk_live_9f8a7b6c5d4e3f2g1h"'), ';'
+          ], 'login.ts:5', 'p1', 'P1 高危', '疑似硬编码密钥 · CWE-798', 'gitleaks + AI 复核',
+             '密钥已进入 Git 提交历史,建议立即轮换并迁移至环境变量或 KMS 托管。'),
+          c('6', ''),
+          c('7', t({ kw: 1 }, 'export async function '), t({ fn: 1 }, 'login'), '(req, res) {'),
+          c('8', '  ', t({ kw: 1 }, 'const '), '{ user, pass } = req.body;'),
+          finding(9, 'p0', [
+            '  ', t({ kw: 1 }, 'const '), 'sql = ', t({ risk: 1 }, "\"SELECT * FROM users WHERE name='\""), ' + user + ', t({ risk: 1 }, "\"'\""), ';'
+          ], 'login.ts:9', 'p0', 'P0 紧急', 'SQL 拼接注入 · CWE-89', 'CodeQL 污点追踪 + AI',
+             '用户输入未参数化直接拼接进 SQL,存在认证绕过与拖库风险,建议改用参数化查询 / ORM 预编译。'),
+          c('10', '  ', t({ kw: 1 }, 'const '), 'rows = await ', t({ fn: 1 }, 'db.query'), '(sql);'),
+          c('11', '  ', t({ kw: 1 }, 'if '), '(!rows.length) ', t({ kw: 1 }, 'return '), 'res.status(401).json({ code: ', t({ str: 1 }, '"AUTH_FAIL"'), ' });'),
+          c('12', '  ', t({ kw: 1 }, 'const '), 'token = ', t({ fn: 1 }, 'sign'), '(rows[0].id, SECRET_KEY, { expiresIn: ', t({ str: 1 }, '"7d"'), ' });'),
+          c('13', '  ', t({ kw: 1 }, 'return '), 'res.json({ token });'),
+          c('14', '}')
+        ],
+        eventsHtml: [
+          ev('13:24:02', 'ok', '信息收集完成 · 资产 32 项 / 入口 8 处已圈定'),
+          ev('13:25:18', 'ok', 'Semgrep 扫描完成 · 214 文件 · 37 条告警'),
+          ev('13:26:41', 'warn', '发现硬编码密钥 · login.ts:5 · 已定级 P1'),
+          ev('13:26:55', 'ok', 'gitleaks 复核完成 · 命中 2 处,1 处待确认'),
+          evRunning('13:27:02', 'AI 语义审查中 · 逐行分析 login.ts'),
+          evPending('动态测试 · 等待测试环境授权')
+        ],
+        tools: [
+          ['Semgrep', 'ok', '已完成 · 37 告警'],
+          ['gitleaks', 'ok', '已完成 · 命中 2 处'],
+          ['CodeQL', 'progress', '运行中 · 45%'],
+          ['OWASP ZAP', 'pending', '排队中 · 等待授权']
+        ]
+      },
+      scan: {
+        file: 'src/auth/login.ts', meta: '14 行 · 412 字符',
+        hits: 5, scanned: 214, queued: 102, time: '4:32',
+        pct: 81, rules: '21 条规则', applied: '17 / 21 规则'
+      },
+      checklist: {
+        title: '网站 OWASP Top 10 + 自定义扩展',
+        total: 64, passed: 38, pending: 22, risk: 4
+      },
+      report: { repo: 'mall-ecommerce', pr: 'PR #482', prTitle: '认证模块重构', date: '2026-09-05' }
+    },
+
+    user: {
+      crumb: 'PR #156 · 密码重置流程升级',
+      repo:  'user-center',
+      statusChip: { kind: 'warn', text: '3 个逾期' },
+      overviewTitle: 'user-center · 项目概览',
+      live: {
+        files: ['src/services/auth.ts', 'src/api/reset.ts', 'src/middleware/session.ts'],
+        tabsMore: '+9',
+        tabMeta: '128 文件 · 已扫描 76% · 分析中',
+        panelLeft:  '阶段 5 · 动态运行时测试 — 模拟重置令牌盗用,2 处高危待定位',
+        panelRight: 'src/api/reset.ts · 22 行',
+        progressSub: '已扫描 128 / 168 文件 · 用时 18 分钟 · 预计剩余 6 分钟',
+        sev: { p0: 0, p1: 2, p2: 5, p3: 2 },
+        codeHtml: [
+          c('1', 'import ', { kw: '{ Router, redis }' }, ' from ', { str: "'@user-center/core'" }, ';'),
+          c('2', 'import ', { kw: '{ issueToken }' }, ' from ', { str: "'./token'" }, ';'),
+          c('3', ''),
+          c('4', { cmt: '// 重置密码 · 发送一次性令牌至用户邮箱' }),
+          finding(5, 'p1', [
+            t({ kw: 1 }, 'export async function '), t({ fn: 1 }, 'requestReset'), '(req, res) {'
+          ], 'reset.ts:5', 'p1', 'P1 高危', '重置令牌过期时间过长 · CWE-613', 'CodeQL + AI 语义',
+             '令牌有效期设为 24 小时,远超行业惯例的 15 分钟。建议缩至 5–15 分钟,过期需重新申请。'),
+          c('6', '  ', t({ kw: 1 }, 'const '), '{ email } = req.body;'),
+          c('7', '  ', t({ kw: 1 }, 'const '), 'token = ', t({ fn: 1 }, 'randomBytes'), '(32).toString(', t({ str: 1 }, "'hex'"), ');'),
+          c('8', '  ', { cmt: '// 令牌有效期 24h · 建议改为 15min' }),
+          c('9', '  ', t({ kw: 1 }, 'await '), t({ fn: 1 }, 'redis.setex'), '(', t({ str: 1 }, '`reset:${token}`'), ', 86400, email);'),
+          c('10', ''),
+          c('11', '  ', t({ kw: 1 }, 'return '), t({ fn: 1 }, 'sendMail'), '(email, ', t({ str: 1 }, '`https://u.c/reset?token=${token}`'), ');'),
+          c('12', '}'),
+          c('13', ''),
+          c('14', { cmt: '// 校验重置令牌' }),
+          finding(15, 'p1', [
+            t({ kw: 1 }, 'export async function '), t({ fn: 1 }, 'doReset'), '(req, res) {'
+          ], 'reset.ts:15', 'p1', 'P1 高危', '重置流程无速率限制 · CWE-770', 'gitleaks + AI',
+             '未对重置接口做速率限制,存在邮箱轰炸与令牌爆破风险。建议引入滑动窗口计数与验证码。'),
+          c('16', '  ', t({ kw: 1 }, 'const '), '{ token, newPass } = req.body;'),
+          c('17', '  ', t({ kw: 1 }, 'const '), 'email = ', t({ kw: 1 }, 'await '), t({ fn: 1 }, 'redis.get'), '(', t({ str: 1 }, '`reset:${token}`'), ');'),
+          c('18', '  ', t({ kw: 1 }, 'if '), '(!email) ', t({ kw: 1 }, 'return '), 'res.status(400).json({ code: ', t({ str: 1 }, '"TOKEN_EXPIRED"'), ' });'),
+          c('19', '  ', t({ kw: 1 }, 'await '), t({ fn: 1 }, 'redis.del'), '(', t({ str: 1 }, '`reset:${token}`'), ');'),
+          c('20', ''),
+          c('21', '  ', t({ kw: 1 }, 'await '), t({ fn: 1 }, 'user.updatePassword'), '(email, newPass);'),
+          c('22', '}')
+        ],
+        eventsHtml: [
+          ev('15:02:11', 'ok', '信息收集完成 · 资产 18 项 / 入口 5 处已圈定'),
+          ev('15:03:48', 'ok', 'Semgrep 扫描完成 · 128 文件 · 22 条告警'),
+          ev('15:05:02', 'warn', '重置令牌有效期异常 · reset.ts:8 · 已定级 P1'),
+          ev('15:05:47', 'ok', 'gitleaks 复核完成 · 无密钥命中'),
+          evRunning('15:06:13', '运行时测试 · 模拟爆破重置令牌'),
+          evPending('汇总报告 · 待运行时验证')
+        ],
+        tools: [
+          ['Semgrep', 'ok', '已完成 · 22 告警'],
+          ['gitleaks', 'ok', '已完成 · 命中 0 处'],
+          ['CodeQL', 'ok', '已完成 · 11 命中'],
+          ['OWASP ZAP', 'progress', '运行中 · 32%']
+        ]
+      },
+      scan: {
+        file: 'src/api/reset.ts', meta: '22 行 · 638 字符',
+        hits: 4, scanned: 128, queued: 40, time: '3:08',
+        pct: 76, rules: '21 条规则', applied: '14 / 21 规则'
+      },
+      checklist: {
+        title: '用户中心 鉴权与会话清单',
+        total: 48, passed: 31, pending: 14, risk: 3
+      },
+      report: { repo: 'user-center', pr: 'PR #156', prTitle: '密码重置流程升级', date: '2026-09-05' }
+    },
+
+    pay: {
+      crumb: 'PR #89 · 支付签名验签重构',
+      repo:  'pay-service',
+      statusChip: { kind: 'ok', text: '全绿 · 无逾期' },
+      overviewTitle: 'pay-service · 项目概览',
+      live: {
+        files: ['src/payment/sign.go', 'src/payment/verify.go', 'src/payment/refund.go'],
+        tabsMore: '+6',
+        tabMeta: '86 文件 · 已扫描 92% · 分析中',
+        panelLeft:  '阶段 6 · 汇总 · 报告 · 复测 — 完成签名验签逻辑审查',
+        panelRight: 'src/payment/sign.go · 18 行',
+        progressSub: '已扫描 86 / 92 文件 · 用时 14 分钟 · 预计剩余 2 分钟',
+        sev: { p0: 0, p1: 1, p2: 3, p3: 2 },
+        codeHtml: [
+          c('1', 'package ', { kw: 'payment' }),
+          c('2', ''),
+          c('3', 'import ', t({ str: 1 }, '"crypto/rsa"')),
+          c('4', ''),
+          c('5', { cmt: '// Sign 生成支付订单签名 · RSA-SHA256' }),
+          c('6', 'func ', t({ fn: 1 }, 'Sign'), '(order *Order) (string, error) {'),
+          c('7', '    payload := ', t({ fn: 1 }, 'serialize'), '(order)'),
+          c('8', '    h := ', t({ fn: 1 }, 'sha256.New'), '()'),
+          c('9', '    h.Write(payload)'),
+          finding(10, 'p1', [
+            '    ', { cmt: '// nonce 由请求头透传,未做时间窗校验' }
+          ], 'sign.go:10', 'p1', 'P1 高危', '签名重放风险 · CWE-294', 'CodeQL + AI 语义',
+             '客户端 nonce 未与服务端时间戳绑定,存在重放攻击。建议引入 5 秒时间窗 + 单次 nonce。'),
+          c('11', '    sig, err := ', t({ fn: 1 }, 'rsa.SignPKCS1v15'), '(rand.Reader, priv, hash, h.Sum(nil))'),
+          c('12', '    ', t({ kw: 1 }, 'if '), 'err != nil { return "", err }'),
+          c('13', '    return ', t({ fn: 1 }, 'base64.StdEncoding.EncodeToString'), '(sig), nil'),
+          c('14', '}'),
+          c('15', ''),
+          c('16', 'func ', t({ fn: 1 }, 'Verify'), '(order *Order, sig string) bool {'),
+          c('17', '    expected := ', t({ fn: 1 }, 'Sign'), '(order)'),
+          c('18', '    return ', t({ fn: 1 }, 'hmac.Equal'), '([]byte(sig), []byte(expected))'),
+          c('19', '}')
+        ],
+        eventsHtml: [
+          ev('10:11:32', 'ok', '信息收集完成 · 资产 12 项 / 入口 4 处已圈定'),
+          ev('10:13:05', 'ok', 'Semgrep 扫描完成 · 86 文件 · 12 条告警'),
+          ev('10:14:42', 'warn', '签名重放风险 · sign.go:10 · 已定级 P1'),
+          ev('10:15:20', 'ok', 'gitleaks 复核完成 · 无密钥命中'),
+          evRunning('10:16:08', '汇总报告生成 · 复测建议已附带'),
+          evPending('所有阶段已完成 · 等待归档')
+        ],
+        tools: [
+          ['Semgrep', 'ok', '已完成 · 12 告警'],
+          ['gitleaks', 'ok', '已完成 · 命中 0 处'],
+          ['CodeQL', 'ok', '已完成 · 5 命中'],
+          ['OWASP ZAP', 'ok', '已完成 · 0 高危']
+        ]
+      },
+      scan: {
+        file: 'src/payment/sign.go', meta: '18 行 · 524 字符',
+        hits: 2, scanned: 86, queued: 6, time: '2:18',
+        pct: 92, rules: '21 条规则', applied: '19 / 21 规则',
+        liveHits: [
+          ['10:14:42', 'R-API-07', '命中', 'sign.go:10', 'nonce 未绑定时间窗 · 重放攻击风险'],
+          ['10:14:43', 'R-CRY-01', '通过', 'sign.go:11', 'RSA-SHA256 签名 · 算法合规'],
+          ['10:14:45', 'R-SEC-01', '命中', 'refund.go:22', '退款金额未校验 · 负数退款风险'],
+          ['10:14:46', 'R-SQL-01', '通过', 'verify.go:8', '参数化查询 · 未命中']
+        ]
+      },
+      checklist: {
+        title: '支付服务 PCI-DSS + 自定义规则',
+        total: 52, passed: 46, pending: 6, risk: 0
+      },
+      report: { repo: 'pay-service', pr: 'PR #89', prTitle: '支付签名验签重构', date: '2026-09-05' }
+    }
+  };
+
+  /* ---------- 小工具函数（生成代码行 / 事件 / 严重度徽标） ---------- */
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function t(cls, content) {
+    var k = (cls && cls.kw) ? 'kw' : (cls && cls.fn) ? 'fn' : (cls && cls.str) ? 'str' : (cls && cls.risk) ? 'risk' : (cls && cls.cmt !== undefined) ? 'cmt' : '';
+    return '<span class="' + k + '">' + esc(content) + '</span>';
+  }
+  function line(n, content) {
+    return '<div class="code-line" data-n="' + n + '"><span class="ln">' + n + '</span><span class="src">' + content + '</span></div>';
+  }
+  function c(n) {
+    var parts = [];
+    for (var i = 1; i < arguments.length; i++) {
+      var a = arguments[i];
+      if (typeof a === 'string') parts.push(a.charAt(0) === '<' ? a : esc(a)); /* t() 预渲染片段直接插入 */
+      else if (a && typeof a === 'object' && a.kw) parts.push(t({kw:1}, a.kw));
+      else if (a && typeof a === 'object' && a.fn) parts.push(t({fn:1}, a.fn));
+      else if (a && typeof a === 'object' && a.str) parts.push(t({str:1}, a.str));
+      else if (a && typeof a === 'object' && a.cmt) parts.push('<span class="src cmt">' + esc(a.cmt) + '</span>');
+      else if (a && typeof a === 'object' && a.risk) parts.push(t({risk:1}, a.risk));
+    }
+    return line(n, parts.join(''));
+  }
+  function finding(n, sev, content, loc, sevKey, sevLabel, title, src, desc) {
+    var lineHtml = '<div class="code-line finding-' + sev + '" data-n="' + n + '"><span class="risk-bar ' + sev + '"></span><span class="ln">' + n + '</span><span class="src">' + content.join('') + '</span></div>';
+    var card = '<div class="finding-wrap"><div class="finding-card ' + sev + '"><div class="finding-head"><span class="sev-badge ' + sev + '">' + sevLabel + '</span><span class="finding-title">' + title + '</span><span class="finding-src">' + src + '</span></div><div class="finding-desc">' + desc + '</div><div class="finding-actions"><span class="fp-btn" data-fp>标记误报</span><span class="fix-btn" data-fix>加入整改单</span></div></div></div>';
+    return lineHtml + card;
+  }
+  function ev(time, kind, text) {
+    var icon = kind === 'ok' ? '<svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#D9F3E1"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+              : kind === 'warn' ? '<svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 3.5L22 20H2L12 3.5z" fill="#FFE8D4" stroke="#DD5B00" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9.5v4.5" stroke="#DD5B00" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="#DD5B00"/></svg>'
+              : '<svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.5" fill="#D9F3E1"/><path d="M8 12.4l2.7 2.7 5-5.5" stroke="#147A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    return '<div class="event"><span class="t">' + time + '</span>' + icon + '<span class="tx">' + text + '</span></div>';
+  }
+  function evRunning(time, text) {
+    return '<div class="event running"><span class="t">' + time + '</span><svg class="ic spin" viewBox="0 0 24 24" fill="none"><path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#5645D4" stroke-width="2.4" stroke-linecap="round"/></svg><div class="event running-col"><span class="event running-main">' + text + '</span><span class="event running-sub"><span id="typeTarget"></span><span class="caret"></span></span></div></div>';
+  }
+  function evPending(text) {
+    return '<div class="event pending"><span class="t">—</span><svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#C8C4BE" stroke-width="1.6" stroke-dasharray="3.5 3.5"/></svg><span class="tx">' + text + '</span></div>';
+  }
+
+  /* ---------- applyProjectData · 切换项目时更新所有页面 ---------- */
+  function applyProjectData(key) {
+    var p = PROJECTS[key]; if (!p) return;
+
+    /* 同步 PAGES 配置 · 保证后续切页时顶栏文案仍跟随当前项目 */
+    PAGES.live.crumb = p.crumb;
+    PAGES.checklist.crumb = p.checklist.title + ' · 已自动裁剪至 ' + p.checklist.total + ' 项';
+    PAGES.scan.crumb = '代码扫描规则 · 21 条规则 · 命中 ' + p.scan.hits + ' 项';
+    PAGES.scan.statusChip = { kind: 'warn', text: 'SCANNING · ' + p.scan.pct + '%' };
+    PAGES.vuln.statusChip = { kind: p.statusChip.kind, text: p.statusChip.text };
+    PAGES.report.crumb = '报告导出 · ' + p.repo + ' · ' + p.report.pr;
+    /* 按当前激活页重放顶栏配置 */
+    var activePage = document.querySelector('.page.active');
+    if (activePage) applyPageConfig(activePage.getAttribute('data-page'));
+
+    /* 顶栏 */
+    document.getElementById('crumbRepo').textContent = p.repo;
+    document.getElementById('crumbPr').textContent = p.crumb;
+
+    /* 状态徽标（按当前页面配置决定是否可见） */
+    if (p.statusChip) {
+      statusChip.className = 'status-chip ' + p.statusChip.kind;
+      statusChipText.textContent = p.statusChip.text;
+    }
+
+    /* 项目概览标题 */
+    var ovTitle = document.getElementById('overviewProjTitle');
+    if (ovTitle) ovTitle.textContent = p.overviewTitle;
+
+    /* 实时审查页 · 文件标签 + tabMeta + 进度文字 */
+    document.getElementById('fileTab0').textContent = p.live.files[0];
+    document.getElementById('fileTab1').textContent = p.live.files[1];
+    document.getElementById('fileTabsMore').textContent = p.live.tabsMore;
+    document.getElementById('tabMeta').textContent = p.live.tabMeta;
+    document.getElementById('panelStatusLeft').textContent = p.live.panelLeft;
+    document.getElementById('panelStatusRight').textContent = p.live.panelRight;
+    document.getElementById('progressSub').textContent = p.live.progressSub;
+
+    /* 严重度计数 */
+    document.getElementById('sevP0N').textContent = 'P0 × ' + p.live.sev.p0;
+    document.getElementById('sevP1N').textContent = 'P1 × ' + p.live.sev.p1;
+    document.getElementById('sevP2N').textContent = 'P2 × ' + p.live.sev.p2;
+    document.getElementById('sevP3N').textContent = 'P3 × ' + p.live.sev.p3;
+
+    /* 代码区 · 重新渲染 */
+    document.getElementById('codeArea').innerHTML = p.live.codeHtml.join('');
+
+    /* 实时审查流 */
+    document.getElementById('eventList').innerHTML = p.live.eventsHtml.join('');
+
+    /* 工具执行状态 */
+    var toolRows = document.querySelectorAll('.tools-card .tool-row');
+    var tools = p.live.tools;
+    for (var i = 0; i < toolRows.length && i < tools.length; i++) {
+      var tr = toolRows[i];
+      var name = tools[i][0], kind = tools[i][1], txt = tools[i][2];
+      var nm = tr.querySelector('.tool-name'); if (nm) nm.textContent = name;
+      var ts = tr.querySelector('.tool-status'); if (ts) { ts.textContent = txt; ts.className = 'tool-status ' + (kind === 'ok' ? '' : (kind === 'progress' ? 'running' : (kind === 'pending' ? 'pending' : ''))); }
+      if (kind === 'pending') tr.classList.add('dim'); else tr.classList.remove('dim');
+      var icon = tr.querySelector('.tool-ic'); if (icon) {
+        if (kind === 'ok') icon.outerHTML = '<svg class="tool-ic" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#147A2B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        else if (kind === 'progress') icon.outerHTML = '<svg class="tool-ic spin" viewBox="0 0 24 24" fill="none"><path d="M12 3.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#5645D4" stroke-width="2.4" stroke-linecap="round"/></svg>';
+        else if (kind === 'pending') icon.outerHTML = '<svg class="tool-ic" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="#C8C4BE" stroke-width="1.6" stroke-dasharray="3.5 3.5"/></svg>';
+      }
+    }
+
+    /* 代码扫描页 · 文件名 + 统计 */
+    document.getElementById('scanFile').textContent = p.scan.file;
+    document.getElementById('scanFileMeta').textContent = p.scan.meta;
+    document.getElementById('scanHits').textContent = p.scan.hits;
+    document.getElementById('scanScanned').textContent = p.scan.scanned;
+    document.getElementById('scanQueued').textContent = p.scan.queued;
+    document.getElementById('scanTime').textContent = p.scan.time;
+    /* scanProgress 进度条 */
+    var sp = document.getElementById('scanProgress');
+    if (sp) { sp.style.width = '0%'; requestAnimationFrame(function () { requestAnimationFrame(function () { sp.style.width = p.scan.pct + '%'; }); }); }
+    /* scan 状态徽标文本 */
+    var scanChip = document.querySelector('.scan-status-card .status-tag.scanning');
+    if (scanChip) scanChip.textContent = '● SCANNING · ' + p.scan.pct + '%';
+    var scanApplied = document.querySelector('.scan-status-card [data-page-node-id="lMNa2B64ToDLMaI9kEqNo8"]');
+    if (scanApplied) scanApplied.textContent = '已应用 ' + p.scan.applied;
+    var pctLabel = document.getElementById('scanPctLabel');
+    if (pctLabel) pctLabel.textContent = p.scan.pct + '%';
+    /* 实时命中面板 */
+    var hitList = document.getElementById('hitList');
+    if (hitList && p.scan.liveHits) {
+      hitList.innerHTML = p.scan.liveHits.map(function (h) {
+        return '<div class="hit-item"><div class="hit-row1"><span class="t">' + h[0] + '</span><span class="muted">' + h[1] + '</span><span class="muted">' + h[2] + '</span><span>' + h[3] + '</span></div><div class="hit-row2">' + h[4] + '</div></div>';
+      }).join('');
+    }
+
+    /* 检查清单页 · 总数 / 已通过 / 待审 / 风险 */
+    var ckMeta = document.getElementById('checklistMeta');
+    if (ckMeta) {
+      ckMeta.innerHTML = '<b>' + p.checklist.total + '</b> 项 · 已通过 <b id="ckPassed">' + p.checklist.passed + '</b> · 待审 <b id="ckPending">' + p.checklist.pending + '</b> · 风险 <b id="ckRisk">' + p.checklist.risk + '</b>';
+    }
+    var ckSub = document.getElementById('ckProgressSub');
+    if (ckSub) ckSub.textContent = '已通过 ' + p.checklist.passed + ' · 待审 ' + p.checklist.pending + ' · 风险 ' + p.checklist.risk;
+    /* 检查清单卡片标题 */
+    var ckTitle = document.querySelector('.checklist-card .card-title');
+    if (ckTitle && ckTitle.closest('[data-page="checklist"]')) ckTitle.textContent = p.checklist.title;
+    /* 重新触发动画 */
+    var ckPct = document.getElementById('ckPct'); var ckDen = document.querySelector('.big-progress-row .den'); var ckFill = document.getElementById('ckProgress');
+    if (ckPct && ckDen && ckFill) {
+      ckDen.textContent = p.checklist.total;
+      var target = p.checklist.passed;
+      ckFill.style.width = '0%';
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        ckFill.style.width = Math.round(p.checklist.passed / p.checklist.total * 100) + '%';
+        var start = null; var D = 800;
+        function step(ts) { if (start === null) start = ts; var q = Math.min((ts - start) / D, 1); var e = 1 - Math.pow(1 - q, 3); ckPct.textContent = Math.round(e * target); if (q < 1) requestAnimationFrame(step); }
+        requestAnimationFrame(step);
+      }); });
+    }
+
+    /* 报告预览 · 项目名 + PR + 日期 */
+    var repName = document.querySelector('.preview-paper .meta-row b');
+    var repPr   = document.querySelectorAll('.preview-paper .meta-row b')[1];
+    var repDate = document.querySelector('.preview-paper .meta-row .mono');
+    if (repName) repName.textContent = p.report.repo;
+    if (repPr) repPr.textContent = p.report.pr;
+    var repMidSpan = document.querySelectorAll('.preview-paper .meta-row span')[2];
+    if (repMidSpan) repMidSpan.textContent = p.report.prTitle;
+    if (repDate) repDate.textContent = p.report.date;
+  }
+  window.applyProjectData = applyProjectData;
+  window.PROJECTS = PROJECTS;
+})();
+</script>
+
+<script>
+/* ============================================================
+   守护中枢控制器（并入 v2 工作台）— 独立 IIFE，与主脚本隔离
+   - 实时模式：轮询 http://127.0.0.1:8700/api/v1/*
+   - 演示模式：守护服务未运行时自动降级为内置演示数据，每 8s 尝试重连
+   ============================================================ */
+(function () {
+  'use strict';
+  if (document.querySelector('.page[data-page="guardian"]') === null) return;
+
+  var $id = function (s) { return document.getElementById(s); };
+  var HUB = (location.protocol === 'http:' && location.port === '8700') ? '' : 'http://127.0.0.1:8700';
+
+  var state = {
+    mode: 'conn',            // conn | demo
+    status: null,
+    view: 'overview',
+    selTarget: null,
+    paused: false,
+    knownEv: {},
+    snippets: null,
+    curTok: '',
+    lastPoll: 0,
+    lastHealthTry: 0,
+    demoBuilt: false
+  };
+  var demoHist = {};         // id -> [ms...]
+
+  /* ---------- 工具 ---------- */
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fmtT(ms) { if (!ms) return '—'; var d = new Date(ms); return d.toTimeString().slice(0, 8); }
+  function fmtAgo(iso) {
+    if (!iso) return '从未';
+    var t = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (t < 0) return '刚刚';
+    if (t < 60) return Math.floor(t) + 's 前';
+    if (t < 3600) return Math.floor(t / 60) + 'm 前';
+    if (t < 86400) return Math.floor(t / 3600) + 'h 前';
+    return Math.floor(t / 86400) + 'd 前';
+  }
+  function typeCn(t) { return ({ website: '网站', api: 'API', app: 'App', miniprogram: '小程序', agent: '代理' })[t] || t; }
+  function srcCn(s) { return ({ probe: '中枢探测', report: '客户端上报', agent: '代理采集' })[s] || s; }
+  var ST_LABEL = { ok: '正常', warn: '预警', down: '故障' };
+  var P_NAMES = { online: '在线', latency: '延迟', tls: '证书', content: '内容', security: '安全' };
+  var P_FULL = { online: '在线可用性', latency: '响应延迟', tls: 'TLS 证书', content: '内容指纹', security: '安全响应头' };
+  function active() { var p = document.querySelector('.page[data-page="guardian"]'); return !!(p && p.classList.contains('active')); }
+
+  /* ---------- HTTP ---------- */
+  function apiFetch(path, opts, ms) {
+    opts = opts || {};
+    var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var to = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 3000);
+    var o = { method: opts.method || 'GET', headers: opts.headers || {}, signal: ctl ? ctl.signal : undefined };
+    if (opts.body) { o.headers['Content-Type'] = 'application/json'; o.body = JSON.stringify(opts.body); }
+    return fetch(HUB + path, o).then(function (r) {
+      clearTimeout(to);
+      return r.json().catch(function () { throw new Error('bad json'); });
+    }).then(function (j) {
+      if (!j.ok) throw new Error(j.error || 'HTTP ' + (j.status || ''));
+      return j.data;
+    });
+  }
+
+  /* ---------- 状态获取（真实） ---------- */
+  function poll() {
+    return apiFetch('/api/v1/status', null, 3000).then(function (d) {
+      var prev = state.status;
+      state.mode = 'conn';
+      state.status = d;
+      setUi();
+      render();
+      notifyNew(d.events || [], prev);
+    });
+  }
+  function tryHealth() {
+    return apiFetch('/api/v1/health', null, 2000).then(function () { return true; }).catch(function () { return false; });
+  }
+
+  /* ================= 演示数据 ================= */
+  function nowIso() { return new Date().toISOString(); }
+  function buildDemo() {
+    var base = Date.now();
+    function ev(level, type, target_id, message, ago) { return { level: level, type: type, target_id: target_id, message: message, ts: base - ago }; }
+    var targets = [
+      {
+        id: 'demo-web-ok', name: '官网门户 demo-site', type: 'website', source: 'probe', state: 'ok',
+        url: 'https://demo.example.com', last_check: nowIso(),
+        metrics: { latency_ms: 84 },
+        probe_status: {
+          online: { status: 'ok', detail: 'HTTP 200', at: nowIso() },
+          latency: { status: 'ok', detail: '84 ms', at: nowIso() },
+          tls: { status: 'ok', detail: '证书剩余 87 天', at: nowIso() },
+          content: { status: 'ok', detail: 'sha256 指纹一致', at: nowIso() },
+          security: { status: 'ok', detail: '安全响应头齐全', at: nowIso() }
+        }
+      },
+      {
+        id: 'demo-api-slow', name: '订单核心 API', type: 'api', source: 'probe', state: 'warn',
+        url: 'https://demo.example.com/api/orders', last_check: nowIso(),
+        conditions: { slow_ms: 2000 },
+        metrics: { latency_ms: 2634 },
+        probe_status: {
+          online: { status: 'ok', detail: 'HTTP 200', at: nowIso() },
+          latency: { status: 'warn', detail: '2634 ms · 超过 2000ms 阈值', at: nowIso() },
+          tls: { status: 'ok', detail: '证书剩余 41 天', at: nowIso() },
+          content: { status: 'ok', detail: 'sha256 指纹一致', at: nowIso() },
+          security: { status: 'ok', detail: '安全响应头齐全', at: nowIso() }
+        }
+      },
+      {
+        id: 'demo-cdn-edge', name: 'CDN 边缘节点', type: 'website', source: 'probe', state: 'down',
+        url: 'https://cdn.demo.example.com', last_check: nowIso(),
+        metrics: { latency_ms: null },
+        probe_status: {
+          online: { status: 'fail', detail: 'HTTP 503 Service Unavailable', at: nowIso() },
+          latency: { status: 'fail', detail: '连接超时 5s', at: nowIso() },
+          tls: { status: 'warn', detail: '证书剩余 9 天', at: nowIso() },
+          content: { status: 'fail', detail: '内容指纹漂移', at: nowIso() },
+          security: { status: 'n/a', detail: '无法探测', at: nowIso() }
+        }
+      },
+      {
+        id: 'demo-mall-app', name: '商城小程序', type: 'miniprogram', source: 'report', state: 'ok',
+        url: '', last_check: nowIso(),
+        metrics: {},
+        probe_status: {}
+      }
+    ];
+    var events = [
+      ev('critical', 'target_down', 'demo-cdn-edge', 'CDN 边缘节点不可达 · HTTP 503', 40 * 1000),
+      ev('warn', 'perf_slow', 'demo-api-slow', '响应延迟超阈值 2000ms', 30 * 1000),
+      ev('info', 'target_recovered', 'demo-web-ok', '官网门户恢复在线', 20 * 1000),
+      ev('warn', 'cert_expiring', 'demo-cdn-edge', 'TLS 证书剩余 9 天', 12 * 1000),
+      ev('critical', 'content_drift', 'demo-cdn-edge', '页面内容指纹漂移，疑似被篡改', 5 * 1000),
+      ev('info', 'heartbeat', 'demo-mall-app', '小程序心跳正常', 2 * 1000)
+    ];
+    var s = {
+      global: { total: 4, ok: 2, warn: 1, down: 1, events_today: 6, report: 1, probe: 3, agent: 0 },
+      targets: targets, events: events, generated_at: nowIso(),
+      version: 'v0.3.0',
+      maintenance: {
+        active: [{ id: 'mt-rel', title: '周三 02:00-03:00 例行发布维护', start: new Date(Date.now() - 900000).toISOString(), end: new Date(Date.now() + 1800000).toISOString(), targets: ['demo-cdn-edge'] }],
+        all: [{ id: 'mt-rel', title: '周三 02:00-03:00 例行发布维护', start: new Date(Date.now() - 900000).toISOString(), end: new Date(Date.now() + 1800000).toISOString(), targets: ['demo-cdn-edge'] }]
+      },
+      notify: { enabled: true, preset: 'qyweixin', url_masked: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/***', levels: ['warn', 'critical'], has_url: true }
+    };
+    var UP = {
+      'demo-web-ok': { '1d': 99.99, '7d': 99.98, '30d': 99.97 },
+      'demo-api-slow': { '1d': 98.7, '7d': 97.9, '30d': 98.3 },
+      'demo-cdn-edge': { '1d': 94.2, '7d': 91.6, '30d': 95.8 },
+      'demo-mall-app': { '1d': 100, '7d': 100, '30d': 100 }
+    };
+    targets.forEach(function (t) {
+      t.uptime = UP[t.id] || { '1d': 100, '7d': 100, '30d': 100 };
+      t.in_maintenance = (t.id === 'demo-cdn-edge');   // 演示：处于维护窗口的目标
+    });
+    targets.forEach(function (t) {
+      var h = [];
+      for (var i = 0; i < 36; i++) h.push(t.metrics.latency_ms != null ? Math.max(20, Math.round(t.metrics.latency_ms * (0.7 + Math.random() * 0.6))) : null);
+      demoHist[t.id] = h;
+    });
+    state.status = s;
+    state.demoBuilt = true;
+  }
+  function demoAnim() {
+    var s = state.status; if (!s) return;
+    s.generated_at = nowIso();
+    s.targets.forEach(function (t) {
+      t.last_check = nowIso();
+      var lat;
+      if (t.id === 'demo-api-slow') { lat = 2300 + Math.round(Math.random() * 600); t.metrics.latency_ms = lat; t.probe_status.latency.detail = lat + ' ms · 超过 2000ms 阈值'; }
+      else if (t.id === 'demo-web-ok') { lat = 55 + Math.round(Math.random() * 90); t.metrics.latency_ms = lat; t.probe_status.latency.detail = lat + ' ms'; }
+      else { lat = null; }
+      if (lat != null && demoHist[t.id]) { demoHist[t.id].push(lat); if (demoHist[t.id].length > 60) demoHist[t.id].shift(); }
+      var at = nowIso();
+      Object.keys(t.probe_status).forEach(function (k) { t.probe_status[k].at = at; });
+    });
+    render();
+  }
+
+  /* ================= UI 状态 ================= */
+  function setUi() {
+    var conn = $id('gConn'), txt = $id('gConnText'), ban = $id('gBanner');
+    var anno = $id('chAnno');
+    if (state.mode === 'conn') {
+      conn.className = 'gpill ok'; conn.querySelector('i').style.background = '';
+      txt.textContent = '已连接 · 127.0.0.1:8700';
+      anno.textContent = '3s 自动巡检';
+      ban.className = 'gbanner'; ban.innerHTML = '';
+    } else {
+      conn.className = 'gpill demo'; conn.querySelector('i').style.background = '';
+      txt.textContent = '演示数据 · 守护服务未运行';
+      anno.textContent = '演示数据';
+      ban.className = 'gbanner demo show';
+      ban.innerHTML = '<b>守护服务未运行</b><span>当前展示内置演示数据。启动服务后自动切换实时：双击 <code>guardian/start.bat</code>（或 python guardian_server.py）</span>' +
+        '<button class="btn btn-secondary gb-btn" id="gbRetry">重试连接</button>';
+      var rb = $id('gbRetry');
+      if (rb) rb.onclick = function () { gtoast('info', '正在重连守护服务…'); tryRecover(true); };
+    }
+  }
+
+  /* ================= 渲染 ================= */
+  function dotCls(st) { return st === 'ok' ? 'dot-ok' : (st === 'down' ? 'dot-down' : 'dot-warn'); }
+  function upV(v) { if (v == null) return ' na'; return v < 95 ? ' gd' : (v < 99.5 ? ' gw' : ''); }
+  function upCells(upt) {
+    function mk(lbl, key) {
+      var v = upt ? upt[key] : null;
+      return '<div class="upcell"><div class="ut">' + lbl + ' 可用率</div><div class="uv' + upV(v) + '">' + (v == null ? '—' : v.toFixed(2) + '%') + '</div></div>';
+    }
+    return mk('24h', '1d') + mk('7d', '7d') + mk('30d', '30d');
+  }
+  function renderMt() {
+    var m = state.status ? (state.status.maintenance || {}) : {};
+    var act = m.active || [];
+    var ban = $id('gmtBan');
+    if (!ban) return;
+    if (!act.length) { ban.className = 'gmtban'; return; }
+    ban.className = 'gmtban show';
+    $id('gmtText').innerHTML = act.map(function (w) {
+      return '<b>' + esc(w.title) + '</b> 至 ' + esc(w.end ? String(w.end).replace('T', ' ').slice(5, 16) : '—') +
+        (w.targets && w.targets.length ? '（影响：' + esc(w.targets.join('、')) + '）' : '（全部目标）');
+    }).join('　·　');
+  }
+  function render() {
+    if (!state.status || !active()) return;
+    renderKpi(); renderPills(); renderMt(); renderOverview(); renderEvents();
+    if (state.view === 'detail') {
+      var t = getTarget(state.selTarget);
+      if (t) renderDetail(t); else switchView('overview');
+    }
+  }
+  function getTarget(id) { var arr = state.status ? state.status.targets : []; return arr.find ? arr.find(function (x) { return x.id === id; }) : null; }
+
+  function renderKpi() {
+    var g = state.status.global;
+    $id('kTotal').textContent = g.total;
+    $id('kOk').textContent = g.ok;
+    $id('kWarn').textContent = g.warn;
+    $id('kDown').textContent = g.down;
+    $id('kEvents').textContent = g.events_today;
+    $id('kSub').textContent = state.status.targets.length + ' 条目标配置';
+    $id('kChannels').textContent = '上报 ' + g.report + ' · 探测 ' + g.probe + ' · 代理 ' + g.agent;
+  }
+  function renderPills() {
+    var g = state.status.global, ph = $id('gHealth');
+    var mt = ((state.status.maintenance || {}).active || []).length;
+    var suffix = mt > 0 ? ' · 维护×' + mt : '';
+    if (g.down > 0) { ph.className = 'gpill down'; ph.querySelector('i').style.background = ''; $id('gHealthText').textContent = g.down + ' 个故障' + suffix; }
+    else if (g.warn > 0) { ph.className = 'gpill warn'; ph.querySelector('i').style.background = ''; $id('gHealthText').textContent = g.warn + ' 个预警' + suffix; }
+    else { ph.className = 'gpill ok'; ph.querySelector('i').style.background = ''; $id('gHealthText').textContent = '守护中 · 全部正常' + suffix; }
+  }
+  function renderOverview() {
+    var s = state.status, grid = $id('ovGrid');
+    if (!s.targets.length) {
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">⛨</div>' +
+        '<div class="hint">还没有守护目标。点击工具条右上角「+ 登记目标」，把你的网站 / 小程序 / App 接入守护中枢——分发 Token 后由被守护方上报，或由中枢直接探测。</div></div>';
+      return;
+    }
+    grid.innerHTML = s.targets.map(function (t) {
+      var ps = t.probe_status || {}, chips = '';
+      Object.keys(ps).forEach(function (k) {
+        var st = ps[k].status, nm = P_NAMES[k] || k;
+        var c = st === 'ok' ? 'p-ok' : (st === 'warn' ? 'p-warn' : (st === 'fail' ? 'p-fail' : 'p-noadata'));
+        var label = st === 'n/a' ? '—' : (st === 'pending' ? '待查' : nm + (st === 'fail' ? ' ✗' : ''));
+        chips += '<span class="pchip ' + c + '">' + esc(label) + '</span>';
+      });
+      var u7 = t.uptime ? t.uptime['7d'] : null;
+      var upCls = (u7 == null) ? '' : (u7 < 95 ? ' gd' : (u7 < 99.5 ? ' gw' : ''));
+      var stChip = t.in_maintenance
+        ? '<span class="chip c-maint">维护中</span>'
+        : '<span class="chip c-' + t.state + '" style="padding:1px 8px">' + (ST_LABEL[t.state] || t.state) + '</span>';
+      return '<div class="tcard" data-id="' + esc(t.id) + '">' +
+        '<div class="row1"><span class="dot ' + dotCls(t.state) + '"></span><span class="nm">' + esc(t.name) + '</span>' + stChip + '</div>' +
+        '<div class="probes">' + chips + '</div>' +
+        '<div class="gup">7d 可用率 <b class="' + upCls + '">' + (u7 != null ? u7.toFixed(2) + '%' : '—') + '</b></div>' +
+        '<div class="meta"><span>' + srcCn(t.source) + ' · ' + typeCn(t.type) + '</span><span>' + fmtAgo(t.last_check) + '</span></div></div>';
+    }).join('');
+    grid.querySelectorAll('.tcard').forEach(function (el) { el.onclick = function () { openDetail(el.getAttribute('data-id')); }; });
+  }
+  function renderEvents() {
+    var s = state.status, list = $id('evList');
+    if (!s.events || !s.events.length) {
+      list.innerHTML = '<div class="empty"><div class="hint">暂无事件。目标状态变化、客户端上报异常都会出现在这里。</div></div>';
+      return;
+    }
+    list.innerHTML = s.events.slice(0, 60).map(function (e) {
+      var tag = e.type === 'target_recovered' ? '恢复' : (e.level === 'critical' ? '严重' : (e.level === 'warn' ? '预警' : '信息'));
+      return '<div class="ev ' + (e.level === 'info' ? 'info' : e.level) + '"><span class="ev-tag">' + tag + '</span>' +
+        '<span class="msg"><b>' + esc(e.target_id || '') + '</b>' + esc(e.message) + '</span>' +
+        '<span class="t">' + fmtT(e.ts) + '</span></div>';
+    }).join('');
+  }
+
+  function switchView(v) {
+    state.view = v;
+    $id('viewOverview').style.display = v === 'overview' ? '' : 'none';
+    $id('viewDetail').style.display = v === 'detail' ? '' : 'none';
+  }
+  function openDetail(id) {
+    var t = getTarget(id); if (!t) return;
+    state.selTarget = id;
+    switchView('detail');
+    renderDetail(t);
+    loadLatency(id);
+  }
+  function renderDetail(t) {
+    $id('dName').textContent = t.name;
+    $id('dType').textContent = typeCn(t.type);
+    $id('dSource').textContent = srcCn(t.source);
+    var inMt = !!t.in_maintenance;
+    var c = inMt ? 'c-maint' : (t.state === 'ok' ? 'c-ok' : (t.state === 'down' ? 'c-down' : 'c-warn'));
+    var stEl = $id('dState');
+    stEl.textContent = '状态 · ' + (inMt ? '维护中' : (ST_LABEL[t.state] || t.state));
+    stEl.className = 'chip ' + c;
+    $id('dMaint').style.display = inMt ? '' : 'none';
+    $id('dUrl').textContent = t.url || (t.source === 'report' ? '由客户端主动上报，无探测地址' : '—');
+    $id('dUptime').innerHTML = upCells(t.uptime);
+    var box = $id('dProbes'), ps = t.probe_status || {};
+    var notes = { online: 'HTTP 状态码', latency: '阈值判定', tls: '剩余天数', content: 'sha256 基线', security: '缺失头检查' };
+    var html = Object.keys(ps).length ? '' : '<div style="padding:10px 0;color:var(--g-ink3);font-size:12px">此目标由客户端上报驱动，无内置探针。</div>';
+    ['online', 'latency', 'tls', 'content', 'security'].forEach(function (k) {
+      if (!ps[k]) return;
+      var p = ps[k], st = p.status;
+      var icon = st === 'ok' ? 'st-ok' : (st === 'warn' ? 'st-warn' : (st === 'fail' ? 'st-fail' : ''));
+      html += '<div class="probe-row"><span class="pname"><i class="' + icon + '"></i>' + (P_FULL[k] || k) + '</span>' +
+        '<span class="pdetail">' + esc(p.detail || '—') + '</span>' +
+        '<span class="plat">' + (p.at ? fmtAgo(p.at) : '—') + '</span></div>';
+    });
+    box.innerHTML = html;
+    $id('dLastLat').textContent = t.metrics && t.metrics.latency_ms != null ? t.metrics.latency_ms + ' ms' : '—';
+  }
+  function loadLatency(id) {
+    if (state.mode === 'demo') { drawLatFromArr(demoHist[id] || []); return; }
+    apiFetch('/api/v1/history?target=' + encodeURIComponent(id) + '&metric=latency_ms&limit=120', null, 3000)
+      .then(function (h) { drawLatFromArr((h || []).map(function (x) { return x.value; })); })
+      .catch(function () { /* 无数据静默 */ });
+  }
+  function drawLatFromArr(vals) {
+    var svg = $id('latSvg'); if (!svg) return;
+    svg.innerHTML = '';
+    var W = 600, H = 60, pad = 2;
+    vals = (vals || []).filter(function (v) { return v != null; });
+    if (!vals.length) { svg.innerHTML = '<text x="8" y="26" font-size="11" fill="#9B978C">暂无延迟数据</text>'; return; }
+    var mx = Math.max.apply(null, vals.concat([10]));
+    var NS = 'http://www.w3.org/2000/svg';
+    var ns = document.createElementNS(NS, 'polyline');
+    var pts = vals.map(function (v, i) {
+      var x = pad + (W - pad * 2) * (1 - i / (vals.length - 1 || 1));
+      var y = H - pad - (H - pad * 2) * (v / mx);
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+    ns.setAttribute('points', pts); ns.setAttribute('fill', 'none');
+    ns.setAttribute('stroke', '#5645D4'); ns.setAttribute('stroke-width', '1.6');
+    ns.setAttribute('stroke-linejoin', 'round'); ns.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(ns);
+    var t = getTarget(state.selTarget);
+    var slowMs = (t && t.conditions && t.conditions.slow_ms) || 2000;
+    var sy = H - pad - (H - pad * 2) * (slowMs / mx);
+    if (sy > 0 && sy < H) {
+      var ln = document.createElementNS(NS, 'line');
+      ln.setAttribute('x1', pad); ln.setAttribute('x2', W - pad);
+      ln.setAttribute('y1', sy); ln.setAttribute('y2', sy);
+      ln.setAttribute('stroke', '#D97706'); ln.setAttribute('stroke-width', '0.8'); ln.setAttribute('stroke-dasharray', '4 3');
+      svg.appendChild(ln);
+    }
+  }
+
+  /* ---------- 事件通知 ---------- */
+  function notifyNew(events, prev) {
+    var fresh = [];
+    (events || []).forEach(function (e) {
+      if (e.level === 'info') return;
+      var key = e.ts + '|' + e.target_id + '|' + e.type;
+      if (state.knownEv[key]) return;
+      state.knownEv[key] = 1;
+      var ks = Object.keys(state.knownEv);
+      if (ks.length > 600) delete state.knownEv[ks[0]];
+      fresh.push(e);
+    });
+    if (state.paused) return;
+    fresh.slice(0, 3).forEach(function (e) {
+      gtoast(e.level === 'critical' ? 'critical' : 'warn', (e.target_id || '') + ' · ' + (e.message || '').slice(0, 80));
+      if (e.level === 'critical' && typeof beep === 'function') beep();
+      if ('Notification' in window && Notification.permission === 'granted' && document.visibilityState === 'hidden') {
+        try { new Notification('守护中枢 · ' + (e.level === 'critical' ? '严重告警' : '预警'), { body: (e.target_id || '') + ' ' + (e.message || '').slice(0, 90) }); } catch (_) {}
+      }
+    });
+  }
+
+  /* ---------- gtoast & 声音 ---------- */
+  function gtoast(level, msg) {
+    var box = $id('gtoasts'); if (!box) return;
+    var el = document.createElement('div');
+    el.className = 'gtoast t-' + level;
+    el.innerHTML = '<span class="tdot"></span><span class="tmsg">' + esc(msg) + '</span><span class="tx">✕</span>';
+    box.appendChild(el);
+    el.querySelector('.tx').onclick = function () { el.remove(); };
+    setTimeout(function () {
+      el.style.opacity = '0'; el.style.transition = 'opacity .3s';
+      setTimeout(function () { el.remove(); }, 320);
+    }, 6000);
+    while (box.children.length > 4) box.firstChild.remove();
+  }
+  function beep() {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      var ac = new AC(), o = ac.createOscillator(), g = ac.createGain();
+      o.connect(g); g.connect(ac.destination);
+      o.frequency.value = 660; o.type = 'square';
+      g.gain.setValueAtTime(0.06, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.5);
+      o.start(); o.stop(ac.currentTime + 0.5);
+    } catch (_) {}
+  }
+
+  /* ---------- 登记抽屉 ---------- */
+  var fType = 'website', fSrc = 'report';
+  function openDrawer() {
+    $id('drawer').classList.add('show'); $id('overlay').classList.add('show');
+    $id('urlField').style.display = fSrc === 'probe' ? '' : 'none';
+    $id('intervalLabel').style.display = fSrc === 'probe' ? '' : 'none';
+    $id('fInterval').style.display = fSrc === 'probe' ? '' : 'none';
+    $id('fName').focus();
+  }
+  function closeDrawer() {
+    $id('drawer').classList.remove('show'); $id('overlay').classList.remove('show');
+  }
+  var codePre = $id('codePre');
+  function showCode(k) {
+    document.querySelectorAll('.gscope .stab button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-k') === k); });
+    var code = (state.snippets && state.snippets[k]) || '';
+    code = code.replace(/<token>/g, state.curTok || 'YOUR_TOKEN').replace(/<登记目标后领取的 token>/g, state.curTok || 'YOUR_TOKEN');
+    if (codePre) codePre.textContent = code;
+  }
+
+  /* ---------- 主循环 ---------- */
+  function tryRecover(immediate) {
+    if (!immediate && Date.now() - state.lastHealthTry < 8000) return;
+    state.lastHealthTry = Date.now();
+    tryHealth().then(function (ok) {
+      if (!ok) return;
+      state.mode = 'conn';
+      state.lastPoll = 0;
+      poll().catch(function () { state.mode = 'demo'; if (!state.demoBuilt) buildDemo(); setUi(); });
+    });
+  }
+  setInterval(function () {
+    var now = Date.now();
+    var cl = $id('gClock');
+    if (cl) { var d = new Date(), p = function (n) { return String(n).padStart(2, '0'); }; cl.textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()); }
+    if (!active()) return;
+    if (state.mode === 'conn') {
+      if (now - state.lastPoll >= 3000) {
+        state.lastPoll = now;
+        poll().catch(function () {
+          state.mode = 'demo';
+          if (!state.demoBuilt) buildDemo();
+          setUi(); render();
+        });
+      }
+    } else {
+      if (!state.demoBuilt) { buildDemo(); setUi(); }
+      demoAnim();
+      tryRecover(false);
+    }
+  }, 1000);
+
+  /* ---------- 事件绑定 ---------- */
+  $id('btnPause').onclick = function () {
+    state.paused = !state.paused;
+    $id('btnPause').textContent = state.paused ? '恢复告警' : '暂停告警';
+    $id('btnPause').classList.toggle('btn-secondary', !state.paused);
+    gtoast('info', state.paused ? '已暂停告警（事件仍在记录）' : '告警已恢复');
+  };
+  $id('btnAdd').onclick = openDrawer;
+  $id('dBack').onclick = function () { state.selTarget = null; switchView('overview'); render(); };
+  $id('dRefresh').onclick = function () {
+    gtoast('info', '已刷新');
+    if (state.mode === 'conn') { state.lastPoll = 0; poll().catch(function () {}); }
+    else { demoAnim(); }
+  };
+  $id('overlay').onclick = closeDrawer;
+  $id('dClose').onclick = closeDrawer;
+  document.querySelectorAll('.gscope #typeSeg button').forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll('.gscope #typeSeg button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on'); fType = b.getAttribute('data-v');
+    };
+  });
+  document.querySelectorAll('.gscope #srcSeg button').forEach(function (b) {
+    b.onclick = function () {
+      document.querySelectorAll('.gscope #srcSeg button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on'); fSrc = b.getAttribute('data-v');
+      var show = fSrc === 'probe';
+      $id('urlField').style.display = show ? '' : 'none';
+      $id('intervalLabel').style.display = show ? '' : 'none';
+      $id('fInterval').style.display = show ? '' : 'none';
+    };
+  });
+  $id('fSubmit').onclick = function () {
+    if (state.mode !== 'conn') { gtoast('warn', '演示模式下无法登记 · 请先启动守护服务（guardian/start.bat）'); return; }
+    var name = $id('fName').value.trim();
+    if (!name) { gtoast('warn', '请填写目标名称'); return; }
+    var body = { name: name, type: fType, source: fSrc, interval_s: parseInt($id('fInterval').value, 10) || 30 };
+    if (fSrc === 'probe') {
+      var url = $id('fUrl').value.trim();
+      if (!url) { gtoast('warn', '探测通道需要填写 URL'); return; }
+      body.url = url;
+    }
+    var btn = $id('fSubmit'); btn.textContent = '提交中…';
+    apiFetch('/api/v1/targets', { method: 'POST', body: body }, 5000).then(function (data) {
+      state.curTok = data.token;
+      $id('formWrap').style.display = 'none';
+      $id('result').classList.add('show');
+      $id('rToken').textContent = data.token;
+      $id('dTitle').textContent = '接入完成 · ' + (data.target.name || '');
+      apiFetch('/api/v1/snippets', null, 3000).then(function (sn) { state.snippets = sn; showCode('python'); }).catch(function () { showCode('python'); });
+      gtoast('info', '目标「' + (data.target.name || '') + '」已登记');
+      state.lastPoll = 0; poll().catch(function () {});
+    }).catch(function (e) {
+      gtoast('critical', '登记失败: ' + e.message);
+      btn.textContent = '创建并领取 Token';
+    });
+  };
+  $id('copyToken').onclick = function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(state.curTok).then(function () { gtoast('info', 'Token 已复制'); }); }
+    else window.prompt('复制 Token', state.curTok);
+  };
+  $id('newTarget').onclick = function () {
+    $id('result').classList.remove('show'); $id('formWrap').style.display = '';
+    $id('dTitle').textContent = '登记守护目标'; $id('fSubmit').textContent = '创建并领取 Token';
+    $id('fName').value = ''; $id('fUrl').value = '';
+  };
+  document.querySelectorAll('.gscope .stab button').forEach(function (b) { b.onclick = function () { showCode(b.getAttribute('data-k')); }; });
+  $id('copyCode').onclick = function () {
+    var txt = codePre ? codePre.textContent : '';
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(function () { gtoast('info', '代码已复制，可直接粘贴到被守护方'); }); }
+    else window.prompt('复制代码', txt);
+  };
+
+  /* ---------- v0.3 登记连通性自测 ---------- */
+  var btnTest = $id('btnTest');
+  if (btnTest) btnTest.onclick = function () {
+    if (state.mode !== 'conn') { gtoast('warn', '演示模式：请先启动守护服务（guardian/start.bat）再测试连通'); return; }
+    var url = $id('fUrl').value.trim();
+    if (!url) { gtoast('warn', '请先填写 URL'); return; }
+    var out = $id('testOut');
+    out.className = 'testout show';
+    out.innerHTML = '<span class="tres">测试中…</span>';
+    btnTest.textContent = '测试中…'; btnTest.disabled = true;
+    apiFetch('/api/v1/validate', { method: 'POST', body: { url: url, probes: ['online', 'latency', 'tls', 'content', 'security'], timeout_ms: 3000 } }, 6000)
+      .then(function (d) {
+        var names = { online: '在线', latency: '延迟', tls: '证书', content: '内容', security: '安全' };
+        out.innerHTML = Object.keys(d.probes).map(function (k) {
+          var v = d.probes[k];
+          return '<span class="tres ' + (v.status === 'ok' ? 'ok' : 'fail') + '">' + (names[k] || k) + ' · ' + esc(v.status) + (k === 'tls' && v.detail ? ' · ' + esc(v.detail) : '') + '</span>';
+        }).join('') + '<span class="tres ' + (d.summary === 'ok' ? 'ok' : 'fail') + '">' + (d.summary === 'ok' ? '✓ 可达' : '⚠ 不可达') + '</span>';
+      })
+      .catch(function (e) { out.innerHTML = '<span class="tres fail">测试失败: ' + esc(e.message) + '</span>'; })
+      .then(function () { btnTest.textContent = '测试连通'; btnTest.disabled = false; });
+  };
+
+  /* ---------- 通知权限 ---------- */
+  function askNotify() {
+    if (!('Notification' in window) || Notification.permission !== 'default') return;
+    var b = document.createElement('button');
+    b.className = 'btn btn-secondary'; b.id = 'btnNoti'; b.textContent = '开启系统通知';
+    var pauseBtn = $id('btnPause');
+    if (pauseBtn && pauseBtn.parentNode) pauseBtn.parentNode.insertBefore(b, pauseBtn);
+    b.onclick = function () {
+      Notification.requestPermission().then(function (p) {
+        if (p === 'granted') { gtoast('info', '已开启系统通知：页面在后台时也能收到告警'); b.remove(); }
+        else gtoast('warn', '通知未授权，告警只在页面内提示');
+      });
+    };
+  }
+  askNotify();
+
+  /* ---------- 启动 ---------- */
+  state.lastPoll = 0;
+  poll().catch(function () {
+    state.mode = 'demo';
+    if (!state.demoBuilt) buildDemo();
+    setUi(); render();
+  });
 })();
 </script>
 </body>
