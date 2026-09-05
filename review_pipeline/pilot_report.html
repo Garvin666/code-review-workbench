@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="N12cklSC9l9w6wlOL3NiBa"><head data-page-node-id="vI6ocdqu5zr6LoNgEmGhj0"><meta charset="utf-8" data-page-node-id="Rp6sfXAEO25xpRBpBsXQKG">
+<meta name="viewport" content="width=device-width,initial-scale=1" data-page-node-id="2ChmVRooBXYDVfMsuDtDhz">
+<title>代码审查端到端试点 · 结果概览</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0E1220; color:#DDE3F0;
+        font:14px/1.6 Inter,"Noto Sans SC","Microsoft YaHei",sans-serif; }
+  .wrap { max-width:1080px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:22px; margin:0 0 4px; color:#fff; letter-spacing:.2px; }
+  .sub { color:#93A0B8; margin-bottom:22px; }
+  .metabar { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 8px; }
+  .metabar .m { background:#161C30; border:1px solid #232B45; border-radius:8px;
+        padding:6px 12px; color:#B9C4DC; font-size:12.5px; }
+  .metabar b { color:#fff; font-weight:600; }
+  .sevcards { display:flex; gap:12px; margin:16px 0 26px; }
+  .scard { flex:1; background:#161C30; border:1px solid #232B45; border-radius:12px;
+        padding:14px 10px; text-align:center; }
+  .snum { font:600 30px/1.2 "JetBrains Mono",monospace; }
+  .slab { color:#93A0B8; font-size:12px; margin-top:4px; }
+  .rcard { background:#151A2C; border:1px solid #242E4D; border-radius:12px;
+        padding:16px 18px; margin-bottom:16px; }
+  .rhead { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:6px; }
+  .rid { font:600 14px "JetBrains Mono",monospace; color:#8E7BFF; }
+  .chip { background:#1D2440; color:#B9C4DC; border:1px solid #2A3456; border-radius:999px;
+        padding:2px 10px; font-size:11.5px; }
+  .chip.dim { color:#7C88A3; }
+  .rmeta { color:#7C88A3; font-size:11.5px; margin-bottom:12px;
+        font-family:"JetBrains Mono",monospace; }
+  .fcard { background:#10152a; border:1px solid #27314f; border-left:3px solid #39435F;
+        border-radius:8px; padding:10px 14px; margin:10px 0; }
+  .fhead { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+  .sev { border-radius:999px; padding:1px 10px; font:600 11px "JetBrains Mono",monospace; }
+  .rule { font:500 11px "JetBrains Mono",monospace; color:#6F7B96; }
+  .cat { font-size:11.5px; color:#93A0B8; margin-left:auto; }
+  .ftitle { color:#E8EDF7; font-weight:600; margin:2px 0 4px; }
+  .fdesc { color:#C6CFE0; font-size:13px; white-space:pre-wrap; }
+  .fev summary { cursor:pointer; color:#8E7BFF; font-size:12px; margin-top:6px; }
+  details.code summary { cursor:pointer; color:#93A0B8; font-size:12px; margin-top:10px; }
+  pre { background:#0B0F1E; border:1px solid #1F2742; border-radius:8px; padding:12px;
+        overflow:auto; max-height:340px; color:#A9C1E8; font:12px/1.55 "JetBrains Mono",monospace;
+        white-space:pre-wrap; word-break:break-word; }
+  .foot { color:#6F7B96; font-size:12px; margin-top:28px; border-top:1px solid #1F2742; padding-top:14px; }
+</style></head><body data-page-node-id="zEbuqT1mx7gpXAVtAPEuXS"><div class="wrap" data-page-node-id="xpM1QBFPnbR95Nk4jn0U6j">
+  <h1 data-page-node-id="9erTxRWKm6hn4mBLXgYyzJ">代码审查工作台 · 端到端试点结果</h1>
+  <div class="sub" data-page-node-id="pZxCs96yHVWYglpPPSBEHe">真实数据集 → 审查模型后端 → 工作台格式结构化 → 存档</div>
+  <div class="metabar" data-page-node-id="MFrHEeYo3vtiTUhWgJulsu">
+    <div class="m" data-page-node-id="qMcYzCZi4GyFTGNgLbYudA">后端 <b data-page-node-id="q59HaEje8v7jRlMIdu22L0">golden</b></div>
+    <div class="m" data-page-node-id="LPmjgroUpjBdHeADrezPxz">模型 <b data-page-node-id="LepklOQmcJHMnhLeN9TrK0">dataset-reference(人工真值)</b></div>
+    <div class="m" data-page-node-id="QFdSYr6dqQg695spqcms9A">样本 <b data-page-node-id="BeMPsWkA6DZDZ1eLBKK597">12</b> · 成功 <b style="color:#46D28A" data-page-node-id="cEXnYXbymAC5oUoZhsQKOR">12</b> / 失败 <b style="color:#E5484D" data-page-node-id="T9JzdN4PkeETlBXTFoGlED">0</b></div>
+    <div class="m" data-page-node-id="PNCZzMP7rD7KxrbznKgHbK">解析引擎 <b data-page-node-id="aI7qO563eHl2jPl05lkUoQ">extract.py v0.1</b></div>
+    <div class="m" data-page-node-id="rYFp0r62AuFQkc4Z0AjPdY">运行 <b data-page-node-id="ATDbglLy1ou4nVl91c8Xwn">2026-09-05T15:05:40+08:00</b></div>
+  </div>
+  <div class="sevcards" data-page-node-id="spHCJ2FSeTjJiDXPhy1Tst"><div class="scard" data-page-node-id="pgUXcAdmGO2uHwejx4vrYR"><div class="snum" style="color:#8B9BB4" data-page-node-id="HyZzJSFXPWgOSuDypIYvK4">2</div><div class="slab" data-page-node-id="kCQbWfhTMF41dqzGDTo0w5">P3 · 提示</div></div><div class="scard" data-page-node-id="cMknSmf3j73urTOUuz4jSR"><div class="snum" style="color:#E4C400" data-page-node-id="ZVhxIY1ebUSJArihYZukeW">8</div><div class="slab" data-page-node-id="ChsfTEvJIK7pvFumOI0UGQ">P2 · 建议</div></div><div class="scard" data-page-node-id="qYSy747pTmeuqD7PtLFW6z"><div class="snum" style="color:#F5A623" data-page-node-id="gSMMnBTuxMr9I0Y5Qk7mfX">3</div><div class="slab" data-page-node-id="cdTpwggV0qfhccIJJDGcyK">P1 · 高危</div></div><div class="scard" data-page-node-id="yvoL8vh5VokPvKJ470WG2Y"><div class="snum" style="color:#E5484D" data-page-node-id="2Anv6Lt43YfU6ezkaEnZaG">1</div><div class="slab" data-page-node-id="42tlPUMPoII9enMTrJ1qHp">P0 · 阻断级</div></div></div>
+  <div class="rcard" data-page-node-id="PZuOtWCz1ngA2cI0QYGHFO"><div class="rhead" data-page-node-id="dizLrctB4nDB91UGsFI4Gc"><span class="rid" data-page-node-id="xjBvg4GfbQoyhNFqvYuejz">cwe-na-01</span><span class="chip" data-page-node-id="bMHJ2pDdSb0hhexI5iYk7X">漏洞样本</span><span class="chip" data-page-node-id="TER6c5tU7AUxHJbCRtgHaE">vuln_detect</span><span class="chip" data-page-node-id="Pfxmp4W0HVdVJ12Osn8liq">—</span><span class="chip dim" data-page-node-id="Yyb2GRKGZ3AJx4xuPn6y1m">CWE-352</span></div><div class="rmeta" data-page-node-id="SQ9FNHz2k9C9vTkYKTGRN0">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="9CHta4TXy4xwemuASCwKez"><div class="fhead" data-page-node-id="1O6jkt2YP7DhvlQ6LeT1Os"><span class="sev" style="color:#F5A623;background:#3A2405" data-page-node-id="YmsNb3fbk0GeaQND06zCSY">P1 · 高危</span><span class="rule" data-page-node-id="VJn6O5M2AtbtPmg9ACgTY4">CWE-352</span><span class="cat" data-page-node-id="zaefabZ3xaHKcsUyw1UXqZ">CSRF跨站请求伪造</span></div><div class="ftitle" data-page-node-id="EUCFhtqGNzFTkGhFUBh7dQ">[CWE-352] Cross-Site Request Forgery (CSRF)</div><div class="fdesc" data-page-node-id="3dN6nZRu5n87G2ByNRBQUK">: This code incorrectly allows requests from different hosts by returning true when the referer doesn&#x27;t contain the host, which undermines CSRF protection. An attacker could exploit this by crafting a cross-origin request from their site, potentially tricking a user into submitting it via a malicious form or link, leading to unauthorized actions like submitting feedback. The issue stems from the inverted logic in referer checks; use CSRF tokens instead, such as Spring&#x27;s CsrfToken, to verify request authenticity. Based on the provided code, this flaw is evident in the method&#x27;s implementation.</div><details class="fev" data-page-node-id="zI5e0TAbwSIrH8mNofV344"><summary data-page-node-id="PPeU2elhjDTVTpcUZJZV1q">证据片段 / 原文</summary><pre data-page-node-id="sHGoT90dMjGQX0W9Vs3piG">漏洞类型: [CWE CWE-352] Cross-Site Request Forgery (CSRF)
+
+分析: This code incorrectly allows requests from different hosts by returning true when the referer doesn&#x27;t contain the host, which undermines CSRF protection. An attacker could exploit this by crafting a cross-origin request from their site, potentially tricking a user into submitting it via a malicious form or link, leading to unauthorized actions like submitting feedback. The issue stems from the inverted logic in referer checks; use CSRF tokens instead, such as Spring&#x27;s CsrfToken, to verify request authenticity. Based on the provided co…</pre></details></div><details class="code" data-page-node-id="0A8HKgLM6ZeASmVCqjhHMA"><summary data-page-node-id="CDnaDau9PpTFBbgPj0zHDn">查看被审查代码 (277 字符)</summary><pre data-page-node-id="wv1yC5iNNKUecu1nI2n1te">private boolean hostOrRefererDifferentHost(HttpServletRequest request) {
+    String referer = request.getHeader(&quot;Referer&quot;);
+    String host = request.getHeader(&quot;Host&quot;);
+    if (referer != null) {
+        return !referer.contains(host);
+    } else {
+        return true;
+    }
+}</pre></details></div><div class="rcard" data-page-node-id="WsQpDmKBce3BkoHnQkFuJY"><div class="rhead" data-page-node-id="UBLMUFjoZx8DIHOw7E9INC"><span class="rid" data-page-node-id="9rpELca4HV9HGZW8KeVFYg">cwe-na-02</span><span class="chip" data-page-node-id="KNGmKur6U4lf5PBcfUDFbC">漏洞样本</span><span class="chip" data-page-node-id="vjFC36zA9ZQ6Njks9dGTHs">vuln_detect</span><span class="chip" data-page-node-id="33BgYQ9rZvG9vOYZ4zLR1F">—</span><span class="chip dim" data-page-node-id="mGWt3GuQuOETFYhgYe1JBJ">CWE-89</span></div><div class="rmeta" data-page-node-id="02CzwkHw0rbqTckgDGkQAI">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="o0Ijt9UU0K6hw3GOt9mhhj"><div class="fhead" data-page-node-id="PXyylhL65YjGNwHxkCLI6m"><span class="sev" style="color:#E5484D;background:#3A0D10" data-page-node-id="0XDSAjqatwwSKxldfqBA3c">P0 · 阻断级</span><span class="rule" data-page-node-id="DlvzVUHwq89t4mq2edAZ4H">CWE-89</span><span class="cat" data-page-node-id="eNzLgWniK4nEC6F6P3ZtVy">SQL注入</span></div><div class="ftitle" data-page-node-id="42nevGtcRrAo0YsaTrFmRh">[CWE-89] SQL Injection</div><div class="fdesc" data-page-node-id="TH2sAHrPEI5GldmEfG218L">: This code concatenates user input directly into an SQL query, leaving it wide open to attacks. For instance, an attacker could manipulate the username parameter with something like &#x27; OR &#x27;1&#x27;=&#x27;1&#x27; to log in without a valid password. That could expose sensitive user data or allow full database access. The core problem is skipping prepared statements for dynamic queries. To fix this, switch to mysqli prepared statements with bound parameters—it&#x27;s straightforward and prevents these issues. I spotted this because of the direct string insertion.</div><details class="fev" data-page-node-id="UKPZej60oFdHAkgqTIHYhh"><summary data-page-node-id="A9AuWtENxxourAxuVRyBoi">证据片段 / 原文</summary><pre data-page-node-id="5V4yATqOoHvepC1UoSOU5P">漏洞类型: [CWE CWE-89] SQL Injection
+
+分析: This code concatenates user input directly into an SQL query, leaving it wide open to attacks. For instance, an attacker could manipulate the username parameter with something like &#x27; OR &#x27;1&#x27;=&#x27;1&#x27; to log in without a valid password. That could expose sensitive user data or allow full database access. The core problem is skipping prepared statements for dynamic queries. To fix this, switch to mysqli prepared statements with bound parameters—it&#x27;s straightforward and prevents these issues. I spotted this because of the direct string insertion.</pre></details></div><details class="code" data-page-node-id="JnHWCazwyecCpDrZKfbEnH"><summary data-page-node-id="mvBlTh9nvVBSc27ACgLGnT">查看被审查代码 (418 字符)</summary><pre data-page-node-id="57Ph1nWcYP9i3gRGvJulvM">// Get password
+$pass = $_GET[ &#x27;password&#x27; ];
+$pass = md5( $pass );
+
+// Check the database
+$query  = &quot;SELECT * FROM `users` WHERE user = &#x27;$user&#x27; AND password = &#x27;$pass&#x27;;&quot;;
+$result = mysqli_query($GLOBALS[&quot;___mysqli_ston&quot;],  $query ) or die( &#x27;&lt;pre&gt;&#x27; . ((is_object($GLOBALS[&quot;___mysqli_ston&quot;])) ? mysqli_error($GLOBALS[&quot;___mysqli_ston&quot;]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . &#x27;&lt;/pre&gt;&#x27; );</pre></details></div><div class="rcard" data-page-node-id="Yb99WXmP35TlqFEbyWQhgH"><div class="rhead" data-page-node-id="FwoKVdEe8wa8SO79lka1K1"><span class="rid" data-page-node-id="ohSiBg9WcnDRWEYvsmbfAR">cwe-na-03</span><span class="chip" data-page-node-id="K9sWE1j5LkOIIJMcqCnDBT">漏洞样本</span><span class="chip" data-page-node-id="VKsjJJadenyMrEKFrTuUsG">vuln_detect</span><span class="chip" data-page-node-id="Wn1miqUnctPLxmOnyWgsS6">—</span><span class="chip dim" data-page-node-id="PiB10zCK5phDhfvPF2oJA2">CWE-434</span></div><div class="rmeta" data-page-node-id="EWzqs3agZPHyCrjHAVD2Ol">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="AEFH50pAXikhL4XyGqjtmT"><div class="fhead" data-page-node-id="7yTLrsiOLgxtKu3EOylnID"><span class="sev" style="color:#F5A623;background:#3A2405" data-page-node-id="6AjZwG9GBMSKQHHgo19PjC">P1 · 高危</span><span class="rule" data-page-node-id="9mE1fNt6FyRMFQWAB4H7qV">CWE-434</span><span class="cat" data-page-node-id="isnRkdupfIIkwIPopiz4Fu">任意文件上传</span></div><div class="ftitle" data-page-node-id="UjLVesb8Wmo64uCoUHJ4f0">[CWE-434] Unrestricted Upload of File with Dangerous Type</div><div class="fdesc" data-page-node-id="jPEYgDRVTc9Rl5mVOq6XwZ">: This code permits file uploads based on extension, size, and getimagesize() checks, but these aren&#x27;t foolproof—attackers could upload malicious files like a PHP script disguised as a JPEG by crafting files that pass these tests, potentially leading to remote code execution. For example, an attacker might upload a file with a valid image header but embedded executable code, exploiting server-side processing in the &#x27;hackable/uploads/&#x27; directory. The vulnerability stems from insufficient content validation; to fix, verify file integrity more robustly, such as using libraries to check file signatures or hashing. Note: This analysis assumes the code snippet is complete, but if $html output isn&#x27;t escaped elsewhere, it could compound risks—provide full context for thorough review.</div><details class="fev" data-page-node-id="28XKOJVycwso5foNbYwdLD"><summary data-page-node-id="dKEExjLMjc8ysx8FTC7kRU">证据片段 / 原文</summary><pre data-page-node-id="KLEZhPGxgERD6Z2zb5iHJN">漏洞类型: [CWE CWE-434] Unrestricted Upload of File with Dangerous Type
+
+分析: This code permits file uploads based on extension, size, and getimagesize() checks, but these aren&#x27;t foolproof—attackers could upload malicious files like a PHP script disguised as a JPEG by crafting files that pass these tests, potentially leading to remote code execution. For example, an attacker might upload a file with a valid image header but embedded executable code, exploiting server-side processing in the &#x27;hackable/uploads/&#x27; directory. The vulnerability stems from insufficient content validation; to fix, verify f…</pre></details></div><details class="code" data-page-node-id="IrYlc3HzqeK1B8ngArhRqq"><summary data-page-node-id="hpQjuQdmfmvlmNeTq9z4wN">查看被审查代码 (307 字符)</summary><pre data-page-node-id="7Ng8JgfoVgLL6zdDZCfdQV">if( ( strtolower( $uploaded_ext ) == &quot;jpg&quot; || strtolower( $uploaded_ext ) == &quot;jpeg&quot; || strtolower( $uploaded_ext ) == &quot;png&quot; ) &amp;&amp;
+		( $uploaded_size &lt; 100000 ) &amp;&amp;
+		getimagesize( $uploaded_tmp ) ) {
+
+		// Can we move the file to the upload folder?
+		if( !move_uploaded_file( $uploaded_tmp, $target_path ) ) {</pre></details></div><div class="rcard" data-page-node-id="p32zrtbeq3FvJlgYd7l0rs"><div class="rhead" data-page-node-id="inBqZsTgHBwj2JWbLD1sRW"><span class="rid" data-page-node-id="cDW2HKg89ONZQQ0ecTY1dd">cwe-na-04</span><span class="chip" data-page-node-id="yZbJDVYLHgKkATleM1wwFV">漏洞样本</span><span class="chip" data-page-node-id="VT6ciiptFOHByD9qOq968W">vuln_detect</span><span class="chip" data-page-node-id="heRvaqh7bn4IyBTGZU3FqV">—</span><span class="chip dim" data-page-node-id="zkjyww9mUg1t8SQz8eWpeL">CWE-798</span></div><div class="rmeta" data-page-node-id="Da89W5BqnyGlHzoNtM2Fbb">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="O0Crt5AeCEpfJJKCGPy4p9"><div class="fhead" data-page-node-id="yuwY3uUndQAEdnkhavAAzW"><span class="sev" style="color:#F5A623;background:#3A2405" data-page-node-id="7M1DE5mwXXKauBv0elgSrm">P1 · 高危</span><span class="rule" data-page-node-id="VTYHRhIdqck7DnhUjdphOc">CWE-798</span><span class="cat" data-page-node-id="kJakynPpptu78PA6QS62KW">硬编码凭据</span></div><div class="ftitle" data-page-node-id="8GjOXZarQoYha7cqXq7V9J">[CWE-798] Use of Hard-coded Credentials</div><div class="fdesc" data-page-node-id="XleARnFykNLoXXXfhwXfQB">: This code sets a hard-coded weak password for the &#x27;admin&#x27; user via random_password(), which always returns insecure values like &#x27;changeme&#x27;. An attacker could exploit this by guessing the password easily, potentially gaining full administrative access and compromising the entire database. The issue stems from using predictable credentials in production-like code; always hash and salt passwords using a library like bcrypt. Fix by generating strong, unique passwords and ensuring they&#x27;re hashed before storage.</div><details class="fev" data-page-node-id="rD50MiLFWBVNPjPx92xhtY"><summary data-page-node-id="e1CZBWD6fJSS1mt9MQnbhb">证据片段 / 原文</summary><pre data-page-node-id="UDzAYW7e9FKxXV03cVnEYH">漏洞类型: [CWE CWE-798] Use of Hard-coded Credentials
+
+分析: This code sets a hard-coded weak password for the &#x27;admin&#x27; user via random_password(), which always returns insecure values like &#x27;changeme&#x27;. An attacker could exploit this by guessing the password easily, potentially gaining full administrative access and compromising the entire database. The issue stems from using predictable credentials in production-like code; always hash and salt passwords using a library like bcrypt. Fix by generating strong, unique passwords and ensuring they&#x27;re hashed before storage.</pre></details></div><details class="code" data-page-node-id="QN9ECSG5tN6HZRTXsg8aOs"><summary data-page-node-id="PNW9vhqCG37geGNddzilY7">查看被审查代码 (170 字符)</summary><pre data-page-node-id="0ZoYx3L3wxBrUmdymJ9okI">admin = User(username=&quot;admin&quot;, password=random_password())
+operator = User(username=&quot;operator&quot;, password=random_password())
+db.session.add(admin)
+db.session.add(operator)</pre></details></div><div class="rcard" data-page-node-id="TAc9DbDvhGuyLseA49aW5M"><div class="rhead" data-page-node-id="2vpgPxPM5RKyxcgiVRJMKN"><span class="rid" data-page-node-id="xXeclkx60q7grX7D5S3EAN">dahoas-ruby-01</span><span class="chip" data-page-node-id="8XXK1iZGJKO0mYsrHtPw4Y">批评+修订</span><span class="chip" data-page-node-id="liGnsHz6c8sqZfUzX6Z1BA">review_critique</span><span class="chip" data-page-node-id="F2hNiAWHOAW6MhVGPAKqlD">Ruby</span><span class="chip dim" data-page-node-id="Aamo3uFA0xM7MPKjsvHvED">—</span></div><div class="rmeta" data-page-node-id="3jeQMDFCfVVHOVeWaK76Iq">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="kXh5oXFyQLWWdVj0Hl5h31"><div class="fhead" data-page-node-id="jRjBSDDA5G8auHGMc1Qd0v"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="41ub7DWLlFBFqWUejHTUeV">P2 · 建议</span><span class="rule" data-page-node-id="cKK9zmo50BYShA4dmy3Dow">critique.review</span><span class="cat" data-page-node-id="iDOEJqCAuOzs0MSiLNv4qP">可维护性与正确性</span></div><div class="ftitle" data-page-node-id="yvVEr5vSaGgsf3QjWVeTYN">代码质量与设计缺陷(Ruby)</div><div class="fdesc" data-page-node-id="TJJv5Jq2VkfWEuAFOjxU8I">Original: 
+if not c.e1.nil?
+  extrapreis = number_to_currency Extra.find(c.e1).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e1).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e1).aufschlag
+end
+if not c.e2.nil?
+  extrapreis = number_to_currency Extra.find(c.e2).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e2).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e2).aufschlag
+end
+if not c.e3.nil?
+  extrapreis = number_to_currency Extra.find(c.e3).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e3).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e3).aufschlag
+end
+if not c.e4.nil?
+  extrapreis = number_to_currency Extra.find(c.e4).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e4).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e4).aufschlag
+end
+if not c.e5.nil?
+  e…</div><details class="fev" data-page-node-id="zQ0NzJcmYsp5eLiYxA8m4k"><summary data-page-node-id="qqTpXC1Ir2h3BfWVgFuuLH">证据片段 / 原文</summary><pre data-page-node-id="repcHzBu95J9aB1K9wiblg">Original: 
+if not c.e1.nil?
+  extrapreis = number_to_currency Extra.find(c.e1).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e1).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e1).aufschlag
+end
+if not c.e2.nil?
+  extrapreis = number_to_currency Extra.find(c.e2).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e2).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e2).aufschlag
+end
+if not c.e3.nil?
+  extrapreis = number_to_currency Extra.find(c.e3).aufschlag, :unit=&amp;gt;&quot;EUR &quot;
+  array.push Extra.find(c.e3).name + &quot; (&quot; + extrapreis.to_…</pre></details></div><details class="code" data-page-node-id="LfWAD5wFoh0lUBELDlJuyB"><summary data-page-node-id="epzu9WO01t4eW6rU8tFTT9">查看被审查代码 (2830 字符)</summary><pre data-page-node-id="7uZ3hKpl4th0CRDkjSHYQR">Question: I have this working code. I think this must be easier with a while loop.
+
+```
+if not c.e1.nil?
+  extrapreis = number_to_currency Extra.find(c.e1).aufschlag, :unit=&gt;&quot;EUR &quot;
+  array.push Extra.find(c.e1).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e1).aufschlag
+end
+if not c.e2.nil?
+  extrapreis = number_to_currency Extra.find(c.e2).aufschlag, :unit=&gt;&quot;EUR &quot;
+  array.push Extra.find(c.e2).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e2).aufschlag
+end
+if not c.e3.nil?
+  extrapreis = number_to_currency Extra.find(c.e3).aufschlag, :unit=&gt;&quot;EUR &quot;
+  array.push Extra.find(c.e3).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e3).aufschlag
+end
+if not c.e4.nil?
+  extrapreis = number_to_currency Extra.find(c.e4).aufschlag, :unit=&gt;&quot;EUR &quot;
+  array.push Extra.find(c.e4).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e4).aufschlag
+end
+if not c.e5.nil?
+  extrapreis = number_to_currency Extra.find(c.e5).aufschlag, :unit=&gt;&quot;EUR &quot;
+  array.push Extra.find(c.e5).name + &quot; (&quot; + extrapreis.to_s + &quot;)&quot;
+  extpreis = extpreis + Extra.find(c.e5).aufschlag          
+end
+
+```
+
+It is always the same code, except for the variable e (1, 2, 3, 4, 5). How can I put this in a while loop and put the counter together with e?
+ 
+
+ Answer: Notes on your code:
+
+Use of parentheses: Ruby allows you to drop them, but the community seems to have reached a consensus it may harm readability, restrict its usage to DSL-style code.
+extrapreis: this may be &quot;private&quot; code (well, it&#x27;s not anymore since you publicly asked about it), but it&#x27;s good practice to use the commonly accepted language in the programming world (for script names, variable names, comments, everything).
+array.push, x = x + y, ...: you may use this but being aware about functional programming and why inplace updates are considered (by some) bad practice. More on this issue.
+if not c.e1.nil? -&gt; if c.e1.
+Extra.find(c.e1).aufschlag. In each block you call this twice, why? use a variable to store the value.
+
+For a novice programmer a functional approach may be a little difficult to grasp at first, but it introduces important concepts that will (hopefully) prove useful later on:
+
+```
+strings, values = [c.e1, c.e2, c.e3, c.e4].compact.map do |e|
+  value = Extra.find(e).aufschlag
+  extra_price = number_to_currency(value, :unit =&gt; &quot;EUR&quot;)
+  name = Extra.find(e).name 
+  [&quot;#{name} (#{extra_price})&quot;, value]
+end.transpose
+extra_price_total = values.inject(0, :+)
+
+```
+
+ 
+
+ This is a question and answer from a forum where users review and improve the code of other users. Please output the original code, a summary of the critique, and the revised code using the format ORIGINAL: [write original code here] CRITIQUE: [write critique here] REVISED: [write revision code here].</pre></details></div><div class="rcard" data-page-node-id="3xqiu1B5TB4wXBsJUELjlC"><div class="rhead" data-page-node-id="YuuzGxvbmuGT4jUmMwGevL"><span class="rid" data-page-node-id="Ck4iqMoC007NP67wLGOpd2">dahoas-python-02</span><span class="chip" data-page-node-id="F3GG0yJg0ilnhkDozMgk8I">批评+修订</span><span class="chip" data-page-node-id="FlaMpcUJ33eFYxEgk1hXQL">review_critique</span><span class="chip" data-page-node-id="JnpmQGe1zC8XGMfXJvWRFo">Python</span><span class="chip dim" data-page-node-id="LsFQRBPF6iAW4iCshZFNnh">—</span></div><div class="rmeta" data-page-node-id="t5pSVvjUP2UNIdbRBu6DJq">backend=golden · model=dataset-reference(人工真值) · s · findings=2</div><div class="fcard" data-page-node-id="urjXywplhtzyPerUyNFYaZ"><div class="fhead" data-page-node-id="CwFsT8Uz2qzlUMexpJHJJF"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="A8vERqBKUBzwUaD2l1hgdg">P2 · 建议</span><span class="rule" data-page-node-id="nFaI7IuzE064kSQv5jfcKR">critique.review</span><span class="cat" data-page-node-id="oFSSL2G3kiCN1Absd9m8fx">可维护性与正确性</span></div><div class="ftitle" data-page-node-id="zUNSQRZ5gCvFRQXriuGnVX">代码质量与设计缺陷(Python)</div><div class="fdesc" data-page-node-id="tFEPTA2K1jmH5BUVHSjEhs">The code is repetitive and inefficient.</div><details class="fev" data-page-node-id="qiDmkdD9uAvxO1xSedb5QG"><summary data-page-node-id="8m2kkhKEseDR1EFAJAsOd1">证据片段 / 原文</summary><pre data-page-node-id="cAP1W6Ceru7FkmBAR7A7br">CRITIQUE:
+The code is repetitive and inefficient.
+
+REVISED:
+self.comboBox.activated.connect(self.handleActivated)
+
+def handleActivated(self, index):
+    db = QSqlDatabase.addDatabase(&quot;QSQLITE&quot;)
+    db.setDatabaseName(&quot;data.db&quot;)
+    db.open()
+    # tableView = QtWidgets.QTableView()
+
+    options = [ None, &#x27;%html%&#x27;, &#x27;%javascript%&#x27;]
+    query = &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27;&quot;
+
+    if options[index] is not None:
+        query += f&quot; WHERE content_type LIKE &#x27;{options[index]}&#x27;&quot;
+
+    sourceModel = QSqlQueryModel()
+    sourceModel.setQuery(query, db)
+    proxyModel = QSortFilterPro…</pre></details></div><div class="fcard" data-page-node-id="k7xoHAtlrzDYtFGXGfCBll"><div class="fhead" data-page-node-id="R3rkNyIkMLnWv4qCEMllkn"><span class="sev" style="color:#8B9BB4;background:#17202E" data-page-node-id="cuG5s9GOBnhhDIudBWDvK3">P3 · 提示</span><span class="rule" data-page-node-id="2DH9tfUhMcv49eZQbB5pHm">critique.revision</span><span class="cat" data-page-node-id="akc7govLyA46TNJb8Dgs2c">修复方案</span></div><div class="ftitle" data-page-node-id="ZtWEC4lEqsEguSiVOKkDVJ">修订建议(REVISED)</div><div class="fdesc" data-page-node-id="4n5QLvAimqyBw0bZeDF0FO">self.comboBox.activated.connect(self.handleActivated)
+
+def handleActivated(self, index):
+    db = QSqlDatabase.addDatabase(&quot;QSQLITE&quot;)
+    db.setDatabaseName(&quot;data.db&quot;)
+    db.open()
+    # tableView = QtWidgets.QTableView()
+
+    options = [ None, &#x27;%html%&#x27;, &#x27;%javascript%&#x27;]
+    query = &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27;&quot;
+
+    if options[index] is not None:
+        query += f&quot; WHERE content_type LIKE &#x27;{options[index]}&#x27;&quot;
+
+    sourceModel = QSqlQueryModel()
+    sourceModel.setQuery(query, db)
+    proxyModel = QSortFilterProxyModel(self)
+    proxyModel.setSourceModel(sourceModel)
+    self.tableView.setModel(proxyModel)
+    self.tableView.setSortingEnabled(True)</div><details class="fev" data-page-node-id="hMHVz6Mryl7Ms1DN8bNqWU"><summary data-page-node-id="8NlGQ0hJYtD51mImQyEanL">证据片段 / 原文</summary><pre data-page-node-id="8BSIySTkSG2fWGsOCO3wTa">self.comboBox.activated.connect(self.handleActivated)
+
+def handleActivated(self, index):
+    db = QSqlDatabase.addDatabase(&quot;QSQLITE&quot;)
+    db.setDatabaseName(&quot;data.db&quot;)
+    db.open()
+    # tableView = QtWidgets.QTableView()
+
+    options = [ None, &#x27;%html%&#x27;, &#x27;%javascript%&#x27;]
+    query = &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27;&quot;
+
+    if options[index] is not None:
+        query += f&quot; WHERE content_type LIKE &#x27;{options[index]}&#x27;&quot;
+
+    sourceModel = QSqlQueryModel()
+    sourceModel.setQuery(query, db)
+    proxyModel = QSortFilterProxyModel(self)
+    proxyModel.setSourceModel(sourceModel)
+   …</pre></details></div><details class="code" data-page-node-id="2T0fncrRM4LdqHZ5OoGtzK"><summary data-page-node-id="rQxB0d9m4eBgHOCxYLG4m5">查看被审查代码 (3462 字符)</summary><pre data-page-node-id="SFAZYYs1k7oPaJhzAzjlCE">Question: I have a very simple file where I have a Qcombobox Filter. When you select the filter, I run through a case on the index and output results.
+
+So, on selection I trigger:
+
+```
+self.comboBox.activated.connect(self.handleActivated)
+
+```
+
+Then,
+
+my handled function is
+
+    def handleActivated(self, index):
+        db = QSqlDatabase.addDatabase(&quot;QSQLITE&quot;)
+        db.setDatabaseName(&quot;data.db&quot;)
+        db.open()
+        # tableView = QtWidgets.QTableView()
+
+        if index == 0:
+            sourceModel = QSqlQueryModel()
+            sourceModel.setQuery(
+                &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27;&quot;,
+                db)
+            proxyModel = QSortFilterProxyModel(self)
+            proxyModel.setSourceModel(sourceModel)
+            self.tableView.setModel(proxyModel)
+            self.tableView.setSortingEnabled(True)
+        elif index == 1:
+            sourceModel = QSqlQueryModel()
+            sourceModel.setQuery(
+                &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27; WHERE content_type LIKE &#x27;%html%&#x27;&quot;,
+                db)
+            proxyModel = QSortFilterProxyModel(self)
+            proxyModel.setSourceModel(sourceModel)
+            self.tableView.setModel(proxyModel)
+            self.tableView.setSortingEnabled(True)
+        elif index == 2:
+            sourceModel = QSqlQueryModel()
+            sourceModel.setQuery(
+                &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27; WHERE content_type LIKE &#x27;%javascript%&#x27;&quot;,
+                db)
+            proxyModel = QSortFilterProxyModel(self)
+            proxyModel.setSourceModel(sourceModel)
+            self.tableView.setModel(proxyModel)
+            self.tableView.setSortingEnabled(True)
+
+```
+
+My question is, is this the most efficient way of writing this code ? I have upto 15 filters and this will become really cumbersome in my main file.
+ 
+
+ Answer: Well you have already identified the problem: repetition.
+It can be tackled fairly easily. Instead of that if/elif block you can use a (zero-indexed) list that contains the WHERE clause for the query:
+
+```
+    options = [ None, &#x27;%html%&#x27;, &#x27;%javascript%&#x27;]
+    query = &quot;SELECT url,size,content_type FROM &#x27;google.com.au&#x27;&quot;
+
+    if options[index] is not None:
+        query += f&quot; WHERE content_type LIKE &#x27;{options[index]}&#x27;&quot;
+
+    sourceModel = QSqlQueryModel()
+    sourceModel.setQuery(query, db)
+    proxyModel = QSortFilterProxyModel(self)
+    proxyModel.setSourceModel(sourceModel)
+    self.tableView.setModel(proxyModel)
+    self.tableView.setSortingEnabled(True)
+
+```
+
+Only the first option is different: there is no WHERE clause. In the other places the request is always the same, it&#x27;s only the search pattern that is different.
+
+What I am doing here is simply selective string concatenation. Note: using an F-string for the WHERE clause, requires Python &gt;= 3.6. Usage is not mandatory but if you have a recent version of Python embrace the new features.
+
+Instead of None you could say &#x27;&#x27; (an empty string). I chose None to signify option #0 is a special case. I am not checking that index is actually in the range 0-&gt;2. If you think this could happen, add a if to check.
+ 
+
+ This is a question and answer from a forum where users review and improve the code of other users. Please output the original code, a summary of the critique, and the revised code using the format ORIGINAL: [write original code here] CRITIQUE: [write critique here] REVISED: [write revision code here].</pre></details></div><div class="rcard" data-page-node-id="rtuwKcC8DZGLnlnhbHTVa4"><div class="rhead" data-page-node-id="wuvCpGi8iZxh1Y7EmoVaGF"><span class="rid" data-page-node-id="mHg8PxmcrSJqK7oW2mbUHF">dahoas-java-03</span><span class="chip" data-page-node-id="IRUVF2Az6aFTHZAXRo7fwG">批评+修订</span><span class="chip" data-page-node-id="HrctRR1zDC1h9iJjwqQjJZ">review_critique</span><span class="chip" data-page-node-id="OdkuUrld2vuuAYQETIm9us">Java</span><span class="chip dim" data-page-node-id="uP4dTV1XgmFD6zW0feCzgs">—</span></div><div class="rmeta" data-page-node-id="nKaRDeYr6tzlvuFngVdS3h">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="zB3HsACWCgdGuIq3OwN6s6"><div class="fhead" data-page-node-id="G6tx7zNALAkHudSNLt3drq"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="e8jFhJckhioro9GTRjoLFs">P2 · 建议</span><span class="rule" data-page-node-id="l47aXfzhGtRL7rDEDTCEEi">critique.review</span><span class="cat" data-page-node-id="DD3F3jGCphQ7sUaotDk8PE">可维护性与正确性</span></div><div class="ftitle" data-page-node-id="kLCKXb1STNkq9ciSGzEcpR">代码质量与设计缺陷(Java)</div><div class="fdesc" data-page-node-id="htANHfSbywFP0hFOzgAM2G">Original: 
+package com.arun.reversewords;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ReverseWords {
+
+public static void main(String[] args) throws IOException {
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    System.out.println(&quot;Enter the string&quot;);
+    String s = br.readLine();
+
+    String rev = StringRev(s);
+
+    System.out.println(rev);
+
+}
+
+private static String StringRev(String s) {
+
+    char[] modString = new char[s.length()];
+
+    for (int i = 0; i &lt; s.length(); i++) {
+        modString[i] = s.charAt(s.length() - 1 - i);
+    }
+
+    s = s.copyValueOf(modString);
+    String reverseWord = &quot;&quot;;
+    String eachWord;
+    for (String part : s.split(&quot; &quot;)) {
+        eachWord = new StringBuilder(part).reverse().toString();
+        reverseWord = reverseWord + eachWord + &quot; &quot;;
+    }
+
+    return r…</div><details class="fev" data-page-node-id="NX887CVurt65oBjCCDY1DW"><summary data-page-node-id="RxZLeDyK8AFHBEpBO7jFcr">证据片段 / 原文</summary><pre data-page-node-id="p7u0o02W2ekBXhN8rmTMjp">Original: 
+package com.arun.reversewords;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ReverseWords {
+
+public static void main(String[] args) throws IOException {
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    System.out.println(&quot;Enter the string&quot;);
+    String s = br.readLine();
+
+    String rev = StringRev(s);
+
+    System.out.println(rev);
+
+}
+
+private static String StringRev(String s) {
+
+    char[] modString = new char[s.length()];
+
+    for (int i = 0; i &lt; s.length(); i++) {
+        modString[i…</pre></details></div><details class="code" data-page-node-id="ti9AWdiUnFHOxuftWTxsQ1"><summary data-page-node-id="DUBMh7maUYu2yBYyNOwqS4">查看被审查代码 (2590 字符)</summary><pre data-page-node-id="Ma0BU3C9TDJbDWLaF78jHX">Question: I&#x27;d like this code to be improved
+
+Input string: codereview is awesome
+
+Output string: awesome is codereview
+
+My approach:
+
+Reverse the entire string
+Reverse each word in a string
+
+```
+package com.arun.reversewords;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ReverseWords {
+
+public static void main(String[] args) throws IOException {
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    System.out.println(&quot;Enter the string&quot;);
+    String s = br.readLine();
+
+    String rev = StringRev(s);
+
+    System.out.println(rev);
+
+}
+
+private static String StringRev(String s) {
+
+    char[] modString = new char[s.length()];
+
+    for (int i = 0; i Your Approach
+
+Variable names: reverseWord doesn&#x27;t really match what it is. I used reversedSentence which I think fits better (your method StringRev could also be named reverseSentence)
+reversing a string: you use two different approaches: StringBuilder.reverse and your modString approach. Why are you using two different solutions for the same problem? I would extract it to a new method: reverseString and use that method in both places
+
+If you do that, your code would look like this:
+
+```
+private static String reverseSentence(String sentence) {
+    sentence = reverseString(sentence);
+
+    String reversedSentence = &quot;&quot;;
+    for (String word : sentence.split(&quot; &quot;)) {
+        reversedSentence += reverseString(word) + &quot; &quot;;
+    }
+
+    return reversedSentence;    
+  }
+
+private static String reverseString(String string) {
+    return new StringBuilder(string).reverse().toString();
+}
+
+```
+
+Which I think is a lot easier to understand. If you care about performance, you can use a StringBuilder instead of + and +=.
+
+A different Approach
+
+I think that your approach is way too complex, there is no need to reverse the whole string first. I would just simply reverse the words:
+
+```
+private static String reverseSentence(String sentence) {
+    String reversedSentence = &quot;&quot;;
+    for (String word : sentence.split(&quot; &quot;)) {
+        reversedSentence = word + &quot; &quot; + reversedSentence;
+    }
+    return reversedSentence;
+}
+
+```
+
+It&#x27;s easier to understand and performs a lot better (and again, you can use StringBuilder for even better performance).
+ 
+
+ This is a question and answer from a forum where users review and improve the code of other users. Please output the original code, a summary of the critique, and the revised code using the format ORIGINAL: [write original code here] CRITIQUE: [write critique here] REVISED: [write revision code here].</pre></details></div><div class="rcard" data-page-node-id="J9PpApkQJ7AdkrCeHv6yYY"><div class="rhead" data-page-node-id="v0LtBAkfA196cT4S2nbSCv"><span class="rid" data-page-node-id="6XL3X1tL4qD9uucF1UZtgI">dahoas-php-04</span><span class="chip" data-page-node-id="cUHSGuCsZ1JMyueCHIP9QV">批评+修订</span><span class="chip" data-page-node-id="LoNsk3npGCJ7vqs2WBKjqZ">review_critique</span><span class="chip" data-page-node-id="oLGEMDbJxoPieARofFCXAP">Php</span><span class="chip dim" data-page-node-id="amzFZC4RnQJyHIMndM5QbB">—</span></div><div class="rmeta" data-page-node-id="Ak2aBMp7LKMylnXoWwDfZi">backend=golden · model=dataset-reference(人工真值) · s · findings=2</div><div class="fcard" data-page-node-id="O1jTJWOYGapqGeKaBRAXmv"><div class="fhead" data-page-node-id="BwAkwRyiuG6HnaUamcM4Q0"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="knOyLhKeym7FAtM02vnphc">P2 · 建议</span><span class="rule" data-page-node-id="Hid64hFTyuN6BpoNBcDl0V">critique.review</span><span class="cat" data-page-node-id="S1dMZSB3ULvuGxzFzWXRw2">可维护性与正确性</span></div><div class="ftitle" data-page-node-id="CQfPryeMLyhb49GFG3H1ss">代码质量与设计缺陷(Php)</div><div class="fdesc" data-page-node-id="UY7Gw5edcVFpZbbCSLSVUd">The code is not very modular and the variable names are long. The statement is also long and should be broken up across multiple lines. The semicolon should be placed at the end of the line.</div><details class="fev" data-page-node-id="NOV0CTzVPs9st1Gc2ZvBxZ"><summary data-page-node-id="R2gVOpN2cOSoxuDa6ZkLSF">证据片段 / 原文</summary><pre data-page-node-id="hUghbQsCX7nWvD0lw7Khl0">CRITIQUE: The code is not very modular and the variable names are long. The statement is also long and should be broken up across multiple lines. The semicolon should be placed at the end of the line.
+
+REVISED: 
+$startOfLine = PHP_EOL.
+               str_repeat(&#x27; &#x27;,$rbtSt_billToBox_leadingWidth);
+$innerMargin = str_repeat(&#x27; &#x27;,$rbtSt_billToBox_innerMargin); 
+extract($statementInfoArray,&#x27;stm&#x27;);
+$rbt .= $startOfLine.
+        padBothAndTruncate($stm_bill-to-addr1,$rbtSt_billToBox_addr_maxWidth).
+        $innerMargin.
+        substr($stm_bill-to-code,0,$rbtSt_billToBox_acctNum_maxWidth).
+        $…</pre></details></div><div class="fcard" data-page-node-id="TUo5MPm8FDZHtLQ717fWx0"><div class="fhead" data-page-node-id="1wBWMjpDBLvMqatPC50lEm"><span class="sev" style="color:#8B9BB4;background:#17202E" data-page-node-id="aiTPfMnC8hUZ62c2um4wkI">P3 · 提示</span><span class="rule" data-page-node-id="H78ZSnxr5epNDOYfcZU1hY">critique.revision</span><span class="cat" data-page-node-id="69FWDpw7u0S5ArkPbwQAUM">修复方案</span></div><div class="ftitle" data-page-node-id="sGvgyxVsSqmJ1kd1X0Qdu0">修订建议(REVISED)</div><div class="fdesc" data-page-node-id="tdO8OBSkstoEaqPtCyydjo">$startOfLine = PHP_EOL.
+               str_repeat(&#x27; &#x27;,$rbtSt_billToBox_leadingWidth);
+$innerMargin = str_repeat(&#x27; &#x27;,$rbtSt_billToBox_innerMargin); 
+extract($statementInfoArray,&#x27;stm&#x27;);
+$rbt .= $startOfLine.
+        padBothAndTruncate($stm_bill-to-addr1,$rbtSt_billToBox_addr_maxWidth).
+        $innerMargin.
+        substr($stm_bill-to-code,0,$rbtSt_billToBox_acctNum_maxWidth).
+        $startOfLine.
+        padBothAndTruncate($stm_bill-to-city.&#x27;, &#x27;.$stm_bill-to-state.&#x27; &#x27;.$stm_bill-to-zip);</div><details class="fev" data-page-node-id="dGQNdYzySgQD7PZbJvaGFY"><summary data-page-node-id="FBO1caFKvESZVxvJmrU9dN">证据片段 / 原文</summary><pre data-page-node-id="VsPqKu2JpimNl4Dv70LKMV">$startOfLine = PHP_EOL.
+               str_repeat(&#x27; &#x27;,$rbtSt_billToBox_leadingWidth);
+$innerMargin = str_repeat(&#x27; &#x27;,$rbtSt_billToBox_innerMargin); 
+extract($statementInfoArray,&#x27;stm&#x27;);
+$rbt .= $startOfLine.
+        padBothAndTruncate($stm_bill-to-addr1,$rbtSt_billToBox_addr_maxWidth).
+        $innerMargin.
+        substr($stm_bill-to-code,0,$rbtSt_billToBox_acctNum_maxWidth).
+        $startOfLine.
+        padBothAndTruncate($stm_bill-to-city.&#x27;, &#x27;.$stm_bill-to-state.&#x27; &#x27;.$stm_bill-to-zip);</pre></details></div><details class="code" data-page-node-id="bFiGwpe9Mi0rhodNxu5Q4R"><summary data-page-node-id="iU7GYTvJgazstkrEvBtvyw">查看被审查代码 (3169 字符)</summary><pre data-page-node-id="M7etM9wMNZhK2R6uoceYiw">Question: I&#x27;m writing code to do line printing to a template -- counting characters to box A, then to box B, etc. -- and as such, it&#x27;s not very modular. There are a lot of (long) variable names and each statement, which adds to the string to be printed, is pretty long.
+
+So I&#x27;ve been breaking up the statements across multiple lines. But I don&#x27;t know how I should be indenting it or where I should put the semicolon.
+
+Here&#x27;s a sample line:
+
+$rbt .= &quot;\n&quot;
+    . str_repeat(&quot; &quot;, $rbtSt_billToBox_leadingWidth)
+    . padBothAndTruncate($statementInfoArray[&#x27;bill-to-addr1&#x27;], $rbtSt_billToBox_addr_maxWidth)
+    . str_repeat(&quot; &quot;, $rbtSt_billToBox_innerMargin)
+    . substr($statementInfoArray[&#x27;bill-to-code&#x27;], 0, $rbtSt_billToBox_acctNum_maxWidth)
+;
+
+```
+
+I like how the concat operators are lined up and how it looks bracketed, but the naked semicolon on the following line makes me a little nervous. Putting it at the end of the line makes me even more nervous, since then it&#x27;s hard to see.
+
+It gets a little trickier when there&#x27;s more nesting.
+
+$rbt .= &quot;\n&quot;
+    . str_repeat(&quot; &quot;, $rbtSt_billToBox_leadingWidth)
+    . padBothAndTruncate(
+        $statementInfoArray[&#x27;bill-to-city&#x27;] . &quot;, &quot; . $statementInfoArray[&#x27;bill-to-state&#x27;]
+            . &quot; &quot; . $statementInfoArray[&#x27;bill-to-zip&#x27;]
+    )
+;
+
+```
+
+Do I always do multiple lines? Just when it is more than a certain number of characters (say, 120)? Once a statement is multiline, should I only have one operator per line?
+
+I&#x27;m feeling a bit paralyzed by choices here and I fear that none of them are very good.
+ 
+
+ Answer: This is indeed purely personal, however, when you work in a group, or want to share your code, it&#x27;s best to stick to certain conventions. A good source for this is:
+
+http://www.php-fig.org/psr/psr-2
+
+Eventhough these guidelines are quite good, I don&#x27;t always follow them myself. For instance, I often use two spaces to indent, not four. Etc.
+
+As for my personal opinion about any code: It should be very easy to read and understand. Your code wouldn&#x27;t be accepted here, mainly due to the lack of comments and sometimes vague names. But that&#x27;s not what your question is about. As for the concatenation dots, I like them at the end of lines:
+
+```
+$startOfLine = PHP_EOL.
+               str_repeat(&#x27; &#x27;,$rbtSt_billToBox_leadingWidth);
+$innerMargin = str_repeat(&#x27; &#x27;,$rbtSt_billToBox_innerMargin); 
+extract($statementInfoArray,&#x27;stm&#x27;);
+$rbt .= $startOfLine.
+        padBothAndTruncate($stm_bill-to-addr1,$rbtSt_billToBox_addr_maxWidth).
+        $innerMargin.
+        substr($stm_bill-to-code,0,$rbtSt_billToBox_acctNum_maxWidth).
+        $startOfLine.
+        padBothAndTruncate($stm_bill-to-city.&#x27;, &#x27;.$stm_bill-to-state.&#x27; &#x27;.$stm_bill-to-zip);
+
+```
+
+and then I align all the parts on the left side. This makes it very clear what belongs together. I am however sure there are many other ways to do this.
+ 
+
+ This is a question and answer from a forum where users review and improve the code of other users. Please output the original code, a summary of the critique, and the revised code using the format ORIGINAL: [write original code here] CRITIQUE: [write critique here] REVISED: [write revision code here].</pre></details></div><div class="rcard" data-page-node-id="KW48kWBl15NK3Ey3aem5A7"><div class="rhead" data-page-node-id="MnTRTSbXAeakAxCy7vFmyJ"><span class="rid" data-page-node-id="Y5B2YfNV0RuZAoOPZBma5C">github-php-01</span><span class="chip" data-page-node-id="Imd4zLGYHrKbuWJreXn2RW">GitHub PR</span><span class="chip" data-page-node-id="BYWhJHmlBGR5ZdHhSHH2D7">review_comment</span><span class="chip" data-page-node-id="fL1wnZyU00ybUHnR4N97FS">PHP</span><span class="chip dim" data-page-node-id="Lem2bR8ml5P4SafFyfzPzT">symfony/symfony</span></div><div class="rmeta" data-page-node-id="F5FP2ngUV6y6hB1wULSMME">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="84swLsxFKODwIx5AJb4Az8"><div class="fhead" data-page-node-id="hIfbDuj9irK1NT5S8Jm4Rv"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="e6Qe3GWszFB8SqPHy8bsU5">P2 · 建议</span><span class="rule" data-page-node-id="CtGgcvQCXwCFxSZYPMQ1aF">github.review.performance</span><span class="cat" data-page-node-id="RJn8M0UsgIIEMA022zNSOW">变更审查意见</span></div><div class="ftitle" data-page-node-id="O7y4WAXvZ9rEKKZy7lqjHd">other configuration of the filter need to be included in the cache invalidation,</div><div class="fdesc" data-page-node-id="8LfeqCwQyfyG2lmx1tyzRV">other configuration of the filter need to be included in the cache invalidation, to avoid issues when using 2 form types with different settings.
+
+the old callback only had `$choiceTranslationLocale` as state.</div><details class="fev" data-page-node-id="9OBFCTBp72J2yS4HnGZhhZ"><summary data-page-node-id="DtXiNOI09bwAK730q5FVsL">证据片段 / 原文</summary><pre data-page-node-id="ByyYyDQ78dv4Er2dEl0la2">other configuration of the filter need to be included in the cache invalidation, to avoid issues when using 2 form types with different settings.
+
+the old callback only had `$choiceTranslationLocale` as state.</pre></details></div><details class="code" data-page-node-id="lnq0WEEzDFtI5FpthWcBTI"><summary data-page-node-id="2WNMxMIA2lfKUEuytpxCWG">查看被审查代码 (2204 字符)</summary><pre data-page-node-id="HVaz693ets4iPMV1QyqPDX">@@ -32,14 +33,56 @@ public function configureOptions(OptionsResolver $resolver): void
+ 
+                 $choiceTranslationLocale = $options[&#x27;choice_translation_locale&#x27;];
+ 
+-                return ChoiceList::loader($this, new IntlCallbackChoiceLoader(static fn () =&gt; array_flip(Currencies::getNames($choiceTranslationLocale))), $choiceTranslationLocale);
++                return ChoiceList::loader(
++                    $this,
++                    new IntlCallbackChoiceLoader(
++                        static function () use ($options, $choiceTranslationLocale) {
++                            $activeAt = $options[&#x27;active_at&#x27;];
++                            $notActiveAt = $options[&#x27;not_active_at&#x27;];
++                            $legalTender = $options[&#x27;legal_tender&#x27;];
++
++                            if (null === $activeAt &amp;&amp; null === $notActiveAt &amp;&amp; null === $legalTender) {
++                                return array_flip(Currencies::getNames($choiceTranslationLocale));
++                            }
++
++                            if (null !== $activeAt &amp;&amp; null !== $notActiveAt) {
++                                throw new InvalidOptionsException(&#x27;The &quot;active_at&quot; and &quot;not_active_at&quot; options cannot be used together.&#x27;);
++                            }
++
++                            $filteredCurrencyNames = [];
++
++                            $active = match (true) {
++                                null !== $activeAt =&gt; true,
++                                null !== $notActiveAt =&gt; false,
++                                default =&gt; null,
++                            };
++
++                            foreach (Currencies::getCurrencyCodes() as $code) {
++                                if (!Currencies::isValidInAnyCountry($code, $legalTender, $active, $activeAt ?? $notActiveAt)) {
++                                    continue;
++                                }
++
++                                $filteredCurrencyNames[$code] = Currencies::getName($code, $choiceTranslationLocale);
++                            }
++
++                            return array_flip($filteredCurrencyNames);
++                        },
++                    ),
++                    $choiceTranslationLocale</pre></details></div><div class="rcard" data-page-node-id="Lw06oSohqQbOYoXfZPD6Bx"><div class="rhead" data-page-node-id="xu2MZrSqzHtEVJfOiEXoFa"><span class="rid" data-page-node-id="957qi2G5qggW0YhjC19txY">github-rust-02</span><span class="chip" data-page-node-id="h55hlewG5rpRcOCdmzQ1EA">GitHub PR</span><span class="chip" data-page-node-id="57ZgP8OMfNNxfbexK9zvAi">review_comment</span><span class="chip" data-page-node-id="MsbwNHgRFVCoGvCPYeNBTu">Rust</span><span class="chip dim" data-page-node-id="SPAPF3YxvDHRWwoEqIgKGi">risingwavelabs/risingwave</span></div><div class="rmeta" data-page-node-id="ngCwbYA0qCcjoOFOEEEUa6">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="ySEQGs99U43isJd7vDU2az"><div class="fhead" data-page-node-id="KQVBeMR5vE09FDXDFlJWWT"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="BBPAVAUPODzryf6paJoHwY">P2 · 建议</span><span class="rule" data-page-node-id="5fhwDEAYxA4Sq1HACMBYrL">github.review.security</span><span class="cat" data-page-node-id="HLnoKRb5wBadJA5dCxsiNN">变更审查意见</span></div><div class="ftitle" data-page-node-id="s0K80NldAIKHY4EAAZgcvN">The test case does not verify that the Java catalog configuration is correctly g</div><div class="fdesc" data-page-node-id="F1uHwf5SXA078B5ckEIVfz">The test case does not verify that the Java catalog configuration is correctly generated with the GCP credentials path. While the test verifies that the configuration properties are parsed correctly, it should also verify that `build_jni_catalog_configs` produces the expected Java catalog properties, specifically that `gcp.auth.credentials-path` is set correctly when `gcp.credentials.path` is provided. Consider adding assertions to verify the generated Java catalog configuration.</div><details class="fev" data-page-node-id="Ju9IFKPOloBFu4prqBwnYv"><summary data-page-node-id="ue8LEyhXOQopDG0Ye1rOgg">证据片段 / 原文</summary><pre data-page-node-id="emoaTLSht0GIgh63tGg6Az">The test case does not verify that the Java catalog configuration is correctly generated with the GCP credentials path. While the test verifies that the configuration properties are parsed correctly, it should also verify that `build_jni_catalog_configs` produces the expected Java catalog properties, specifically that `gcp.auth.credentials-path` is set correctly when `gcp.credentials.path` is provided. Consider adding assertions to verify the generated Java catalog configuration.</pre></details></div><details class="code" data-page-node-id="p8hyiEtpcZ9O1FDseATaOV"><summary data-page-node-id="SlrAfsNffcG2WYlDvK1Jbz">查看被审查代码 (4123 字符)</summary><pre data-page-node-id="gKK92INBzhDSQJJFt28QsD">@@ -3080,6 +3083,201 @@ mod test {
+         test_create_catalog(values).await;
+     }
+ 
++    /// Test parsing Google authentication configuration with custom scopes.
++    #[test]
++    fn test_parse_google_auth_with_custom_scopes() {
++        let values: BTreeMap&lt;String, String&gt; = [
++            (&quot;connector&quot;, &quot;iceberg&quot;),
++            (&quot;type&quot;, &quot;append-only&quot;),
++            (&quot;force_append_only&quot;, &quot;true&quot;),
++            (&quot;catalog.name&quot;, &quot;biglake-catalog&quot;),
++            (&quot;catalog.type&quot;, &quot;rest&quot;),
++            (
++                &quot;catalog.uri&quot;,
++                &quot;https://biglake.googleapis.com/iceberg/v1/restcatalog&quot;,
++            ),
++            (&quot;warehouse.path&quot;, &quot;bq://projects/my-gcp-project&quot;),
++            (&quot;catalog.security&quot;, &quot;google&quot;),
++            (&quot;gcp.auth.scopes&quot;, &quot;https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/bigquery&quot;),
++            (&quot;database.name&quot;, &quot;my_dataset&quot;),
++            (&quot;table.name&quot;, &quot;my_table&quot;),
++        ]
++        .into_iter()
++        .map(|(k, v)| (k.to_owned(), v.to_owned()))
++        .collect();
++
++        let iceberg_config = IcebergConfig::from_btreemap(values).unwrap();
++
++        // Verify catalog type
++        assert_eq!(iceberg_config.catalog_type(), &quot;rest&quot;);
++
++        // Verify Google-specific options
++        assert_eq!(
++            iceberg_config.common.catalog_security.as_deref(),
++            Some(&quot;google&quot;)
++        );
++        assert_eq!(
++            iceberg_config.common.gcp_auth_scopes.as_deref(),
++            Some(
++                &quot;https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/bigquery&quot;
++            )
++        );
++
++        // Verify warehouse path with bq:// prefix
++        assert_eq!(
++            iceberg_config.common.warehouse_path.as_deref(),
++            Some(&quot;bq://projects/my-gcp-project&quot;)
++        );
++    }
++
++    /// Test parsing BigLake/Google Cloud REST catalog configuration.
++    #[test]
++    fn test_parse_biglake_google_auth_config() {
++        let values: BTreeMap&lt;String, String&gt; = [
++            (&quot;connector&quot;, &quot;iceberg&quot;),
++            (&quot;type&quot;, &quot;append-only&quot;),
++            (&quot;force_append_only&quot;, &quot;true&quot;),
++            (&quot;catalog.name&quot;, &quot;biglake-catalog&quot;),
++            (&quot;catalog.type&quot;, &quot;rest&quot;),
++            (
++                &quot;catalog.uri&quot;,
++                &quot;https://biglake.googleapis.com/iceberg/v1/restcatalog&quot;,
++            ),
++            (&quot;warehouse.path&quot;, &quot;bq://projects/my-gcp-project&quot;),
++            (
++                &quot;catalog.header&quot;,
++                &quot;x-goog-user-project=my-gcp-project&quot;,
++            ),
++            (&quot;catalog.security&quot;, &quot;google&quot;),
++            (&quot;gcp.credentials.path&quot;, &quot;/path/to/service-account.json&quot;),
++            (&quot;gcp.auth.scopes&quot;, &quot;https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/bigquery&quot;),
++            (&quot;database.name&quot;, &quot;my_dataset&quot;),
++            (&quot;table.name&quot;, &quot;my_table&quot;),
++        ]
++        .into_iter()
++        .map(|(k, v)| (k.to_owned(), v.to_owned()))
++        .collect();
++
++        let iceberg_config = IcebergConfig::from_btreemap(values).unwrap();
++
++        // Verify catalog type
++        assert_eq!(iceberg_config.catalog_type(), &quot;rest&quot;);
++
++        // Verify Google-specific options
++        assert_eq!(
++            iceberg_config.common.catalog_security.as_deref(),
++            Some(&quot;google&quot;)
++        );
++        assert_eq!(
++            iceberg_config.common.gcp_credentials_path.as_deref(),
++            Some(&quot;/path/to/service-account.json&quot;)
++        );
++        assert_eq!(
++            iceberg_config.common.gcp_auth_scopes.as_deref(),
++            Some(
++                &quot;https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/bigquery&quot;
++            )
++        );
++
++        // Verify warehouse path with bq:// prefix
++        assert_eq!(
++            iceberg_config.common.warehouse_path.as_deref(),
++            Some(&quot;bq://projects/my-gcp-project&quot;)
++        );
++
++        // Verify custom header
++        assert_eq!(
++            iceberg_config.common.catalog_header.as_deref(),
++            Some(&quot;x-goog-user-project=my-gcp-project&quot;)
++        );
++    }</pre></details></div><div class="rcard" data-page-node-id="FfpbzNsrBEsFlcgAC9EB7s"><div class="rhead" data-page-node-id="teouzQr1CxEsLumGEhQqP8"><span class="rid" data-page-node-id="3hfx1GuMYdAmmZb2wHa1k5">github-python-03</span><span class="chip" data-page-node-id="HCvVEwH2peA2sUt8dmxhub">GitHub PR</span><span class="chip" data-page-node-id="jpqzkj2a13pU2zf5DBGyEC">review_comment</span><span class="chip" data-page-node-id="eA1PRbpC0eijm0WKnuArMt">Python</span><span class="chip dim" data-page-node-id="UHcLUyPchqXoBgaWhg8ty7">pytest-dev/pytest</span></div><div class="rmeta" data-page-node-id="yEZ69nxdHuYKJb9WwFejl3">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="Sxl70WGAOJaoWzxf1a12EU"><div class="fhead" data-page-node-id="lsgLlwttWNz5E8uzR7WM0M"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="lcqqV59QFbdoOigfOSTn4h">P2 · 建议</span><span class="rule" data-page-node-id="0L4ABVgX2l86FsOz1sq7i6">github.review.bug</span><span class="cat" data-page-node-id="QXT4z72oFQoDnH3sB9YZGH">变更审查意见</span></div><div class="ftitle" data-page-node-id="AB5qH4ovwq3M47uugQP8Ad">This makes the testsuite explicitly depend on pygments - but the tests in `test_</div><div class="fdesc" data-page-node-id="EaT9IgFdJQgHYVuGj6vtSL">This makes the testsuite explicitly depend on pygments - but the tests in `test_terminal.py` already fail if `pygments` is not installed, and it&#x27;s in `optional-dependencies.dev` in `pyproject.toml`, so I suppose that&#x27;s alright?</div><details class="fev" data-page-node-id="hshI0ja00s9hpbq64UwKOz"><summary data-page-node-id="VW49t6zmBacE3gzrI9p7sv">证据片段 / 原文</summary><pre data-page-node-id="SsUGYzNXJWuwhoKlQ7t579">This makes the testsuite explicitly depend on pygments - but the tests in `test_terminal.py` already fail if `pygments` is not installed, and it&#x27;s in `optional-dependencies.dev` in `pyproject.toml`, so I suppose that&#x27;s alright?</pre></details></div><details class="code" data-page-node-id="uprZMEcXprmuhquURHKADp"><summary data-page-node-id="dri9RkJbCDH4x8CPN8rOoF">查看被审查代码 (57 字符)</summary><pre data-page-node-id="golEamhyoML3AmFbMiYRNV">@@ -6,6 +6,8 @@
+ import re
+ import sys
+ 
++import pygments</pre></details></div><div class="rcard" data-page-node-id="AVmMTqO3VxSoNPzCZmlOD7"><div class="rhead" data-page-node-id="27TRUSzJZsJBQBwWRiHDWs"><span class="rid" data-page-node-id="mIXnxnDLSBfBwgBqRSJNjo">github-csharp-04</span><span class="chip" data-page-node-id="3DcIyrsQd5WpzYRHU5wt6l">GitHub PR</span><span class="chip" data-page-node-id="9A0CoGFwo73ewni86qCTWg">review_comment</span><span class="chip" data-page-node-id="UJFskBrm1uVt2w9TKnhbGU">C#</span><span class="chip dim" data-page-node-id="wJVKnurJuG31pBfkvuz6Yy">dotnet/maui</span></div><div class="rmeta" data-page-node-id="GJDM2eLaeFBlinKuuTMcp7">backend=golden · model=dataset-reference(人工真值) · s · findings=1</div><div class="fcard" data-page-node-id="VHhcAvesDRGw3WQYXyahgx"><div class="fhead" data-page-node-id="fRsCEIurcsmcQLwe7Wfe7a"><span class="sev" style="color:#E4C400;background:#332B05" data-page-node-id="nNZ929nCYCODE2XtHh9aVX">P2 · 建议</span><span class="rule" data-page-node-id="QH6pOQxSYwpE7En064JEZC">github.review.bug</span><span class="cat" data-page-node-id="6PmmAk9Abm8UxwMIYGAij5">变更审查意见</span></div><div class="ftitle" data-page-node-id="DSdP53PFS2RUtmGmAHAuH3">Could expand the comment to include more details, like the link to the original </div><div class="fdesc" data-page-node-id="5GJEaEl16qTZ8ukM0Y2HsI">Could expand the comment to include more details, like the link to the original issue?
+
+```
+// WinUI bug: Setting PaneDisplayMode to the same value during navigation
+// causes the selected item indicator to not update correctly.
+// Workaround: Only set PaneDisplayMode when the value actually changes.
+// Related: https://github.com/microsoft/microsoft-ui-xaml/issues/9812
+```</div><details class="fev" data-page-node-id="vQZz7VgnSNAxNPg6JgF8EA"><summary data-page-node-id="Dnf2UJk1rEHG7UF0X9TD31">证据片段 / 原文</summary><pre data-page-node-id="LkU8qwubVDoww4O4scw051">Could expand the comment to include more details, like the link to the original issue?
+
+```
+// WinUI bug: Setting PaneDisplayMode to the same value during navigation
+// causes the selected item indicator to not update correctly.
+// Workaround: Only set PaneDisplayMode when the value actually changes.
+// Related: https://github.com/microsoft/microsoft-ui-xaml/issues/9812
+```</pre></details></div><details class="code" data-page-node-id="qkH1kXGSj3ISKvCHMNKt7o"><summary data-page-node-id="f4MliAySzvU1QMFWcpFQRT">查看被审查代码 (337 字符)</summary><pre data-page-node-id="usNQClR5PicqL6kyGuSG3n">@@ -180,7 +180,12 @@ internal void UpdatePaneDisplayModeFromFlyoutBehavior(FlyoutBehavior flyoutBehav
+ 			{
+ 				case FlyoutBehavior.Flyout:
+ 					IsPaneToggleButtonVisible = true;
+-					PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
++					// Updating the same PaneDisplayMode at the runtime causes selection related issues</pre></details></div>
+  <div class="foot" data-page-node-id="rTdusW8DueFfOoToHPONai">产物: output/samples.jsonl · reviews_raw.jsonl · findings.jsonl · workbench_payload.json · stats.json ｜ 重新生成: python run_pilot.py --backend &lt;golden|ollama|openai&gt; 后 python gen_report_html.py</div>
+</div></body></html>
