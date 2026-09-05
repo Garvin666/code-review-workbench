@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>守护工作台 · Guardian Workbench</title>
+<style>
+:root{
+  --brand:#5645D4; --brand-soft:#EEEDFE; --brand-deep:#3C3489;
+  --ink:#1F1E1B; --ink-2:#6F6C63; --ink-3:#9B978C;
+  --bg:#FAFAF9; --card:#FFFFFF; --line:#E5E3DF;
+  --ok:#16A34A; --ok-bg:#E9F7EF; --warn:#D97706; --warn-bg:#FEF4E4;
+  --down:#DC2626; --down-bg:#FDEBEB; --info:#2563EB; --info-bg:#EAF1FD;
+  --maint:#7C3AED; --maint-bg:#F5F0FF;
+  --code-bg:#0A1530; --radius:12px; --shadow:0 1px 2px rgba(28,25,23,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:13px/1.55 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;height:100vh;overflow:hidden}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#D8D5CD;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* 侧栏 */
+.sidebar{width:232px;flex:none;background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:10px;padding:16px 16px 12px}
+.brand .logo{width:28px;height:28px;border-radius:8px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.brand b{font-size:14px;font-weight:600}
+.brand small{display:block;color:var(--ink-3);font-size:10px;letter-spacing:.06em}
+.nav-sec{padding:8px 12px;font-size:11px;color:var(--ink-3);letter-spacing:.08em}
+.tlist{flex:1;overflow-y:auto;padding:0 8px 8px}
+.titem{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:background .12s}
+.titem:hover{background:#F4F2EE}
+.titem.active{background:var(--brand-soft);border-color:#D9D4F7}
+.titem .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.sdot-ok{background:var(--ok)} .sdot-warn{background:var(--warn)} .sdot-down{background:var(--down)}
+.titem .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12.5px}
+.titem .tg{font-size:10px;color:var(--ink-3);background:#F0EEE9;padding:1px 6px;border-radius:6px;flex:none}
+.titem .mt{font-size:9px;color:#7C3AED;background:var(--maint-bg);padding:1px 5px;border-radius:6px;flex:none}
+.sidebar .foot{padding:10px 16px;border-top:1px solid var(--line);color:var(--ink-3);font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.heartbeat{display:inline-flex;align-items:center;gap:5px}
+.heartbeat i{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* 主区 */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:60px;flex:none;background:var(--card);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 22px}
+.topbar .crumb{font-size:14px;font-weight:600}
+.topbar .crumb small{color:var(--ink-3);font-weight:400;margin-left:6px}
+.gstat{margin-left:auto;display:flex;align-items:center;gap:10px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid var(--line);background:#F7F6F3;white-space:nowrap}
+.pill .pdot{width:7px;height:7px;border-radius:50%}
+.pill.p-ok{color:#15703a}.pill.p-warn{color:#a05a03}.pill.p-down{color:#a02a2a}.pill.p-maint{color:#6d28d9;background:var(--maint-bg);border-color:#E3D5FF}
+.btn{border-radius:8px;padding:6px 13px;font-size:12.5px;border:1px solid var(--line);background:#fff;transition:all .12s;white-space:nowrap}
+.btn:hover{border-color:#c9c5bb}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.primary:hover{background:var(--brand-deep)}
+.btn.danger{color:#a02a2a;border-color:#f0c4c4}
+.clock{font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-2);margin-left:2px}
+.mtbanner{flex:none;background:var(--maint-bg);color:#6d28d9;font-size:12px;padding:7px 22px;border-bottom:1px solid #E3D5FF;display:none;align-items:center;gap:8px}
+.mtbanner.show{display:flex}
+.demobanner{flex:none;background:#FFF7E6;color:#9a6700;font-size:12px;padding:6px 22px;border-bottom:1px solid #F3DFB4;display:none;align-items:center;gap:8px}
+.demobanner.show{display:flex}
+.demobanner .btn{font-size:11.5px;padding:2px 10px}
+
+.body{flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:16px}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:13px 16px;box-shadow:var(--shadow)}
+.kpi .k-label{font-size:11.5px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.kpi .k-label i{width:7px;height:7px;border-radius:2px;display:inline-block}
+.kpi .k-num{font-size:26px;font-weight:700;line-height:1.2;margin-top:3px;font-variant-numeric:tabular-nums}
+.kpi .k-sub{font-size:10.5px;color:var(--ink-3);margin-top:2px}
+
+.columns{display:flex;gap:16px;align-items:stretch}
+.col-main{flex:1;display:flex;flex-direction:column;gap:16px;min-width:0}
+.col-side{width:376px;flex:none;display:flex;flex-direction:column;gap:16px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:0}
+.panel .p-head{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid var(--line)}
+.panel .p-head h3{font-size:13px;font-weight:600}
+.panel .p-head .sp{flex:1}
+.chip{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+.chip.brand{background:var(--brand-soft);color:var(--brand-deep);border-color:transparent;cursor:pointer}
+.chip.c-ok{background:var(--ok-bg);color:#15703a;border-color:transparent}
+.chip.c-warn{background:var(--warn-bg);color:#a05a03;border-color:transparent}
+.chip.c-down{background:var(--down-bg);color:#a02a2a;border-color:transparent}
+.chip.c-info{background:var(--info-bg);color:#1d4fbf;border-color:transparent}
+.chip.c-maint{background:var(--maint-bg);color:#6d28d9;border-color:transparent}
+
+/* 总览目标卡 */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:12px;padding:14px 16px}
+.tcard{border:1px solid var(--line);border-radius:10px;padding:12px 13px;cursor:pointer;transition:all .12s;background:#fff}
+.tcard:hover{border-color:#C9C5F2;box-shadow:0 2px 8px rgba(86,69,212,.08)}
+.tcard .row1{display:flex;align-items:center;gap:8px}
+.tcard .row1 .nm{flex:1;font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .row1 .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.tcard .probes{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.pchip{font-size:10px;padding:1px 6px;border-radius:5px;background:#F1EFEA;color:var(--ink-2)}
+.pchip.p-ok{background:var(--ok-bg);color:#15703a}.pchip.p-warn{background:var(--warn-bg);color:#a05a03}.pchip.p-fail{background:var(--down-bg);color:#a02a2a}.pchip.p-noadata{background:#EFEDE7;color:var(--ink-3)}
+.tcard .uptime{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--ink-3)}
+.tcard .uptime b{color:#15703a;font-size:12px;font-variant-numeric:tabular-nums}
+.tcard .uptime b.w{color:#b45309}.tcard .uptime b.d{color:#a02a2a}
+.tcard .meta{margin-top:7px;font-size:10.5px;color:var(--ink-3);display:flex;justify-content:space-between}
+
+/* 详情 */
+.detail{padding:0 16px 6px}
+.upstrip{display:flex;gap:10px;padding:10px 2px 4px}
+.upcell{background:#F8F7F4;border:1px solid var(--line);border-radius:9px;padding:6px 12px;min-width:88px}
+.upcell .t{font-size:10px;color:var(--ink-3)}
+.upcell .v{font-size:16px;font-weight:700;color:#15703a;font-variant-numeric:tabular-nums}
+.upcell .v.w{color:#b45309}.upcell .v.d{color:#a02a2a}.upcell .v.na{color:var(--ink-3)}
+.d-actions2{display:flex;gap:8px;padding:6px 2px 4px;flex-wrap:wrap}
+.d-actions2 .btn{font-size:11.5px;padding:3px 10px}
+.probe-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px dashed var(--line)}
+.probe-row:last-child{border-bottom:none}
+.probe-row .pname{width:84px;font-size:12px;font-weight:500;color:var(--ink-2);display:flex;align-items:center;gap:7px}
+.probe-row .pname i{width:7px;height:7px;border-radius:50%;background:#D8D5CD}
+.probe-row .pname i.st-ok{background:var(--ok)}.probe-row .pname i.st-warn{background:var(--warn)}.probe-row .pname i.st-fail{background:var(--down)}
+.probe-row .pdetail{flex:1;font-size:12px;color:var(--ink-2)}
+.probe-row .plat{font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.lat-chart{height:64px;padding:4px 0 2px}
+.lat-chart svg{width:100%;height:100%;display:block}
+.bar-note{font-size:10px;color:var(--ink-3);display:flex;justify-content:space-between;padding-top:2px}
+.urls{font-size:11px;color:var(--ink-3);padding:2px 0 4px;word-break:break-all}
+
+/* 事件流 */
+.evlist{flex:1;overflow-y:auto;padding:4px 10px 10px;max-height:520px}
+.ev{padding:7px 10px;border-radius:8px;display:flex;gap:9px;align-items:flex-start;font-size:12px}
+.ev .t{margin-top:1px;flex:none;font-size:10.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.ev .msg{flex:1;line-height:1.45}
+.ev .msg b{font-weight:600;margin-right:4px}
+.ev.critical{background:var(--down-bg)}
+.ev.warn{background:var(--warn-bg)}
+.ev.info{background:var(--ok-bg)}
+.ev.maint{background:var(--maint-bg)}
+.ev-tag{flex:none;font-size:9.5px;padding:1px 6px;border-radius:5px;font-weight:500;margin-top:1px}
+.ev.critical .ev-tag{background:#dc2626;color:#fff}.ev.warn .ev-tag{background:#d97706;color:#fff}.ev.info .ev-tag{background:#16a34a;color:#fff}
+.ev.maint .ev-tag{background:#7C3AED;color:#fff}
+
+/* 抽屉 */
+.overlay{position:fixed;inset:0;background:rgba(31,28,23,.32);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+.overlay.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:-500px;width:500px;max-width:94vw;height:100vh;background:var(--card);z-index:50;box-shadow:-8px 0 30px rgba(0,0,0,.12);transition:right .22s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.show{right:0}
+.drawer .d-head{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.drawer .d-head h3{font-size:15px}
+.drawer .d-body{flex:1;overflow-y:auto;padding:18px 20px}
+.form label{display:block;font-size:11.5px;color:var(--ink-2);margin:12px 0 5px;font-weight:500}
+.form .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.form .seg button{flex:1;padding:7px 0;font-size:12px;color:var(--ink-2);background:#fff}
+.form .seg button.on{background:var(--brand-soft);color:var(--brand-deep);font-weight:600}
+.input,.select,textarea.input{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;background:#fff;outline:none;resize:vertical}
+.input:focus,.select:focus,textarea.input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(86,69,212,.12)}
+.input.hint-grey{color:var(--ink-2)}
+.form .hint{font-size:11px;color:var(--ink-3);margin-top:5px;line-height:1.5}
+.row2{display:flex;gap:10px;align-items:center}
+.row2>*{flex:1}
+.chk{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--ink-2);padding:6px 0}
+.chk label{display:inline-flex;gap:5px;align-items:center;margin:0;font-size:12px;cursor:pointer}
+.d-actions{margin-top:18px;display:flex;gap:10px}
+.testout{margin-top:10px;display:none;gap:6px;flex-wrap:wrap}
+.testout.show{display:flex}
+/* token 结果 */
+.result{margin-top:14px;display:none}
+.result.show{display:block}
+.tokbox{background:var(--code-bg);color:#E7EBF7;border-radius:10px;padding:14px 16px;font-family:Consolas,"JetBrains Mono",monospace}
+.tokbox .lbl{font-size:10px;color:#8B9AC9;letter-spacing:.08em;margin-bottom:6px}
+.tokbox .tok{font-size:15px;word-break:break-all;color:#C7B8FF;font-weight:600}
+.tok-actions{margin-top:9px;display:flex;gap:8px}
+.stab{display:flex;border-bottom:1px solid var(--line);margin-top:12px;overflow-x:auto}
+.stab button{flex:none;padding:8px 13px;font-size:12px;color:var(--ink-2);border-bottom:2px solid transparent}
+.stab button.on{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+.codebox{background:var(--code-bg);border-radius:10px;margin-top:10px;position:relative;overflow:hidden}
+.codebox pre{margin:0;padding:14px 16px;color:#C7D0E8;font-family:Consolas,"JetBrains Mono",monospace;font-size:11px;line-height:1.6;overflow:auto;white-space:pre;min-height:80px;max-height:250px}
+.codebox .copy{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.08);color:#E7EBF7;border-radius:7px;padding:3px 10px;font-size:11px}
+.codebox .copy:hover{background:rgba(255,255,255,.18)}
+/* 通知设置状态行 */
+.ntstatus{display:flex;align-items:center;gap:8px;padding:8px 2px 2px;font-size:11.5px;color:var(--ink-2)}
+.ntstatus .dot{width:8px;height:8px;border-radius:50%;background:#D8D5CD}
+.ntstatus .dot.on{background:var(--ok)}
+.ntstatus .dot.off{background:var(--ink-3)}
+
+/* toast */
+.toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:#fff;border:1px solid var(--line);border-left:4px solid var(--info);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:9px 16px 9px 12px;display:flex;gap:10px;align-items:center;min-width:280px;max-width:480px;animation:tin .25s cubic-bezier(.2,.9,.3,1.2)}
+.toast.t-critical{border-left-color:#dc2626}.toast.t-warn{border-left-color:#d97706}.toast.t-info{border-left-color:#16a34a}
+.toast .tdot{width:9px;height:9px;border-radius:50%;flex:none}
+.toast.t-critical .tdot{background:#dc2626}.toast.t-warn .tdot{background:#d97706}.toast.t-info .tdot{background:#16a34a}
+.toast .tmsg{font-size:12.5px;flex:1}
+.toast .tx{color:var(--ink-3);cursor:pointer;padding:0 4px}
+@keyframes tin{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+.helpbar{display:flex;align-items:center;gap:12px;padding:2px 0}
+.helpbar a{color:var(--brand);text-decoration:none;font-size:12px}
+@media (max-width:1100px){.columns{flex-direction:column}.col-side{width:100%}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">G</div>
+    <div><b>守护工作台</b><small>GUARDIAN WORKBENCH</small></div>
+  </div>
+  <div class="nav-sec">守护目标 · <span id="sideCount">0</span></div>
+  <div class="tlist" id="targetList"></div>
+  <div class="foot"><span>守护中枢 <b id="verTag" style="color:#9B978C;font-weight:400"></b></span>
+    <span class="heartbeat" id="hb"><i></i><span id="hbText">连接中</span></span></div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="crumb" id="crumbTitle">守护总览<small id="crumbSub"></small></div>
+    <div class="gstat">
+      <span class="pill" id="globalPill"><span class="pdot" id="gDot"></span><span id="gPillText">启动中</span></span>
+      <button class="btn" id="btnPause" title="暂停页面告警提示">暂停告警</button>
+      <button class="btn" id="btnNotiSet" title="配置 Webhook / 企微 / 钉钉 / 飞书 / Server酱 通知渠道">通知设置</button>
+      <button class="btn primary" id="btnAdd">+ 登记目标</button>
+      <span class="clock" id="clock"></span>
+    </div>
+  </header>
+
+  <div class="demobanner" id="demoBanner"><span>⚡ 演示模式 —— 未连接守护中枢，当前展示内置演示数据。</span>
+    <button class="btn" id="btnRetry">重试连接</button></div>
+  <div class="mtbanner" id="mtBanner"><span>🛠 维护窗口</span><span id="mtText" style="flex:1"></span></div>
+
+  <div class="body">
+    <div class="kpis">
+      <div class="kpi"><div class="k-label"><i style="background:#5645D4"></i>守护目标</div><div class="k-num" id="kTotal">0</div><div class="k-sub" id="kSub">—</div></div>
+      <div class="kpi"><div class="k-label"><i style="background:#16A34A"></i>正常</div><div class="k-num" style="color:#16A34A" id="kOk">0</div><div class="k-sub">state = ok</div></div>
+      <div class="kpi"><div class="k-label"><i style="background:#D97706"></i>预警</div><div class="k-num" style="color:#D97706" id="kWarn">0</div><div class="k-sub">慢 / 证书 / 变更</div></div>
+      <div class="kpi"><div class="k-label"><i style="background:#DC2626"></i>故障</div><div class="k-num" style="color:#DC2626" id="kDown">0</div><div class="k-sub">连续失败判定</div></div>
+      <div class="kpi"><div class="k-label"><i style="background:#2563EB"></i>今日事件</div><div class="k-num" id="kEvents">0</div><div class="k-sub" id="kChannels">—</div></div>
+    </div>
+
+    <div class="columns">
+      <div class="col-main">
+        <section class="panel" id="viewOverview">
+          <div class="p-head"><h3>全部守护目标</h3><span class="sp"></span>
+            <span class="chip" id="chMode">3s 自动巡检</span>
+            <span class="chip brand" id="chPublic">公开状态页 ↗</span></div>
+          <div class="tgrid" id="ovGrid"></div>
+        </section>
+        <section class="panel" id="viewDetail" style="display:none">
+          <div class="p-head">
+            <button class="chip" id="dBack" style="cursor:pointer">← 返回总览</button>
+            <h3 id="dName"></h3>
+            <span class="chip" id="dType"></span>
+            <span class="chip" id="dState"></span>
+            <span class="sp"></span>
+            <span class="chip" id="dMaint" style="display:none">维护中</span>
+            <span class="chip brand" id="dRefresh">刷新</span>
+          </div>
+          <div class="detail">
+            <div class="urls" id="dUrl"></div>
+            <div class="upstrip" id="dUptime"></div>
+            <div id="dProbes"></div>
+            <div class="d-actions2" id="dOps"></div>
+            <div class="lat-chart"><svg id="latSvg" preserveAspectRatio="none"></svg></div>
+            <div class="bar-note"><span>响应延迟曲线 (ms)</span><span id="dLastLat">—</span></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-side">
+        <section class="panel" style="height:calc(100vh - 250px);max-height:560px">
+          <div class="p-head"><h3>事件流</h3><span class="sp"></span>
+            <span class="chip brand" id="evFilter">全部</span></div>
+          <div class="evlist" id="evList"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 登记抽屉 -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head"><h3 id="dTitle">登记守护目标</h3><span class="sp"></span><button class="btn" id="dClose">关闭 ✕</button></div>
+  <div class="d-body">
+    <div class="form" id="formWrap">
+      <label>目标名称 *</label>
+      <input class="input" id="fName" placeholder="例如：商城后端 API / 我的小程序">
+      <label>守护类型</label>
+      <div class="seg" id="typeSeg">
+        <button data-v="website" class="on">网站</button><button data-v="api">API</button>
+        <button data-v="miniprogram">小程序</button><button data-v="app">App</button><button data-v="agent">代理</button>
+      </div>
+      <label>接入通道</label>
+      <div class="seg" id="srcSeg">
+        <button data-v="probe">中枢探测</button><button data-v="report" class="on">客户端上报</button><button data-v="agent">代理采集</button>
+      </div>
+      <div id="urlField">
+        <label>目标地址 URL（探测通道）</label>
+        <div class="row2">
+          <input class="input" id="fUrl" placeholder="https://example.com 或 http://127.0.0.1:PORT/路径">
+          <button class="btn" id="btnTest" style="flex:none" title="登记前先单次探测该地址">测试连通</button>
+        </div>
+        <div class="hint">可探测：在线可用性 / 延迟 / TLS 证书 / 内容指纹 / 安全响应头。探测结果不入库。</div>
+        <div class="testout" id="testOut"></div>
+      </div>
+      <label id="intervalLabel">巡检间隔（秒）</label>
+      <input class="input hint-grey" id="fInterval" value="30" style="width:130px">
+      <div class="d-actions">
+        <button class="btn primary" id="fSubmit" style="flex:1">创建并领取 Token</button>
+      </div>
+    </div>
+
+    <div class="result" id="result">
+      <label style="font-weight:600">✓ 目标已登记，这是你的专属 Token（仅此一次展示）</label>
+      <div class="tokbox"><div class="lbl">X-GUARDIAN-TOKEN · 上报请求头</div><div class="tok" id="rToken"></div></div>
+      <div class="tok-actions">
+        <button class="btn" id="copyToken">复制 Token</button>
+        <button class="btn" id="newTarget">再登记一个</button>
+      </div>
+      <div class="stab" id="stabBar"></div>
+      <div class="codebox"><pre id="codePre"></pre><button class="copy" id="copyCode">复制代码</button></div>
+      <div class="hint">把片段放进被守护的网站 / 小程序 / App：它会定时向中枢上报心跳；异常时工作台告警并推送通知。Token 丢失可到目标详情「轮换 Token」重发。</div>
+    </div>
+    <div id="notifyWrap" style="display:none"></div>
+  </div>
+</aside>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+"use strict";
+/* ============ 全局状态 ============ */
+const $ = s => document.querySelector(s);
+const HUB_OK = location.protocol === "http:" || location.protocol === "https:";
+const state = {
+  mode: HUB_OK ? "conn" : "demo",   // conn | demo
+  status: null,
+  view: "overview", selTarget: null, paused: false,
+  knownEv: new Set(),
+  snippets: {}, curTok: "",
+  fType: "website", fSrc: "report",
+  evFilter: "all",
+};
+
+/* ============ 小工具 ============ */
+function esc(s){ return String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function fmtT(ms){ if(!ms) return "—"; return new Date(ms).toTimeString().slice(0,8); }
+function fmtAgo(iso){ if(!iso) return "从未"; const t=(Date.now()-new Date(iso).getTime())/1000;
+  if(t<0) return "刚刚"; if(t<60) return Math.floor(t)+"s 前"; if(t<3600) return Math.floor(t/60)+"m 前"; if(t<86400) return Math.floor(t/3600)+"h 前"; return Math.floor(t/86400)+"d 前"; }
+function typeCn(t){ return ({website:"网站",api:"API",app:"App",miniprogram:"小程序",agent:"代理"})[t]||t; }
+function srcCn(s){ return ({probe:"中枢探测",report:"客户端上报",agent:"代理采集"})[s]||s; }
+const ST_LABEL={ok:"正常",warn:"预警",down:"故障"};
+const PNAMES={online:"在线可用性",latency:"响应延迟",tls:"TLS 证书",content:"内容指纹",security:"安全响应头"};
+const PSHORT={online:"在线",latency:"延迟",tls:"证书",content:"内容",security:"安全"};
+const WCN={website:"网站",api:"API",app:"App",miniprogram:"小程序",agent:"代理"};
+
+/* ============ API ============ */
+async function api(path, opts){
+  const r = await fetch(path, opts);
+  const j = await r.json().catch(()=>({ok:false,error:"bad json"}));
+  if(!j.ok) throw new Error(j.error||("HTTP "+r.status));
+  return j.data;
+}
+function adminHeaders(){ return {"Content-Type":"application/json"}; }
+
+/* ============ 轮询 / 连接模式 ============ */
+async function poll(){
+  if(state.mode==="demo"){ retryConn(); return; }   // 演示模式只在用户重试时尝试真连
+  try{
+    const d = await api("/api/v1/status");
+    state.status = d;
+    if(!state.snippets.python){ try{ state.snippets = await api("/api/v1/snippets"); }catch(_){ state.snippets = demoSnips(); } }
+    setMode("conn"); setHearbeat(true);
+    render(); notifyNewEvents(d.events);
+  }catch(e){ setMode("demo"); }
+}
+let failTick = 0;
+function retryConn(){
+  if(!HUB_OK) return;                        // file:// 直开没有同源 API，永久演示
+  const t = setInterval(async ()=>{
+    try{
+      const d = await api("/api/v1/status");
+      clearInterval(t);
+      state.mode="conn"; state.status = d;
+      if(!state.snippets.python){ try{ state.snippets = await api("/api/v1/snippets"); }catch(_){} }
+      setMode("conn"); render(); notifyNewEvents(d.events);
+    }catch(_){ /* 继续重试 */ }
+  }, 6000);
+}
+function setMode(m){
+  const wasDemo = state.mode==="demo";
+  state.mode = m;
+  $("#demoBanner").classList.toggle("show", m==="demo");
+  $("#chMode").textContent = m==="demo" ? "内置演示数据" : "3s 自动巡检";
+  if(m==="demo"){
+    $("#hbText").textContent="演示数据"; document.querySelector("#hb i").style.background="#D97706";
+    if(!state.status) buildDemo();
+  }else{
+    $("#hbText").textContent="已连接"; document.querySelector("#hb i").style.background="var(--ok)";
+  }
+}
+function setHearbeat(fresh){
+  $("#hbText").textContent = fresh ? "已连接" : "同步中";
+  document.querySelector("#hb i").style.background = fresh ? "var(--ok)" : "#D97706";
+}
+$("#btnRetry").onclick = ()=>{
+  if(!HUB_OK){ toast("warn","此页面以 file:// 打开，无法连接中枢 API；请通过 guardian_server.py 访问，或继续查看演示数据"); return; }
+  toast("info","正在重试连接守护中枢…");
+  retryConn();
+};
+setInterval(()=>{ if(state.mode==="conn"&&state.status){
+    const fresh = (Date.now() - new Date(state.status.generated_at).getTime()) < 8000;
+    setHearbeat(fresh); } }, 1000);
+if(HUB_OK){ poll(); setInterval(poll, 3000); }
+
+/* ============ 演示数据（无中枢时展示，接口字段与真实 /status 一致） ============ */
+function demoSnips(){ return {python:"# 占位：连接中枢后将提供完整片段", js:"", wx:"", curl:""}; }
+const DEMO_CODE = {
+  python:`import json, time, urllib.request
+HUB = "http://127.0.0.1:8700"          # 守护中枢地址
+TOKEN = "<token>"
+def report(metric="online", ok=True, value=None, detail=""):
+    body = json.dumps({"metric": metric, "ok": ok, "value": value,
+                       "detail": detail}).encode()
+    req = urllib.request.Request(HUB + "/api/v1/report", body,
+                                 {"Content-Type": "application/json",
+                                  "X-Guardian-Token": TOKEN})
+    urllib.request.urlopen(req, timeout=5)
+while True:            # 业务代码里放进主循环 / 定时器
+    report()           # 心跳，默认在线
+    time.sleep(60)     # 建议 30~120s`,
+  js:`const HUB = "http://127.0.0.1:8700/api/v1/report";
+const TOKEN = "<token>";
+function report(ok = true, metric = "online", value, detail) {
+  const body = JSON.stringify({metric, ok, value, detail});
+  if (navigator.sendBeacon)
+    navigator.sendBeacon(HUB, new Blob([body], {type: "application/json"}));
+  else
+    fetch(HUB, {method: "POST",
+      headers: {"Content-Type": "application/json", "X-Guardian-Token": TOKEN},
+      body});
+}
+report();
+window.addEventListener("error",
+  e => report(false, "runtime_error", 0, e.message));
+setInterval(() => report(), 60000);`,
+  wx:`// app.js（微信小程序）· 启动即心跳 + 全局错误上报
+const HUB = "http://127.0.0.1:8700";
+const TOKEN = "<token>";
+function guardianReport(ok = true, metric = "online", value, detail) {
+  wx.request({
+    url: HUB + "/api/v1/report", method: "POST",
+    header: {"Content-Type": "application/json", "X-Guardian-Token": TOKEN},
+    data: { metric, ok, value, detail }, fail: () => {}
+  });
+}
+App({
+  onLaunch() { guardianReport();
+    setInterval(() => guardianReport(), 60000); },
+  onError(err) { guardianReport(false, "runtime_error", 0, String(err)); }
+});`,
+  curl:`curl -s -X POST http://127.0.0.1:8700/api/v1/report \\
+  -H "Content-Type: application/json" -H "X-Guardian-Token: <token>" \\
+  -d '{"metric":"online","ok":true}'
+# 崩溃上报
+curl -s -X POST http://127.0.0.1:8700/api/v1/event \\
+  -H "Content-Type: application/json" -H "X-Guardian-Token: <token>" \\
+  -d '{"type":"crash","message":"oom in webview"}'`,
+};
+function demoEv(tid,level,type,message,agoMin,idx){
+  const ts = Date.now()-agoMin*60000;
+  return {ts, time:new Date(ts).toISOString(), target_id:tid, level, type, message,
+          detail:{} , _n: idx};
+}
+function buildDemo(){
+  const now = Date.now();
+  const mkTarget = (id,name,type,source,state,fail,probes,upt,url,lastEv)=>{
+    return { id,name,type,source,url, enabled:true, state, fail_count:fail,
+      last_check:new Date(now-(Math.floor(Math.random()*40)+2)*1000).toISOString(),
+      in_maintenance:false,
+      probe_status:probes, conditions:{slow:state==="warn",tls_expiring:false,content_changed:false,sec_missing:false},
+      metrics:{latency_ms: state==="ok"?86:state==="warn"?2870:null},
+      uptime:upt, last_event:lastEv||null };
+  };
+  const targets = [
+    mkTarget("demo-web-ok","演示站点 · 正常","website","probe","ok",0,
+      {online:{status:"ok",detail:"200 · 86ms",at:new Date(now-3000).toISOString()},
+       latency:{status:"ok",detail:"86ms",at:new Date(now-3000).toISOString()},
+       content:{status:"ok",detail:"内容一致",at:new Date(now-3000).toISOString()},
+       security:{status:"ok",detail:"安全头齐备",at:new Date(now-3000).toISOString()}},
+      {"1d":99.99,"7d":99.98,"30d":99.97}, "https://example.com",
+      {level:"info",type:"target_recovered",message:"演示站点 · 正常 已恢复",time:new Date(now-3600000*5).toISOString()}),
+    mkTarget("demo-api-orders","订单 API · 上报心跳","api","report","ok",0,
+      {online:{status:"ok",detail:"心跳正常 · 每 60s",at:new Date(now-10000).toISOString()}},
+      {"1d":100,"7d":100,"30d":100}, "",
+      {level:"info",type:"client_report",message:"订单 API 心跳正常",time:new Date(now-60000).toISOString()}),
+    mkTarget("demo-mp-mall","商城小程序 · 客户端埋点","miniprogram","report","warn",1,
+      {online:{status:"ok",detail:"心跳正常",at:new Date(now-20000).toISOString()}},
+      {"1d":99.2,"7d":98.6,"30d":99.1}, "",
+      {level:"warn",type:"client_error",message:"商城小程序 · 上报运行时错误: wx.request fail url not found",time:new Date(now-90000).toISOString()}),
+    mkTarget("demo-web-slow","演示站点 · 慢响应","website","probe","warn",1,
+      {online:{status:"ok",detail:"200 · 2870ms",at:new Date(now-5000).toISOString()},
+       latency:{status:"warn",detail:"2870ms · 超阈值",at:new Date(now-5000).toISOString()}},
+      {"1d":98.1,"7d":97.2,"30d":97.9}, "http://127.0.0.1:8800/slow",
+      {level:"warn",type:"perf_slow",message:"演示站点 · 慢响应 响应偏慢 2870ms（阈值 2500ms）",time:new Date(now-120000).toISOString()}),
+    mkTarget("demo-cdn-edge","CDN 边缘 · TLS 即将到期","website","probe","warn",0,
+      {online:{status:"ok",detail:"200 · 132ms",at:new Date(now-8000).toISOString()},
+       tls:{status:"warn",detail:"12 天后到期",at:new Date(now-8000).toISOString()}},
+      {"1d":99.9,"7d":99.8,"30d":99.4}, "https://cdn.example.com",
+      {level:"warn",type:"tls_expiring",message:"CDN 边缘 证书 12 天后到期（预警 30 天）",time:new Date(now-600000).toISOString()}),
+    mkTarget("demo-web-err","演示站点 · 故障（维护后恢复）","website","probe","down",3,
+      {online:{status:"fail",detail:"超时 · 3001ms",at:new Date(now-4000).toISOString()},
+       latency:{status:"fail",detail:"无响应",at:new Date(now-4000).toISOString()}},
+      {"1d":97.6,"7d":96.4,"30d":98.2}, "http://127.0.0.1:8800/err",
+      {level:"critical",type:"target_down",message:"演示站点 · 故障 已判定 DOWN",time:new Date(now-45000).toISOString()}),
+    mkTarget("demo-app-pos","POS App · 代理采集","app","agent","ok",0,
+      {online:{status:"ok",detail:"采集心跳正常",at:new Date(now-30000).toISOString()}},
+      {"1d":100,"7d":100,"30d":100}, "",
+      {level:"info",type:"agent_report",message:"POS App 采集正常",time:new Date(now-180000).toISOString()}),
+  ];
+  const events = [
+    demoEv("demo-web-err","critical","target_down","演示站点 · 故障 已判定 DOWN",1,1),
+    demoEv("demo-web-slow","warn","perf_slow","演示站点 · 慢响应 响应偏慢 2870ms（阈值 2500ms）",2,2),
+    demoEv("demo-mp-mall","warn","client_error","商城小程序 · 上报运行时错误: wx.request fail url not found",2,3),
+    demoEv("demo-cdn-edge","warn","tls_expiring","CDN 边缘 证书 12 天后到期（预警 30 天）",11,4),
+    demoEv("demo-web-ok","info","target_recovered","演示站点 · 正常 已恢复",300,5),
+    demoEv("demo-app-pos","info","agent_report","POS App 代理采集正常",10,6),
+  ].sort((a,b)=>b.ts-a.ts);
+  state.status = {
+    generated_at:new Date().toISOString(),
+    version:"v0.3.0",
+    global:{total:7,ok:4,warn:2,down:1,probe:4,report:2,agent:1,events_today:8,maintenance_active:1},
+    maintenance:{active:[{id:"mt-release",title:"周三 02:00-03:00 例行发布维护",start:new Date(now-20*60000).toISOString(),end:new Date(now+40*60000).toISOString(),targets:["demo-web-err"]}],
+                 all:[{id:"mt-release",title:"周三 02:00-03:00 例行发布维护",start:new Date(now-20*60000).toISOString(),end:new Date(now+40*60000).toISOString(),targets:["demo-web-err"]}]},
+    notify:{enabled:true,preset:"qyweixin",url_masked:"https://qyapi.weixin.qq.com/cgi-bin/webhook/***",levels:["warn","critical"],has_url:true},
+    targets, events,
+  };
+  targets[5].in_maintenance=true;   // 演示“故障目标处于维护窗口”→ 侧栏/卡片显示维护角标
+  state.mode="demo";
+  $("#demoBanner").classList.add("show");
+  $("#chMode").textContent="内置演示数据";
+  $("#verTag").textContent = "v0.3";
+  render();
+}
+
+/* ============ 渲染 ============ */
+function dotCls(st){ return "sdot-"+(st==="ok"?"ok":st==="down"?"down":"warn"); }
+function chipCls(st){ return "c-"+((st==="ok"&&"ok")||(st==="down"&&"down")||"warn"); }
+function upCls(v){ if(v==null) return "na"; return v>=99.5?"":(v>=95?" w":" d"); }
+
+function renderSidebar(){
+  const s = state.status; if(!s) return;
+  const list = $("#targetList");
+  list.innerHTML = (s.targets||[]).map(t=>
+    `<div class="titem ${state.selTarget===t.id?'active':''}" data-id="${esc(t.id)}">
+      <span class="dot ${dotCls(t.state)}"></span>
+      <span class="nm" title="${esc(t.url||t.name)}">${esc(t.name)}</span>
+      ${t.in_maintenance?'<span class="mt">维护</span>':''}
+      <span class="tg">${typeCn(t.type)}</span></div>`).join("") || `<div style="padding:16px 10px;color:var(--ink-3);font-size:12px">暂无目标</div>`;
+  $("#sideCount").textContent = s.targets?.length||0;
+  list.querySelectorAll(".titem").forEach(el=>{ el.onclick=()=>openDetail(el.dataset.id); });
+}
+
+function renderKpi(){
+  const s = state.status, g = s.global||{};
+  $("#kTotal").textContent = g.total||0;
+  $("#kOk").textContent = g.ok||0; $("#kWarn").textContent = g.warn||0; $("#kDown").textContent = g.down||0;
+  $("#kEvents").textContent = g.events_today||0;
+  $("#kChannels").textContent = `上报${g.report||0} · 探测${g.probe||0} · 代理${g.agent||0}`;
+  $("#kSub").textContent = `${(s.targets||[]).length} 条目标配置` + (s.version?` · ${s.version}`:"");
+}
+
+function renderGlobalPill(){
+  const g = state.status.global||{};
+  const mt = (state.status.maintenance&&state.status.maintenance.active||[]).length;
+  let cls="p-ok", txt="守护中 · 全部正常", color="var(--ok)";
+  if(g.down>0){ cls="p-down"; txt=`守护中 · ${g.down} 个故障`; color="var(--down)"; }
+  else if(g.warn>0){ cls="p-warn"; txt=`守护中 · ${g.warn} 个预警`; color="var(--warn)"; }
+  if(mt>0){ cls="p-maint"; txt=`维护窗口 ×${mt}`; color="#7C3AED"; if(g.down>0) txt=`${g.down} 故障 · 维护×${mt}`; }
+  const pill = $("#globalPill");
+  pill.className = "pill "+cls;
+  $("#gDot").style.background = color;
+  $("#gPillText").textContent = txt;
+  document.title = (g.down||g.warn) ? `⚠ ${txt} · 守护工作台` : "守护工作台 · Guardian Workbench";
+}
+
+function renderMtBanner(){
+  const m = state.status&&state.status.maintenance;
+  const act = (m&&m.active)||[];
+  const b = $("#mtBanner"), tx = $("#mtText");
+  if(!act.length){ b.classList.remove("show"); return; }
+  b.classList.add("show");
+  tx.innerHTML = act.map(w=>`<b>${esc(w.title)}</b> 至 ${esc(w.end?w.end.replace("T"," ").slice(5,16):"—")}` +
+    (w.targets&&w.targets.length?`（影响：${esc(w.targets.join("、"))}）`:"（全部目标）")).join("　·　");
+}
+
+function renderUpChips(upt){
+  return `<div class="upcell"><div class="t">24h 可用率</div><div class="v${upCls(upt&&upt["1d"])}">${upt&&upt["1d"]!=null?upt["1d"].toFixed(2)+"%":"—"}</div></div>
+    <div class="upcell"><div class="t">7d 可用率</div><div class="v${upCls(upt&&upt["7d"])}">${upt&&upt["7d"]!=null?upt["7d"].toFixed(2)+"%":"—"}</div></div>
+    <div class="upcell"><div class="t">30d 可用率</div><div class="v${upCls(upt&&upt["30d"])}">${upt&&upt["30d"]!=null?upt["30d"].toFixed(2)+"%":"—"}</div></div>`;
+}
+
+function probeChips(ps){
+  return Object.keys(ps||{}).map(k=>{
+    const st = ps[k].status;
+    const c = st==="ok"?"p-ok":(st==="warn"?"p-warn":(st==="fail"?"p-fail":"p-noadata"));
+    const label = st==="n/a"?"—":(st==="pending"?"待查":(PSHORT[k]||k)+(st==="fail"?"✗":""));
+    return `<span class="pchip ${c}">${esc(label)}</span>`;
+  }).join("");
+}
+
+function renderOverview(){
+  const s = state.status;
+  const grid = $("#ovGrid");
+  if(!s.targets.length){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;padding:44px 20px;text-align:center;color:var(--ink-3)">
+      <div style="font-size:34px;margin-bottom:6px;color:#D3CFC6">⛨</div>
+      <div>还没有守护目标。点击右上角「+ 登记目标」，把网站 / 小程序 / App 接入守护中枢。</div></div>`;
+    return;
+  }
+  grid.innerHTML = s.targets.map(t=>{
+    const st = t.state;
+    const lastEv = t.last_event ? (t.last_event.level==="info"?"已恢复":t.last_event.message.slice(0,26)) : "尚无事件";
+    return `<div class="tcard" data-id="${esc(t.id)}">
+      <div class="row1"><span class="dot ${dotCls(st)}"></span><span class="nm">${esc(t.name)}</span>
+        ${t.in_maintenance?'<span class="chip c-maint">维护中</span>':`<span class="chip c-${st==="ok"?"ok":st==="down"?"down":"warn"}">${ST_LABEL[st]||st}</span>`}
+      </div>
+      <div class="probes">${probeChips(t.probe_status)}</div>
+      <div class="uptime"><span>7d</span><b class="${(t.uptime&&t.uptime["7d"]!=null&&t.uptime["7d"]<99.5)?(t.uptime["7d"]<95?" d":" w"):""}">${t.uptime&&t.uptime["7d"]!=null?t.uptime["7d"].toFixed(2)+"%":"可用率 —"}</b>
+        <span style="margin-left:auto">${fmtAgo(t.last_check)}</span></div>
+      <div class="meta"><span>${srcCn(t.source)} · ${typeCn(t.type)}</span><span>${esc(lastEv)}</span></div></div>`;
+  }).join("");
+  grid.querySelectorAll(".tcard").forEach(el=>{ el.onclick=()=>openDetail(el.dataset.id); });
+}
+
+function switchView(v){
+  state.view = v;
+  $("#viewOverview").style.display = v==="overview" ? "" : "none";
+  $("#viewDetail").style.display = v==="detail" ? "" : "none";
+  $("#crumbTitle").textContent = v==="overview" ? "守护总览" : "目标详情";
+  if(v==="overview"){ $("#crumbSub").textContent=""; }
+}
+$("#dBack").onclick = ()=>{ state.selTarget=null; switchView("overview"); renderSidebar(); };
+
+function openDetail(id){
+  const t = (state.status.targets||[]).find(x=>x.id===id); if(!t) return;
+  state.selTarget = id;
+  switchView("detail");
+  renderSidebar();
+  renderDetail(t);
+  loadLatency(id);
+}
+$("#dRefresh").onclick = ()=>{ if(state.mode!=="conn") return; poll(); toast("info","已刷新状态"); };
+
+function curTarget(){ return (state.status.targets||[]).find(x=>x.id===state.selTarget); }
+
+function renderDetail(t){
+  $("#dName").textContent = t.name;
+  $("#dType").textContent = typeCn(t.type)+" · "+srcCn(t.source);
+  const st = t.state;
+  const c = st==="ok"?"c-ok":(st==="down"?"c-down":"c-warn");
+  $("#dState").textContent = "状态 · "+(ST_LABEL[st]||st);
+  $("#dState").className = "chip "+c;
+  $("#dMaint").style.display = t.in_maintenance ? "" : "none";
+  $("#dUrl").textContent = t.url || (t.source==="report" ? "由客户端主动上报，无探测地址（心跳 / 错误 / 崩溃 / 安全事件均可上报）" : "—");
+  $("#dUptime").innerHTML = renderUpChips(t.uptime);
+  const box = $("#dProbes");
+  const ps = t.probe_status||{};
+  let html = Object.keys(ps).length ? "" : `<div style="padding:8px 0;color:var(--ink-3);font-size:12px">此目标由上报驱动，无内置探针。</div>`;
+  for(const k of ["online","latency","tls","content","security"]){
+    if(!ps[k]) continue;
+    const p = ps[k]; const pst = p.status;
+    const icon = pst==="ok"?"st-ok":(pst==="warn"?"st-warn":(pst==="fail"?"st-fail":""));
+    html += `<div class="probe-row"><span class="pname"><i class="${icon}"></i>${PNAMES[k]}</span>
+      <span class="pdetail">${esc(p.detail||"—")}</span>
+      <span class="plat">${p.at?fmtAgo(p.at):"—"}</span></div>`;
+  }
+  box.innerHTML = html;
+  $("#dLastLat").textContent = t.metrics&&t.metrics.latency_ms!=null ? t.metrics.latency_ms+" ms" : "—";
+  // 管理操作
+  const ops = $("#dOps");
+  const adminHtml = [
+    `<button class="btn" id="opRotate" title="签发新 Token，旧 Token 立即失效">轮换 Token</button>`,
+    `<button class="btn" id="opToggle">${t.enabled===false?"启用守护":"暂停守护"}</button>`,
+    `<button class="btn danger" id="opDelete">注销目标</button>`,
+    `<button class="btn" id="opBadge" title="可用率 SVG 徽章，可嵌入 README/看板">复制徽章链接</button>`,
+  ].join("");
+  const roHtml = (t.source!=="report"&&t.source!=="agent") ? `<span class="chip">读模式</span>` : "";
+  ops.innerHTML = adminHtml + roHtml;
+  $("#opRotate").onclick = async ()=>{
+    try{
+      const d = await api("/api/v1/targets/"+encodeURIComponent(t.id)+"/token/rotate",{method:"POST",headers:adminHeaders(),body:"{}"});
+      state.curTok=d.token; toast("info","新 Token 已签发（仅显示一次）");
+      showTokenPopup(d.token);
+    }catch(e){ toast("critical","轮换失败: "+e.message); }
+  };
+  $("#opToggle").onclick = async ()=>{
+    const want = !(t.enabled===false);
+    try{
+      await api("/api/v1/targets/"+encodeURIComponent(t.id),{method:"POST",headers:adminHeaders(),body:JSON.stringify({enabled:!want})});
+      toast("info", want?"已暂停守护该目标":"已恢复守护该目标");
+      if(state.mode==="conn") poll(); else buildDemo();
+    }catch(e){ toast("critical","操作失败: "+e.message); }
+  };
+  $("#opDelete").onclick = async ()=>{
+    if(!confirm("确认注销目标「"+t.name+"」？历史事件将保留。")) return;
+    try{
+      await fetch("/api/v1/targets/"+encodeURIComponent(t.id),{method:"DELETE"});
+      toast("info","目标已注销");
+      state.selTarget=null; switchView("overview");
+      if(state.mode==="conn") poll(); else buildDemo();
+    }catch(e){ toast("critical","注销失败: "+e.message); }
+  };
+  $("#opBadge").onclick = ()=>{
+    const u = (location.protocol==="http:"||location.protocol==="https:")
+      ? location.origin+"/api/v1/targets/"+encodeURIComponent(t.id)+"/badge.svg?window=7d"
+      : "（连接中枢后生成）";
+    if(u.startsWith("http")){ try{ navigator.clipboard.writeText(u); toast("info","徽章链接已复制：\n"+u); }catch(_){ prompt("徽章链接", u); } }
+    else toast("warn",u);
+  };
+}
+function showTokenPopup(tok){
+  const res=$("#result");
+  $("#formWrap").style.display="none"; res.classList.add("show");
+  $("#rToken").textContent = tok; $("#dTitle").textContent="Token 已轮换";
+  try{ if(!state.snippets.python) state.snippets = {}; }catch(_){}
+  if(!$("#stabBar").children.length) buildStab();
+  $("#drawer").classList.add("show"); $("#overlay").classList.add("show");
+}
+function buildStab(){
+  const order=[["python","Python 心跳"],["js","JS 网页"],["wx","微信小程序"],["curl","curl 任务"]];
+  $("#stabBar").innerHTML = order.map(([k,n])=>`<button data-k="${k}">${n}</button>`).join("");
+  $("#stabBar").querySelectorAll("button").forEach(b=>{ b.onclick=()=>showCode(b.dataset.k); });
+}
+function showCode(k){
+  $("#stabBar").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
+  let code = (state.snippets[k]||"") || "";
+  if(state.mode==="demo"&&!state.snippets[k]) code = DEMO_CODE[k]||"";
+  code = code.replace(/<token>/g, state.curTok || "YOUR_TOKEN").replace(/<登记目标后领取的 token>/g, state.curTok||"YOUR_TOKEN");
+  $("#codePre").textContent = code;
+}
+
+async function loadLatency(id){
+  try{
+    const h = await api(`/api/v1/history?target=${encodeURIComponent(id)}&metric=latency_ms&limit=120`);
+    drawLatChart(h);
+  }catch(e){ const svg=$("#latSvg"); svg.innerHTML=`<text x="8" y="26" font-size="11" fill="#9B978C">暂无延迟数据</text>`; }
+}
+function drawLatChart(h){
+  const svg = $("#latSvg"); svg.innerHTML="";
+  const W=600,H=60,pad=2;
+  if(!h||!h.length){ svg.innerHTML=`<text x="8" y="26" font-size="11" fill="#9B978C">暂无延迟数据（演示模式）</text>`; return; }
+  const vals = h.map(x=>x.value||0);
+  const mx = Math.max(...vals, 10);
+  const mk = (i,v)=>{ const x=pad+(W-pad*2)*(1-i/(vals.length-1||1)); const y=H-pad-(H-pad*2)*(v/mx); return `${x.toFixed(1)},${y.toFixed(1)}`; };
+  const pts = vals.map((v,i)=>mk(i,v)).join(" ");
+  const ns = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+  ns.setAttribute("points",pts); ns.setAttribute("fill","none");
+  ns.setAttribute("stroke","#5645D4"); ns.setAttribute("stroke-width","1.6");
+  ns.setAttribute("stroke-linejoin","round"); ns.setAttribute("stroke-linecap","round");
+  const slowLine = document.createElementNS("http://www.w3.org/2000/svg","line");
+  const slowMs = 2500;
+  const sy = H-pad-(H-pad*2)*(Math.min(slowMs,mx)/mx);
+  slowLine.setAttribute("x1",pad); slowLine.setAttribute("x2",W-pad); slowLine.setAttribute("y1",sy); slowLine.setAttribute("y2",sy);
+  slowLine.setAttribute("stroke","#D97706"); slowLine.setAttribute("stroke-width","0.8"); slowLine.setAttribute("stroke-dasharray","4 3");
+  svg.appendChild(slowLine); svg.appendChild(ns);
+}
+
+function renderEvents(){
+  const s = state.status; if(!s) return;
+  const list = $("#evList");
+  const evs = s.events||[];
+  if(!evs.length){ list.innerHTML=`<div style="padding:30px;color:var(--ink-3);text-align:center">暂无事件</div>`; return; }
+  const f = state.evFilter;
+  const shown = evs.filter(e=> f==="all" || (f==="maint" ? e.type==="maintenance" : e.level===f));
+  list.innerHTML = shown.slice(0,60).map(e=>{
+    const tag = e.type==="target_recovered"?"恢复":(e.level==="critical"?"严重":"预警");
+    return `<div class="ev ${e.level}"><span class="ev-tag">${tag}</span>
+      <span class="msg"><b>${esc(e.target_id||"")}</b>${esc(e.message||"")}</span>
+      <span class="t">${fmtT(e.ts)}</span></div>`;
+  }).join("") || `<div style="padding:24px;color:var(--ink-3);text-align:center">无该过滤条件下的事件</div>`;
+}
+$("#evFilter").onclick = ()=>{
+  const map={all:"critical",critical:"warn",warn:"maint",maint:"all"};
+  state.evFilter = map[state.evFilter]||"all";
+  const t={all:"全部",critical:"严重",warn:"预警",maint:"维护"};
+  $("#evFilter").textContent = t[state.evFilter];
+  renderEvents();
+};
+
+function render(){
+  if(!state.status) return;
+  renderKpi(); renderGlobalPill(); renderMtBanner(); renderSidebar(); renderOverview(); renderEvents();
+  if(state.view==="detail"){
+    const t = curTarget();
+    if(t) renderDetail(t); else switchView("overview");
+  }
+}
+
+/* ============ 事件通知 ============ */
+function notifyNewEvents(events){
+  const fresh = (events||[]).filter(e=>{
+    const key = e.ts+"|"+e.target_id+"|"+e.type;
+    if(state.knownEv.has(key)) return false;
+    if(e.level==="info") return false;
+    state.knownEv.add(key);
+    if(state.knownEv.size>600){ const it=state.knownEv.values().next().value; state.knownEv.delete(it); }
+    return true;
+  }).reverse();
+  if(state.paused) return;
+  fresh.forEach(e=>{
+    if(e.level==="critical"||e.level==="warn"){
+      toast(e.level, (e.target_id||"")+" · "+(e.message||"").slice(0,80));
+      if(e.level==="critical") beep();
+      if("Notification" in window && Notification.permission==="granted" && document.visibilityState==="hidden"){
+        try{ new Notification("守护工作台 · "+(e.level==="critical"?"严重告警":"预警"),{body:(e.target_id||"")+" "+(e.message||"").slice(0,90)}); }catch(_){}
+      }
+    }
+  });
+}
+
+/* ============ toast & 声音 ============ */
+function toast(level, msg){
+  const box = $("#toasts");
+  const el = document.createElement("div");
+  el.className = "toast t-"+level;
+  el.innerHTML = `<span class="tdot"></span><span class="tmsg">${esc(msg)}</span><span class="tx">✕</span>`;
+  box.appendChild(el);
+  el.querySelector(".tx").onclick = ()=> el.remove();
+  setTimeout(()=>{ el.style.opacity="0"; el.style.transition="opacity .3s"; setTimeout(()=>el.remove(),320); }, 6000);
+  while(box.children.length>4) box.firstChild.remove();
+}
+function beep(){
+  try{
+    const AC = window.AudioContext||window.webkitAudioContext;
+    if(!AC) return;
+    if(!state._aud) state._aud = new AC();
+    const o = state._aud.createOscillator(), g = state._aud.createGain();
+    o.connect(g); g.connect(state._aud.destination);
+    o.frequency.value = 660; o.type="square";
+    g.gain.setValueAtTime(0.06, state._aud.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, state._aud.currentTime+0.5);
+    o.start(); o.stop(state._aud.currentTime+0.5);
+  }catch(_){}
+}
+
+/* ============ 顶栏 ============ */
+$("#btnPause").onclick = ()=>{
+  state.paused = !state.paused;
+  const b = $("#btnPause");
+  b.textContent = state.paused ? "恢复告警" : "暂停告警";
+  b.style.background = state.paused ? "var(--warn-bg)" : "";
+  b.style.color = state.paused ? "#a05a03" : "";
+  toast("info", state.paused ? "已暂停告警提示（事件仍在记录）" : "告警提示已恢复");
+};
+$("#btnAdd").onclick = openRegister;
+$("#overlay").onclick = closeDrawer;
+$("#dClose").onclick = closeDrawer;
+$("#chPublic").onclick = ()=>{ window.open("/public","_blank"); };
+/* 系统通知授权 */
+(function askNotify(){
+  if(!("Notification" in window)) return;
+  if(Notification.permission==="default"){
+    $("#btnNotiSet").insertAdjacentHTML("afterend",`<button class="btn" id="btnNoti">开启系统通知</button>`);
+    $("#btnNoti").onclick = async ()=>{
+      const p = await Notification.requestPermission();
+      if(p==="granted"){ toast("info","已开启系统通知"); $("#btnNoti").remove(); }
+      else toast("warn","通知未授权，告警仅在页面内提示");
+    };
+  }
+})();
+
+/* ============ 抽屉：登记 ============ */
+function resetRegisterForm(){
+  $("#formWrap").style.display=""; $("#result").classList.remove("show");
+  $("#notifyWrap").style.display="none";
+  $("#dTitle").textContent="登记守护目标";
+  $("#fName").value=""; $("#fUrl").value=""; $("#fInterval").value="30";
+  $("#testOut").classList.remove("show"); $("#testOut").innerHTML="";
+  $("#urlField").style.display = (state.fSrc==="probe") ? "" : "none";
+  $("#intervalLabel").style.display = (state.fSrc==="probe") ? "" : "none";
+  $("#fInterval").style.display = (state.fSrc==="probe") ? "" : "none";
+  $("#btnTest").style.display = (state.fSrc==="probe") ? "" : "none";
+  $("#fSubmit").textContent="创建并领取 Token";
+}
+function openRegister(){
+  resetRegisterForm();
+  $("#drawer").classList.add("show"); $("#overlay").classList.add("show");
+  if(state.mode==="demo") toast("warn","演示模式：登记将保存到本页内存，仅供预览");
+  $("#fName").focus();
+}
+function closeDrawer(){ $("#drawer").classList.remove("show"); $("#overlay").classList.remove("show"); }
+
+$("#typeSeg").querySelectorAll("button").forEach(b=>{
+  b.onclick = ()=>{ $("#typeSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); state.fType=b.dataset.v; };
+});
+$("#srcSeg").querySelectorAll("button").forEach(b=>{
+  b.onclick = ()=>{ $("#srcSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); state.fSrc=b.dataset.v;
+    const showUrl = state.fSrc==="probe";
+    $("#urlField").style.display = showUrl?"":"none";
+    $("#intervalLabel").style.display = showUrl?"":"none";
+    $("#fInterval").style.display = showUrl?"":"none";
+    $("#btnTest").style.display = showUrl?"":"none";
+  };
+});
+
+/* 登记前连通性自测 v0.3 */
+$("#btnTest").onclick = async ()=>{
+  const url = $("#fUrl").value.trim();
+  if(!url){ toast("warn","请先填写 URL"); return; }
+  const box = $("#testOut");
+  box.classList.add("show"); box.innerHTML = `<span class="chip c-info">测试中…</span>`;
+  $("#btnTest").textContent="测试中…"; $("#btnTest").disabled=true;
+  try{
+    const d = await api("/api/v1/validate",{method:"POST",headers:adminHeaders(),body:JSON.stringify({url,probes:["online","latency","tls","content","security"],timeout_ms:3000})});
+    const map={online:"在线",latency:"延迟",tls:"证书",content:"内容",security:"安全"};
+    box.innerHTML = Object.entries(d.probes).map(([k,v])=>{
+      const c = v.status==="ok"?"p-ok":(v.status==="warn"?"p-warn":"p-fail");
+      return `<span class="pchip ${c}">${map[k]||k} · ${esc(v.status)}</span>`;
+    }).join("") + `<span class="chip c-${d.summary==="ok"?"ok":"warn"}">${d.summary==="ok"?"✓ 可达":"⚠ 不可达，请检查地址"}</span>`;
+    d.probes.tls&&d.probes.tls.detail&&box.insertAdjacentHTML("beforeend",`<span class="chip">${esc(d.probes.tls.detail)}</span>`);
+  }catch(e){
+    box.innerHTML = `<span class="chip c-down">测试失败: ${esc(e.message)}</span>`;
+  }finally{
+    $("#btnTest").textContent="测试连通"; $("#btnTest").disabled=false;
+  }
+};
+
+/* 提交登记 */
+$("#fSubmit").onclick = async ()=>{
+  const name = $("#fName").value.trim();
+  if(!name){ toast("warn","请填写目标名称"); return; }
+  const body = { name, type: state.fType, source: state.fSrc, interval_s: parseInt($("#fInterval").value)||30 };
+  if(state.fSrc==="probe"){
+    const url = $("#fUrl").value.trim();
+    if(!url){ toast("warn","探测通道需要填写 URL"); return; }
+    body.url = url;
+  }
+  $("#fSubmit").textContent="提交中…";
+  try{
+    const data = await api("/api/v1/targets", {method:"POST", headers:adminHeaders(), body: JSON.stringify(body)});
+    state.curTok = data.token;
+    $("#formWrap").style.display = "none";
+    const res = $("#result");
+    res.classList.add("show");
+    $("#rToken").textContent = data.token;
+    $("#dTitle").textContent = "接入完成 · "+data.target.name;
+    try{ if(!state.snippets.python){ state.snippets = await api("/api/v1/snippets"); } }catch(_){}
+    if(!$("#stabBar").children.length) buildStab();
+    showCode("python");
+    toast("info", "目标「"+(data.target.name||"")+"」已登记");
+    poll();
+  }catch(e){
+    if(state.mode==="demo"){ registerDemoLocal(body); return; }
+    toast("critical", "登记失败: "+e.message);
+    $("#fSubmit").textContent = "创建并领取 Token";
+  }
+};
+/* 演示模式本地登记（仅内存预览） */
+function registerDemoLocal(body){
+  const id = "tmp-"+(body.name||"t").replace(/\s+/g,"-").slice(0,18);
+  const up = {"1d":100,"7d":100,"30d":100};
+  state.status.targets.unshift({id,name:body.name,type:body.type,source:body.source,url:body.url||"",
+    enabled:true,state:"ok",fail_count:0,last_check:new Date().toISOString(),in_maintenance:false,
+    probe_status: body.source==="probe"?{online:{status:"ok",detail:"200 · 12ms",at:new Date().toISOString()}}:{online:{status:"pending",detail:"等待首次上报",at:null}},
+    conditions:{},metrics:{latency_ms:12},uptime:up,last_event:null});
+  const ev = {ts:Date.now(),time:new Date().toISOString(),target_id:id,level:"info",type:"target_registered",message:body.name+" 已登记（演示）",detail:{}};
+  state.status.events.unshift(ev);
+  state.status.global.total=(state.status.global.total||0)+1;
+  state.status.global.ok=(state.status.global.ok||0)+1;
+  state.curTok="demo-token-"+Math.random().toString(16).slice(2,10);
+  $("#formWrap").style.display="none";
+  $("#result").classList.add("show"); $("#rToken").textContent=state.curTok;
+  $("#dTitle").textContent="演示登记完成 · "+body.name;
+  if(!$("#stabBar").children.length) buildStab();
+  showCode("python");
+  render(); toast("info","演示模式：目标已加入内存（重启即消失）");
+}
+$("#copyToken").onclick = async ()=>{
+  try{ await navigator.clipboard.writeText(state.curTok); toast("info","Token 已复制"); }
+  catch(e){ prompt("复制 Token", state.curTok); }
+};
+$("#newTarget").onclick = resetRegisterForm;
+$("#copyCode").onclick = async ()=>{
+  const txt = $("#codePre").textContent;
+  try{ await navigator.clipboard.writeText(txt); toast("info","代码已复制，可直接粘贴到被守护方"); }
+  catch(e){ prompt("复制代码", txt); }
+};
+
+/* ============ 抽屉：通知设置 v0.3 ============ */
+const PRESET_HINT = {
+  webhook:"通用 Webhook：中枢以 POST JSON {text, ts} 投递。适用于自建机器人 / Zapier / n8n 等。",
+  qyweixin:"企业微信群机器人：填入 Webhook 地址（https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=…）。",
+  dingtalk:"钉钉群机器人：填入带 access_token 的 Webhook 地址。",
+  feishu:"飞书群机器人：填入带 token 的 Webhook 地址。",
+  serverchan:"Server酱 Turbo：填入 https://sctapi.ftqq.com/<SENDKEY>.send",
+};
+let nPreset="webhook", nEnabled=false, nLevels=["warn","critical"];
+function openNotifySet(){
+  $("#notifyWrap").style.display="";
+  $("#formWrap").style.display="none"; $("#result").classList.remove("show");
+  const st = state.status&&state.status.notify;
+  nEnabled = !!(st&&st.enabled); nPreset = (st&&st.preset)||"webhook"; nLevels=(st&&st.levels)||["warn","critical"];
+  $("#dTitle").textContent="通知设置 · 守护中枢";
+  $("#notifyWrap").innerHTML = notifyFormHTML(st);
+  bindNotifyForm();
+  $("#drawer").classList.add("show"); $("#overlay").classList.add("show");
+}
+function notifyFormHTML(st){
+  const presets = [["webhook","Webhook"],["qyweixin","企业微信"],["dingtalk","钉钉"],["feishu","飞书"],["serverchan","Server酱"]];
+  const seg = presets.map(([v,n])=>`<button data-v="${v}" class="${v===nPreset?"on":""}">${n}</button>`).join("");
+  const lvl = [["warn","预警"],["critical","严重"],["info","恢复"]].map(([v,n])=>
+    `<label><input type="checkbox" value="${v}" ${nLevels.includes(v)?"checked":""}> ${n}</label>`).join("");
+  return `
+    <div class="ntstatus"><span class="dot ${nEnabled?"on":"off"}" id="ntDot"></span>
+      <span id="ntStatus">${nEnabled?"通知已启用":"通知未启用"}</span>
+      ${st&&st.url_masked?`<span class="chip">${esc(st.url_masked)}</span>`:""}</div>
+    <div class="form" style="margin-top:6px">
+      <label>渠道预设</label>
+      <div class="seg" id="presetSeg">${seg}</div>
+      <div class="hint" id="presetHint"></div>
+      <label>启用该渠道</label>
+      <div class="chk"><label><input type="checkbox" id="nEn" ${nEnabled?"checked":""}> 保存后即时生效（仅在状态翻转时投递）</label></div>
+      <label>Webhook 地址</label>
+      <input class="input" id="nUrl" placeholder="https://…（各渠道机器人 Webhook）" value="${esc((st&&st.url_masked)||"")}">
+      <div class="hint">演示 / 只读视图下不显示明文地址；真实中枢打开后此处填完整 URL，保存后只回显打码（如 ${esc((st&&st.url_masked)||"—")}）。</div>
+      <label>投递级别</label>
+      <div class="chk" id="nLvls">${lvl}</div>
+      <label>消息模板 <span style="font-weight:400">（可选，占位符 {level} {name} {message} {time} {type}）</span></label>
+      <textarea class="input" rows="2" id="nTpl">${esc((st&&st.template)||"【守护中枢】{level} · {name}\\n{message}\\n时间：{time}")}</textarea>
+      <div class="d-actions">
+        <button class="btn primary" id="nSave" style="flex:1">保存设置</button>
+        <button class="btn" id="nTest">发送测试</button>
+      </div>
+    </div>`;
+}
+function bindNotifyForm(){
+  $("#nEn").onchange = ()=>{ nEnabled = $("#nEn").checked; $("#ntDot").className="dot "+(nEnabled?"on":"off"); $("#ntStatus").textContent = nEnabled?"通知将启用":"通知关闭"; };
+  $("#presetSeg").querySelectorAll("button").forEach(b=>{
+    b.onclick=()=>{ $("#presetSeg").querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); nPreset=b.dataset.v;
+      $("#presetHint").textContent = PRESET_HINT[nPreset]||""; };
+  });
+  $("#presetHint").textContent = PRESET_HINT[nPreset]||"";
+  $("#nLvls").querySelectorAll("input").forEach(c=>{ c.onchange=()=>{ nLevels=[...$("#nLvls").querySelectorAll("input:checked")].map(x=>x.value); }; });
+  $("#nSave").onclick = async ()=>{
+    const url = $("#nUrl").value.trim();
+    if(url&&!url.startsWith("http")){ toast("warn","URL 需以 http(s):// 开头"); return; }
+    const body = {action:"save",enabled:nEnabled,preset:nPreset,url,levels:nLevels,template:$("#nTpl").value};
+    try{
+      const d = await api("/api/v1/notify",{method:"POST",headers:adminHeaders(),body:JSON.stringify(body)});
+      toast("info", d.enabled?"通知渠道已启用："+d.preset+" "+d.url_masked:"通知渠道已保存（未启用）");
+      closeDrawer();
+      if(state.mode==="conn") poll();
+    }catch(e){ toast("critical","保存失败: "+e.message); }
+  };
+  $("#nTest").onclick = async ()=>{
+    if(state.mode==="demo"){ toast("warn","演示模式：连接中枢后可发送测试通知"); return; }
+    const url = $("#nUrl").value.trim();
+    const body = {action:"test",preset:nPreset,url,levels:nLevels,template:$("#nTpl").value};
+    try{
+      const d = await api("/api/v1/notify",{method:"POST",headers:adminHeaders(),body:JSON.stringify(body)});
+      toast(d.ok?"info":"warn", "测试结果: "+(d.data&&d.data.result||d.error||"完成"));
+    }catch(e){ toast("critical","测试失败: "+e.message); }
+  };
+}
+$("#btnNotiSet").onclick = openNotifySet;
+
+/* ============ 时钟 ============ */
+setInterval(()=>{ $("#clock").textContent = new Date().toTimeString().slice(0,8); }, 1000);
+
+/* ============ 启动 ============ */
+(function init(){
+  const p = new URLSearchParams(location.search);
+  if(p.get("demo") || !HUB_OK){ state.mode="demo"; buildDemo(); }
+  if(HUB_OK && !p.get("demo")){ poll(); setInterval(poll, 3000); }
+})();
+</script>
+</body>
+</html>
